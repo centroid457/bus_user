@@ -52,7 +52,6 @@ class SerialPort:
 
         try:
             self._source = Serial(port=address, timeout=self.TIMEOUT)
-            return True
         except:
             msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
             print(msg)
@@ -62,6 +61,10 @@ class SerialPort:
                 raise Exx_SerialAddressInaccessible(msg)
             else:
                 return False
+
+        msg = f"[OK] connected {address=}/{self.TIMEOUT=}"
+        print(msg)
+        return True
 
     def read_line(self):
         pass
