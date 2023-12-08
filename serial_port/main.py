@@ -1,21 +1,51 @@
 import pathlib
-from serial.tools import list_ports
 from typing import *
+
+from serial import Serial
+from serial.tools import list_ports
 
 from object_info import ObjectInfo
 
 
 # =====================================================================================================================
+class Exx_SerialAddressInaccessible(Exception):
+    pass
 
 
 # =====================================================================================================================
 class SerialPort:
-    address: str = None
+    ADDRESS: str = None
+    TIMEOUT: float = 0.2
+    RAISE: bool = True
 
-    def __init__(self, address: str):
-        self.address = address
+    _source: Optional[Serial] = None
 
-    def connect(self):
+    def __init__(self, address: Optional[str] = None):
+        if address is not None:
+            self.ADDRESS = address
+
+    def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
+        self._source = None
+
+        if address is None:
+            address = self.ADDRESS
+        if _raise is None:
+            _raise = self.RAISE
+
+        try:
+            self._source = Serial(port=address, timeout=self.TIMEOUT)
+            return True
+        except:
+            msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
+            print(msg)
+            self.print()
+
+            if _raise:
+                raise Exx_SerialAddressInaccessible(msg)
+            else:
+                return False
+
+    def read_line(self):
         pass
 
     @classmethod
@@ -83,7 +113,7 @@ class SerialPort:
         if port_obj_list:
             ObjectInfo(port_obj_list[0]).print(hide_skipped=True, hide_build_in=True)
         else:
-            print("[WARN]no ports found")
+            print("[WARN] no serial ports found")
 
 
 # =====================================================================================================================
