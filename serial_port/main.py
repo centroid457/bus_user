@@ -1,7 +1,9 @@
 import pathlib
+import sys
+import glob
 from typing import *
 
-from serial import Serial
+from serial import Serial, SerialException
 from serial.tools import list_ports
 
 from object_info import ObjectInfo
@@ -10,6 +12,22 @@ from object_info import ObjectInfo
 # =====================================================================================================================
 class Exx_SerialAddressInaccessible(Exception):
     pass
+
+
+class Exx_SerialPL2303IncorrectDriver(Exception):
+    """
+    REASON
+    ======
+    typical for windows
+
+    SOLVATION
+    ===========
+    install last drivers
+    manually select other more OLD driver in manager (see from PC)
+        version 3.3.2.105/27.10.2008 - is good!
+        version 3.8.22.0/22.02.2023 - is not good!!!
+    """
+    MARKER: str = "PL2303HXA PHASED OUT SINCE 2012. PLEASE CONTACT YOUR SUPPLIER"
 
 
 # =====================================================================================================================
@@ -38,7 +56,7 @@ class SerialPort:
         except:
             msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
             print(msg)
-            self.print()
+            self.detect_available_ports()
 
             if _raise:
                 raise Exx_SerialAddressInaccessible(msg)
@@ -49,7 +67,21 @@ class SerialPort:
         pass
 
     @classmethod
-    def print(cls) -> None:
+    def detect_available_ports(cls) -> List[str]:
+        result = cls._detect_available_ports_1__standard_method()
+        for port in cls._detect_available_ports_2__direct_access():
+            if port not in result:
+                result.append(port)
+
+        # result -------------------------------------------------------
+        if result:
+            print(f"[OK] detected ports {result}")
+        else:
+            print("[WARN] detected no serial ports")
+        return result
+
+    @staticmethod
+    def _detect_available_ports_1__standard_method():
         """
         WINDOWS - USB
             ==========OBJECTINFO.PRINT==========================================================================
@@ -108,17 +140,58 @@ class SerialPort:
             read_line                       TypeError :join() missing 1 required positional argument: 'a'
             ====================================================================================================
         """
-        port_obj_list = list_ports.comports()
+        result: List[str] = []
 
-        if port_obj_list:
-            ObjectInfo(port_obj_list[0]).print(hide_skipped=True, hide_build_in=True)
+        # find not opened ports ----------------------------------------
+        for obj in list_ports.comports():
+            ObjectInfo(obj).print(hide_skipped=True, hide_build_in=True)
+            result.append(obj.name)
+            if Exx_SerialPL2303IncorrectDriver.MARKER in str(obj):
+                msg = f'[WARN] incorrect driver [{Exx_SerialPL2303IncorrectDriver.MARKER}]'
+                print(msg)
+                raise Exx_SerialPL2303IncorrectDriver(msg)
+        return result
+
+    @staticmethod
+    def _detect_available_ports_2__direct_access() -> Union[List[str], NoReturn]:
+        """Определяет список неоткрытых портов - способом 2 (слепым тестом подключения).
+        Всегда срабатывает!
+
+        :raises EnvironmentError:
+            On unsupported or unknown platforms
+        :return: список неоткрытых портов
+        :rtype: list
+        """
+        # lock_port = Serial(port="COM6", timeout=5)
+        if sys.platform.startswith('win'):
+            attempt_list = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            attempt_list = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            attempt_list = glob.glob('/dev/tty.*')
         else:
-            print("[WARN] no serial ports found")
+            raise EnvironmentError('Unsupported platform')
+
+        result: List[str] = []
+        for name in attempt_list:
+            try:
+                port_attempt = Serial(name)
+                port_attempt.close()
+                result.append(name)
+                print(f"{name} DETECTED SERIAL PORT")
+            except (OSError, SerialException, ):
+                print(f"\t{name} incorrect port while detecting")
+                pass
+
+        return result
 
 
 # =====================================================================================================================
 if __name__ == "__main__":
-    SerialPort.print()
+    ports = SerialPort.detect_available_ports()
+    obj = SerialPort(address=ports[0])
+    obj.connect()
 
 
 # =====================================================================================================================
