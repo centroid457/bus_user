@@ -10,6 +10,14 @@ from object_info import ObjectInfo
 
 # =====================================================================================================================
 class SerialPort:
+    address: str = None
+
+    def __init__(self, address: str):
+        self.address = address
+
+    def connect(self):
+        pass
+
     @classmethod
     def print(cls) -> None:
         """
@@ -39,6 +47,8 @@ class SerialPort:
             ====================================================================================================
 
         RASPBERRY - USB
+        кажется не видит встроенный COM порт даже после его включения и перезагрузки - только USB!!!
+
             ==========OBJECTINFO.PRINT==========================================================================
             str=/dev/ttyUSB0 - USB-Serial Controller
             repr=<serial.tools.list_ports_linux.SysFS object at 0x7fb332d9d0>
