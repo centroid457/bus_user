@@ -52,7 +52,6 @@ class SerialPort:
 
         try:
             self._source = Serial(port=address, timeout=self.TIMEOUT)
-            return True
         except:
             msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
             print(msg)
@@ -62,6 +61,10 @@ class SerialPort:
                 raise Exx_SerialAddressInaccessible(msg)
             else:
                 return False
+
+        msg = f"[OK] connected {address=}/{self.TIMEOUT=}"
+        print(msg)
+        return True
 
     def read_line(self):
         pass
@@ -154,15 +157,12 @@ class SerialPort:
 
     @staticmethod
     def _detect_available_ports_2__direct_access() -> Union[List[str], NoReturn]:
-        """Определяет список неоткрытых портов - способом 2 (слепым тестом подключения).
+        """Определяет список НЕОТКРЫТЫХ портов - способом 2 (слепым тестом подключения).
         Всегда срабатывает!
-
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :return: список неоткрытых портов
-        :rtype: list
         """
-        # lock_port = Serial(port="COM6", timeout=5)
+        lock_port = None
+        lock_port = Serial(port="COM6", timeout=5)
+
         if sys.platform.startswith('win'):
             attempt_list = ['COM%s' % (i + 1) for i in range(256)]
         elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
@@ -174,16 +174,26 @@ class SerialPort:
             raise EnvironmentError('Unsupported platform')
 
         result: List[str] = []
+        exceptions: Set[Exception] = set()
         for name in attempt_list:
             try:
                 port_attempt = Serial(name)
                 port_attempt.close()
                 result.append(name)
                 print(f"{name} DETECTED SERIAL PORT")
-            except (OSError, SerialException, ):
-                print(f"\t{name} incorrect port while detecting")
-                pass
 
+            except Exception as exx:
+                if "FileNotFoundError" in exx:
+                    exceptions.update({exx})
+                # except (OSError, SerialException, ):
+                print(f"\t{name} incorrect port while detecting")
+
+        if exceptions:
+            for exx in exceptions:
+                print(f"{exx!r}")
+
+        if lock_port:
+            lock_port.close()
         return result
 
 
