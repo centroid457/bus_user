@@ -183,6 +183,7 @@ class SerialPort:
                 print(f"{name} DETECTED SERIAL PORT")
 
             except Exception as exx:
+                # FIXME: FINISH IT!!!
                 if "FileNotFoundError" in exx:
                     exceptions.update({exx})
                 # except (OSError, SerialException, ):
