@@ -33,10 +33,12 @@ class Test_BusSerial:
         ports = self.VICTIM.detect_available_ports()
         assert len(ports) > 0
 
-    def test__connect(self):
+    def test__connect_address_existed(self):
         ports = self.VICTIM.detect_available_ports()
-        obj = BusSerial(address=ports[0])
-        assert obj.connect() is True
+        assert BusSerial(address=ports[0]).check_exists_in_system() is True
+
+    def test__connect_address_NOTexisted(self):
+        assert BusSerial(address="HELLO").check_exists_in_system() is False
 
 
 # =====================================================================================================================

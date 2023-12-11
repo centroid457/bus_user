@@ -3,14 +3,39 @@ import sys
 import glob
 from typing import *
 
-from serial import Serial, SerialException
+from serial import Serial
 from serial.tools import list_ports
 
 from object_info import ObjectInfo
 
 
 # =====================================================================================================================
-class Exx_SerialAddressInaccessible(Exception):
+class Exx_SerialAddressNotConfigured(Exception):
+    """
+        raise SerialException("Port must be configured before it can be used.")
+    serial.serialutil.SerialException: Port must be configured before it can be used.
+    """
+    pass
+
+
+class Exx_SerialAddressNotExists(Exception):
+    """
+    SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
+    """
+    pass
+
+
+class Exx_SerialAddressAlreadyOpened(Exception):
+    """
+    SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
+    """
+    pass
+
+
+class Exx_SerialAddressOtherError(Exception):
+    """
+    SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть, но получена ошибка при открытии!!!
+    """
     pass
 
 
@@ -42,7 +67,19 @@ class BusSerial:
         if address is not None:
             self.ADDRESS = address
 
-    def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
+    def check_exists_in_system(self) -> bool:
+        try:
+            self.connect(_raise=True, _silent=True)
+            self.disconnect()
+        except Exx_SerialAddressNotExists:
+            return False
+        return True
+
+    # CONNECT =========================================================================================================
+    def disconnect(self) -> None:
+        self._source.close()
+
+    def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None, _silent: Optional[bool] = None) -> Union[bool, NoReturn]:
         if address is None:
             address = self.ADDRESS
         if _raise is None:
@@ -50,20 +87,41 @@ class BusSerial:
 
         self._source.port = address
         self._source.timeout = self.TIMEOUT
+
         try:
-             self._source.open()
-        except:
-            msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
-            print(msg)
-            self.detect_available_ports()
+            self._source.open()
+        except Exception as exx:
+            print(f"{exx!r}")
+
+            if "FileNotFoundError" in str(exx):
+                msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
+                exx = Exx_SerialAddressNotExists(repr(exx))
+
+                # self.detect_available_ports()
+
+            elif "Port must be configured before" in str(exx):
+                msg = f"[ERROR] PORT NOT CONFIGURED {self._source}"
+                exx = Exx_SerialAddressNotConfigured(repr(exx))
+
+            elif "PermissionError" in str(exx):
+                msg = f"[ERROR] PORT ALREADY OPENED {self._source}"
+                exx = Exx_SerialAddressAlreadyOpened(repr(exx))
+
+            else:
+                msg = f"[ERROR] PORT OTHER ERROR {self._source}"
+                exx = Exx_SerialAddressOtherError(repr(exx))
+
+            if not _silent:
+                print(msg)
 
             if _raise:
-                raise Exx_SerialAddressInaccessible(msg)
+                raise exx
             else:
                 return False
 
-        msg = f"[OK] connected {address=}/{self.TIMEOUT=}"
-        print(msg)
+        if not _silent:
+            msg = f"[OK] connected {self._source}"
+            print(msg)
         return True
 
     # DETECT PORTS ====================================================================================================
@@ -173,31 +231,8 @@ class BusSerial:
 
         result: List[str] = []
         for name in attempt_list:
-            """
-            EXX_TYPES
-            all type of exx are SerialException! but internal text may have different types in string format!
-                SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
-                SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть но получена ошибка при открытии!!!
-                SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)") - уже открыт!
-            """
-            try:
-                port_attempt = Serial(name)
-                port_attempt.close()
+            if BusSerial(address=name).check_exists_in_system():
                 result.append(name)
-                print(f"{name} DETECTED SERIAL PORT")
-            except Exception as exx:
-                if "FileNotFoundError" in str(exx):
-                    # print(f"\t{name}-port not exist")
-                    continue
-                if "PermissionError" in str(exx):
-                    print(f"{name} DETECTED SERIAL PORT (already opened)")
-                    print(f"{exx!r}")
-                    result.append(name)
-                    continue
-                print(f"{name} DETECTED SERIAL PORT (but with some error)")
-                print(f"{exx!r}")
-                result.append(name)
-            # except (OSError, SerialException, ):
 
         if _lock_port:
             _lock_port.close()
@@ -208,6 +243,9 @@ class BusSerial:
         pass
 
 
+
+
+    # TODO: use wrapper for connect/disconnect!
     def read_line(self) -> str:
         data = self._source.readline()
         print(f"{data=}")
