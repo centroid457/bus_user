@@ -65,7 +65,9 @@ class Test_BusSerial:
         assert self.VICTIM._bytes_eol__clear(b"111\n\n\n") == b"111"
 
     def test__rw(self):
+        self.victim_zero.connect()
         self.victim_zero.write_line("hello")
+        assert self.victim_zero.read_line() == "hello"
 
 
 # =====================================================================================================================

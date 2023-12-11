@@ -276,15 +276,17 @@ class BusSerial:
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self) -> str:
         data = self._source.readline()
+        print(f"[OK]read_line={data}")
+        data = self._bytes_eol__clear(data)
         data = self._data_ensure_string(data)
-        print(f"read_line={data}")
+        # print(f"[OK]read_line={data}")
         return data
 
     def write_line(self, data: str) -> bool:
         data = self._data_ensure_bytes(data)
-        print(f"write_line={data}")
+        data = self._bytes_eol__ensure(data)
         data_length = self._source.write(data)
-        print(f"{data_length=}")
+        print(f"[OK]write_line={data}/{data_length=}")
         if data_length > 0:
             return True
         else:
