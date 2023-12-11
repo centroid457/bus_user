@@ -21,7 +21,7 @@ pip install 88888888888888888888888
 ## Import
 
 ```python
-from serial_port import *
+from bus_user import *
 ```
 
 
@@ -31,7 +31,7 @@ from serial_port import *
 *
 
 ```python
-from serial_port import *
+from bus_user import *
 
 
 class Cls:

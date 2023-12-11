@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from typing import *
 from configparser import ConfigParser
 
-from serial_port import *
+from bus_user import *
 
 
 # =====================================================================================================================
