@@ -158,8 +158,8 @@ class SerialPort:
         """Определяет список НЕОТКРЫТЫХ портов - способом 2 (слепым тестом подключения).
         Всегда срабатывает!
         """
-        lock_port = None
-        # lock_port = Serial(port="COM7", timeout=5)
+        _lock_port = None
+        # _lock_port = Serial(port="COM7", timeout=5)   # test reason! finding exx already opened!
 
         if sys.platform.startswith('win'):
             attempt_list = ['COM%s' % (i + 1) for i in range(256)]
@@ -197,8 +197,8 @@ class SerialPort:
                 result.append(name)
             # except (OSError, SerialException, ):
 
-        if lock_port:
-            lock_port.close()
+        if _lock_port:
+            _lock_port.close()
         return result
 
     # RW ==============================================================================================================
