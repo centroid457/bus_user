@@ -31,7 +31,7 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 
 
 # =====================================================================================================================
-class SerialBus:
+class BusSerial:
     ADDRESS: str = None
     TIMEOUT: float = 0.2
     RAISE: bool = True
@@ -210,8 +210,8 @@ class SerialBus:
 
 # =====================================================================================================================
 if __name__ == "__main__":
-    ports = SerialBus.detect_available_ports()
-    obj = SerialBus(address=ports[0])
+    ports = BusSerial.detect_available_ports()
+    obj = BusSerial(address=ports[0])
     obj.connect()
 
 
