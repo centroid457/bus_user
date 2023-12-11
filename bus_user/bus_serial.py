@@ -36,22 +36,22 @@ class BusSerial:
     TIMEOUT: float = 0.2
     RAISE: bool = True
 
-    _source: Optional[Serial] = None
+    _source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
         if address is not None:
             self.ADDRESS = address
 
     def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
-        self._source = None
-
         if address is None:
             address = self.ADDRESS
         if _raise is None:
             _raise = self.RAISE
 
+        self._source.port = address
+        self._source.timeout = self.TIMEOUT
         try:
-            self._source = Serial(port=address, timeout=self.TIMEOUT)
+             self._source.open()
         except:
             msg = f"[WARN] not accessible {address=}/{self.TIMEOUT=}"
             print(msg)
@@ -204,8 +204,24 @@ class BusSerial:
         return result
 
     # RW ==============================================================================================================
-    def read_line(self):
+    def _encode(self, data):
         pass
+
+
+    def read_line(self) -> str:
+        data = self._source.readline()
+        print(f"{data=}")
+        return data
+
+    def write_line(self, data: str) -> bool:
+        data_length = self._source.write(data)
+        print(f"{data_length=}")
+        if data_length > 0:
+            return True
+        else:
+            msg = f"[ERROR] data not write"
+            print(msg)
+            return False
 
 
 # =====================================================================================================================
