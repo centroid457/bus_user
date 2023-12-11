@@ -60,6 +60,8 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 class BusSerial:
     ADDRESS: str = None
     TIMEOUT: float = 0.2
+    WRITE_TIMEOUT: float = 0.5
+    BAUDRATE: int = 115200
     RAISE: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
@@ -67,8 +69,16 @@ class BusSerial:
     _source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
-        if address is not None:
+        # set only address!!!
+        if address:
             self.ADDRESS = address
+
+        # apply settings
+        if self.ADDRESS:
+            self._source.port = self.ADDRESS
+        self._source.baudrate = self.BAUDRATE
+        self._source.timeout = self.TIMEOUT
+        self._source.write_timeout = self.WRITE_TIMEOUT
 
     def __del__(self):
         self.disconnect()
@@ -86,13 +96,10 @@ class BusSerial:
         self._source.close()
 
     def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None, _silent: Optional[bool] = None) -> Union[bool, NoReturn]:
-        if address is None:
-            address = self.ADDRESS
+        if address:
+            self._source.port = address
         if _raise is None:
             _raise = self.RAISE
-
-        self._source.port = address
-        self._source.timeout = self.TIMEOUT
 
         try:
             self._source.open()
@@ -328,9 +335,9 @@ class BusSerial:
 # =====================================================================================================================
 if __name__ == "__main__":
     # see/use tests
-    # ports = BusSerial.detect_available_ports()
-    # obj = BusSerial(address=ports[0])
-    # obj.connect()
+    ports = BusSerial.detect_available_ports()
+    obj = BusSerial(address=ports[0])
+    obj.connect()
     pass
 
 

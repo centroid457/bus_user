@@ -22,14 +22,16 @@ class Test_BusSerial:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
-        cls.victim_zero = cls.VICTIM(cls.ports[0])
+        # cls.victim_zero = cls.VICTIM(cls.ports[0])
 
     @classmethod
     def teardown_class(cls):
-        cls.victim_zero.disconnect()
+        if cls.victim_zero:
+            cls.victim_zero.disconnect()
 
     def setup_method(self, method):
         self.VICTIM = type("VICTIM", (BusSerial,), {})
+        self.victim_zero = self.VICTIM(self.ports[0])
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__detect_available_ports(self):
