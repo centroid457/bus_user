@@ -66,8 +66,11 @@ class Test_BusSerial:
 
     def test__rw(self):
         self.victim_zero.connect()
-        self.victim_zero.write_line("hello")
+        assert self.victim_zero.write_line("hello") is True
         assert self.victim_zero.read_line() == "hello"
+
+        assert self.victim_zero.write_line("") is False
+        assert self.victim_zero.read_line() == ""
 
 
 # =====================================================================================================================
