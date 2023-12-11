@@ -91,7 +91,8 @@ class BusSerial:
         try:
             self._source.open()
         except Exception as exx:
-            print(f"{exx!r}")
+            if not _silent:
+                print(f"{exx!r}")
 
             if "FileNotFoundError" in str(exx):
                 msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
@@ -239,11 +240,11 @@ class BusSerial:
         return result
 
     # RW ==============================================================================================================
-    def _encode(self, data):
+    def _data_encode(self, data):
         pass
 
-
-
+    def _data_dencode(self, data):
+        pass
 
     # TODO: use wrapper for connect/disconnect!
     def read_line(self) -> str:
