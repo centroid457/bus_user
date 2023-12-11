@@ -279,6 +279,7 @@ class BusSerial:
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self, ensure_timeout: Optional[float] = None) -> str:
+        # fixme: ensure_timeout - decide if it need or not!
         data = ""
         timeout_step = 1
 
@@ -318,6 +319,10 @@ class BusSerial:
             msg = f"[ERROR] data not write"
             print(msg)
             return False
+
+    def write_read_line(self, data: Union[str, bytes], ensure_timeout: Optional[float] = None) -> str:
+        if self.write_line(data):
+            return self.read_line(ensure_timeout=ensure_timeout)
 
 
 # =====================================================================================================================

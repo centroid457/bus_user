@@ -76,12 +76,15 @@ class Test_BusSerial:
         assert self.victim_zero.read_line() == "hello"
         assert self.victim_zero.read_line() == ""
 
+        assert self.victim_zero.write_read_line("hello") == "hello"
+        assert self.victim_zero.read_line() == ""
+
         # LINE SEVERAL
         for line in range(3):
-            assert self.victim_zero.write_line("hello") is True
+            assert self.victim_zero.write_line(f"hello{line}") is True
 
         for line in range(3):
-            assert self.victim_zero.read_line() == "hello"
+            assert self.victim_zero.read_line() == f"hello{line}"
         assert self.victim_zero.read_line() == ""
 
 
