@@ -66,9 +66,7 @@ class SerialPort:
         print(msg)
         return True
 
-    def read_line(self):
-        pass
-
+    # DETECT PORTS ====================================================================================================
     @classmethod
     def detect_available_ports(cls) -> List[str]:
         result = cls._detect_available_ports_1__standard_method()
@@ -78,7 +76,7 @@ class SerialPort:
 
         # result -------------------------------------------------------
         if result:
-            print(f"[OK] detected ports {result}")
+            print(f"[OK] detected serial ports {result}")
         else:
             print("[WARN] detected no serial ports")
         return result
@@ -161,7 +159,7 @@ class SerialPort:
         Всегда срабатывает!
         """
         lock_port = None
-        lock_port = Serial(port="COM6", timeout=5)
+        # lock_port = Serial(port="COM7", timeout=5)
 
         if sys.platform.startswith('win'):
             attempt_list = ['COM%s' % (i + 1) for i in range(256)]
@@ -174,28 +172,38 @@ class SerialPort:
             raise EnvironmentError('Unsupported platform')
 
         result: List[str] = []
-        exceptions: Set[Exception] = set()
         for name in attempt_list:
+            """
+            SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
+            SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть но получена ошибка при открытии!!!
+            SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)") - уже открыт!
+            """
             try:
                 port_attempt = Serial(name)
                 port_attempt.close()
                 result.append(name)
                 print(f"{name} DETECTED SERIAL PORT")
-
             except Exception as exx:
-                # FIXME: FINISH IT!!!
-                if "FileNotFoundError" in exx:
-                    exceptions.update({exx})
-                # except (OSError, SerialException, ):
-                print(f"\t{name} incorrect port while detecting")
-
-        if exceptions:
-            for exx in exceptions:
+                if "FileNotFoundError" in str(exx):
+                    # print(f"\t{name}-port not exist")
+                    continue
+                if "PermissionError" in str(exx):
+                    print(f"{name} DETECTED SERIAL PORT (already opened)")
+                    print(f"{exx!r}")
+                    result.append(name)
+                    continue
+                print(f"{name} DETECTED SERIAL PORT (but with some error)")
                 print(f"{exx!r}")
+                result.append(name)
+            # except (OSError, SerialException, ):
 
         if lock_port:
             lock_port.close()
         return result
+
+    # RW ==============================================================================================================
+    def read_line(self):
+        pass
 
 
 # =====================================================================================================================
