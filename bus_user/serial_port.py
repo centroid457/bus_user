@@ -31,7 +31,7 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 
 
 # =====================================================================================================================
-class SerialPort:
+class SerialBus:
     ADDRESS: str = None
     TIMEOUT: float = 0.2
     RAISE: bool = True
@@ -174,9 +174,11 @@ class SerialPort:
         result: List[str] = []
         for name in attempt_list:
             """
-            SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
-            SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть но получена ошибка при открытии!!!
-            SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)") - уже открыт!
+            EXX_TYPES
+            all type of exx are SerialException! but internal text may have different types in string format!
+                SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
+                SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть но получена ошибка при открытии!!!
+                SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)") - уже открыт!
             """
             try:
                 port_attempt = Serial(name)
@@ -208,8 +210,8 @@ class SerialPort:
 
 # =====================================================================================================================
 if __name__ == "__main__":
-    ports = SerialPort.detect_available_ports()
-    obj = SerialPort(address=ports[0])
+    ports = SerialBus.detect_available_ports()
+    obj = SerialBus(address=ports[0])
     obj.connect()
 
 
