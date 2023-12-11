@@ -1,6 +1,7 @@
 import pathlib
 import sys
 import glob
+import time
 from typing import *
 
 from serial import Serial
@@ -277,8 +278,22 @@ class BusSerial:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
-    def read_line(self) -> str:
-        data = self._source.readline()
+    def read_line(self, ensure_timeout: Optional[float] = None) -> str:
+        data = ""
+        timeout_step = 1
+
+        while not data:
+            data = self._source.readline()
+            if ensure_timeout:
+                if ensure_timeout >= timeout_step:
+                    ensure_timeout -= timeout_step
+                else:
+                    timeout_step = ensure_timeout
+
+                time.sleep(timeout_step)
+            else:
+                break
+
         if data:
             print(f"[OK]read_line={data}")
         else:
