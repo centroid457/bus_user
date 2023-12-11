@@ -72,7 +72,7 @@ class BusSerial:
     def __del__(self):
         self.disconnect()
 
-    def check_exists_in_system(self) -> bool:
+    def address_check_exists(self) -> bool:
         try:
             self.connect(_raise=True, _silent=True)
             self.disconnect()
@@ -237,7 +237,7 @@ class BusSerial:
 
         result: List[str] = []
         for name in attempt_list:
-            if BusSerial(address=name).check_exists_in_system():
+            if BusSerial(address=name).address_check_exists():
                 result.append(name)
 
         if _lock_port:

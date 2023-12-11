@@ -37,10 +37,10 @@ class Test_BusSerial:
         assert len(ports) > 0
 
     def test__connect_address_existed(self):
-        assert BusSerial(address=self.ports[0]).check_exists_in_system() is True
+        assert BusSerial(address=self.ports[0]).address_check_exists() is True
 
     def test__connect_address_NOTexisted(self):
-        assert BusSerial(address="HELLO").check_exists_in_system() is False
+        assert BusSerial(address="HELLO").address_check_exists() is False
 
     def test__usure_bytes(self):
         assert self.VICTIM._data_ensure_bytes("111") == b"111"
