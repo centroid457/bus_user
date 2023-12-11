@@ -61,6 +61,7 @@ class BusSerial:
     TIMEOUT: float = 0.2
     RAISE: bool = True
     ENCODING: str = "utf-8"
+    EOL: bytes = b"\n"
 
     _source: Serial = Serial()
 
@@ -241,6 +242,22 @@ class BusSerial:
         return result
 
     # RW ==============================================================================================================
+    pass
+
+    # EOL -------------------------------------------------------------------------------------------------------------
+    @classmethod
+    def _bytes_eol__ensure(cls, data: bytes) -> bytes:
+        if not data.endswith(cls.EOL):
+            data = data + cls.EOL
+        return data
+
+    @classmethod
+    def _bytes_eol__clear(cls, data: bytes) -> bytes:
+        while data.endswith(cls.EOL):
+            data = data.removesuffix(cls.EOL)
+        return data
+
+    # BYTES/STR -------------------------------------------------------------------------------------------------------
     @classmethod
     def _data_ensure_bytes(cls, data: Union[str, bytes]) -> bytes:
         if isinstance(data, bytes):
@@ -255,16 +272,17 @@ class BusSerial:
         else:
             return str(data)
 
+    # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self) -> str:
         data = self._source.readline()
         data = self._data_ensure_string(data)
-        print(f"{data}")
+        print(f"read_line={data}")
         return data
 
     def write_line(self, data: str) -> bool:
         data = self._data_ensure_bytes(data)
-        print(f"{data}")
+        print(f"write_line={data}")
         data_length = self._source.write(data)
         print(f"{data_length=}")
         if data_length > 0:

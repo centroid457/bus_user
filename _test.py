@@ -12,14 +12,17 @@ from bus_user import *
 # =====================================================================================================================
 class Test_BusSerial:
     VICTIM: Type[BusSerial] = type("VICTIM", (BusSerial,), {})
+    ports: List[str] = []
+    victim_zero: BusSerial = None
 
     @classmethod
     def setup_class(cls):
-        ports = cls.VICTIM.detect_available_ports()
-        if len(ports) != 1:
+        cls.ports = cls.VICTIM.detect_available_ports()
+        if len(cls.ports) != 1:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
+        cls.victim_zero = cls.VICTIM(cls.ports[0])
 
     @classmethod
     def teardown_class(cls):
@@ -34,8 +37,7 @@ class Test_BusSerial:
         assert len(ports) > 0
 
     def test__connect_address_existed(self):
-        ports = self.VICTIM.detect_available_ports()
-        assert BusSerial(address=ports[0]).check_exists_in_system() is True
+        assert BusSerial(address=self.ports[0]).check_exists_in_system() is True
 
     def test__connect_address_NOTexisted(self):
         assert BusSerial(address="HELLO").check_exists_in_system() is False
@@ -47,6 +49,23 @@ class Test_BusSerial:
     def test__usure_str(self):
         assert self.VICTIM._data_ensure_string("111") == "111"
         assert self.VICTIM._data_ensure_string(b"111") == "111"
+
+    def test__eol(self):
+        # todo: work with several lines???
+
+        self.VICTIM.EOL = b"\n"
+        assert self.VICTIM._bytes_eol__ensure(b"111") == b"111\n"
+        assert self.VICTIM._bytes_eol__ensure(b"111\n") == b"111\n"
+        assert self.VICTIM._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
+        assert self.VICTIM._bytes_eol__ensure(b"111\n\n\n") == b"111\n\n\n"     # todo: fix this
+
+        assert self.VICTIM._bytes_eol__clear(b"111") == b"111"
+        assert self.VICTIM._bytes_eol__clear(b"111\n") == b"111"
+        assert self.VICTIM._bytes_eol__clear(b"111\n\n") == b"111"
+        assert self.VICTIM._bytes_eol__clear(b"111\n\n\n") == b"111"
+
+    def test__rw(self):
+        self.victim_zero.write_line("hello")
 
 
 # =====================================================================================================================
