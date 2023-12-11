@@ -69,6 +69,9 @@ class BusSerial:
         if address is not None:
             self.ADDRESS = address
 
+    def __del__(self):
+        self.disconnect()
+
     def check_exists_in_system(self) -> bool:
         try:
             self.connect(_raise=True, _silent=True)
@@ -282,7 +285,7 @@ class BusSerial:
         # print(f"[OK]read_line={data}")
         return data
 
-    def write_line(self, data: str) -> bool:
+    def write_line(self, data: Union[str, bytes]) -> bool:
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
         data_length = self._source.write(data)
@@ -297,9 +300,11 @@ class BusSerial:
 
 # =====================================================================================================================
 if __name__ == "__main__":
-    ports = BusSerial.detect_available_ports()
-    obj = BusSerial(address=ports[0])
-    obj.connect()
+    # see/use tests
+    # ports = BusSerial.detect_available_ports()
+    # obj = BusSerial(address=ports[0])
+    # obj.connect()
+    pass
 
 
 # =====================================================================================================================

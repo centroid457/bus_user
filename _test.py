@@ -26,7 +26,7 @@ class Test_BusSerial:
 
     @classmethod
     def teardown_class(cls):
-        pass
+        cls.victim_zero.disconnect()
 
     def setup_method(self, method):
         self.VICTIM = type("VICTIM", (BusSerial,), {})
