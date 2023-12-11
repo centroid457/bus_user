@@ -60,6 +60,7 @@ class BusSerial:
     ADDRESS: str = None
     TIMEOUT: float = 0.2
     RAISE: bool = True
+    ENCODING: str = "utf-8"
 
     _source: Serial = Serial()
 
@@ -240,23 +241,29 @@ class BusSerial:
         return result
 
     # RW ==============================================================================================================
-    @staticmethod
-    def _data_encode(data: Union[str, bytes]) -> bytes:
-        pass
+    @classmethod
+    def _data_ensure_bytes(cls, data: Union[str, bytes]) -> bytes:
+        if isinstance(data, bytes):
+            return data
+        else:
+            return bytes(data, encoding=cls.ENCODING)
 
-    @staticmethod
-    def _data_dencode(data: Union[str, bytes]) -> str:
-        pass
+    @classmethod
+    def _data_ensure_string(cls, data: Union[str, bytes]) -> str:
+        if isinstance(data, bytes):
+            return data.decode(encoding=cls.ENCODING)
+        else:
+            return str(data)
 
-    # TODO: use wrapper for connect/disconnect!
+    # TODO: use wrapper for connect/disconnect!???
     def read_line(self) -> str:
         data = self._source.readline()
-        data = self._data_dencode(data)
+        data = self._data_ensure_string(data)
         print(f"{data}")
         return data
 
     def write_line(self, data: str) -> bool:
-        data = self._data_encode(data)
+        data = self._data_ensure_bytes(data)
         print(f"{data}")
         data_length = self._source.write(data)
         print(f"{data_length=}")
