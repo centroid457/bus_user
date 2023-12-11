@@ -240,19 +240,24 @@ class BusSerial:
         return result
 
     # RW ==============================================================================================================
-    def _data_encode(self, data):
+    @staticmethod
+    def _data_encode(data: Union[str, bytes]) -> bytes:
         pass
 
-    def _data_dencode(self, data):
+    @staticmethod
+    def _data_dencode(data: Union[str, bytes]) -> str:
         pass
 
     # TODO: use wrapper for connect/disconnect!
     def read_line(self) -> str:
         data = self._source.readline()
-        print(f"{data=}")
+        data = self._data_dencode(data)
+        print(f"{data}")
         return data
 
     def write_line(self, data: str) -> bool:
+        data = self._data_encode(data)
+        print(f"{data}")
         data_length = self._source.write(data)
         print(f"{data_length=}")
         if data_length > 0:
