@@ -83,14 +83,6 @@ class BusSerial:
     def __del__(self):
         self.disconnect()
 
-    def address_check_exists(self) -> bool:
-        try:
-            self.connect(_raise=True, _silent=True)
-            self.disconnect()
-        except Exx_SerialAddressNotExists:
-            return False
-        return True
-
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
         self._source.close()
@@ -142,6 +134,14 @@ class BusSerial:
         return True
 
     # DETECT PORTS ====================================================================================================
+    def address_check_exists(self) -> bool:
+        try:
+            self.connect(_raise=True, _silent=True)
+            self.disconnect()
+        except Exx_SerialAddressNotExists:
+            return False
+        return True
+
     @classmethod
     def detect_available_ports(cls) -> List[str]:
         result = cls._detect_available_ports_1__standard_method()
