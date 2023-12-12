@@ -59,8 +59,8 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 # =====================================================================================================================
 class BusSerial:
     ADDRESS: str = None
-    TIMEOUT: float = 0.2
-    WRITE_TIMEOUT: float = 0.5
+    TIMEOUT_READ: float = 0.2
+    TIMEOUT_WRITE: float = 0.5
     BAUDRATE: int = 115200
     RAISE: bool = True
     ENCODING: str = "utf-8"
@@ -77,8 +77,8 @@ class BusSerial:
         if self.ADDRESS:
             self._source.port = self.ADDRESS
         self._source.baudrate = self.BAUDRATE
-        self._source.timeout = self.TIMEOUT
-        self._source.write_timeout = self.WRITE_TIMEOUT
+        self._source.timeout = self.TIMEOUT_READ
+        self._source.write_timeout = self.TIMEOUT_WRITE
 
     def __del__(self):
         self.disconnect()
@@ -100,6 +100,9 @@ class BusSerial:
             self._source.port = address
         if _raise is None:
             _raise = self.RAISE
+
+        if self._source.is_open:
+            return True
 
         try:
             self._source.open()
@@ -285,23 +288,32 @@ class BusSerial:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
-    def read_line(self, ensure_timeout: Optional[float] = None) -> str:
-        # fixme: ensure_timeout - decide if it need or not!
-        data = ""
-        timeout_step = 1
+    def read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
+        # fixme: _timeout - decide if it need or not!
 
-        while not data:
-            data = self._source.readline()
-            if ensure_timeout:
-                if ensure_timeout >= timeout_step:
-                    ensure_timeout -= timeout_step
+        count = count or 1
+
+        # LIST -----------------------
+        if count > 1:
+            result: List[str] = []
+            for i in range(count):
+                line = self.read_line()
+                if line:
+                    result.append(line)
                 else:
-                    timeout_step = ensure_timeout
+                    break
+            return result
 
-                time.sleep(timeout_step)
-            else:
-                break
+        # SINGLE ---------------------
+        if _timeout:
+            self._source.timeout = _timeout
 
+        data = self._source.readline()
+
+        if _timeout:
+            self._source.timeout = self.TIMEOUT_READ
+
+        # RESULT
         if data:
             print(f"[OK]read_line={data}")
         else:
@@ -335,9 +347,9 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: AnyStr, ensure_timeout: Optional[float] = None) -> str:
+    def write_read_line(self, data: AnyStr, _timeout: Optional[float] = None) -> str:
         if self.write_line(data):
-            return self.read_line(ensure_timeout=ensure_timeout)
+            return self.read_line(_timeout=_timeout)
 
 
 # =====================================================================================================================
