@@ -311,11 +311,19 @@ class BusSerial:
         # print(f"[OK]read_line={data}")
         return data
 
-    def write_line(self, data: AnyStr) -> bool:
+    def write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
         if not data:
             print(f"[WARN]BLANK write_line={data}")
             return False
 
+        # LIST -----------------------
+        if isinstance(data, (list, tuple, )):
+            for data_i in data:
+                if not self.write_line(data_i):
+                    return False
+            return True
+
+        # SINGLE ---------------------
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
         data_length = self._source.write(data)

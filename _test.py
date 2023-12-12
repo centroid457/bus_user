@@ -66,14 +66,13 @@ class Test_BusSerial:
         assert self.VICTIM._bytes_eol__clear(b"111\n\n") == b"111"
         assert self.VICTIM._bytes_eol__clear(b"111\n\n\n") == b"111"
 
-    def test__rw(self):
+    def test__rw_single(self):
         self.victim_zero.connect()
 
         # BLANK
         assert self.victim_zero.write_line("") is False
         assert self.victim_zero.read_line() == ""
 
-        # LINE ONE
         assert self.victim_zero.write_line("hello") is True
         assert self.victim_zero.read_line() == "hello"
         assert self.victim_zero.read_line() == ""
@@ -81,10 +80,19 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line("hello") == "hello"
         assert self.victim_zero.read_line() == ""
 
-        # LINE SEVERAL
+    def test__rw_multy(self):
+        self.victim_zero.connect()
+
+        # separated ----------------------
         for line in range(3):
             assert self.victim_zero.write_line(f"hello{line}") is True
 
+        for line in range(3):
+            assert self.victim_zero.read_line() == f"hello{line}"
+        assert self.victim_zero.read_line() == ""
+
+        # at ones ----------------------
+        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
             assert self.victim_zero.read_line() == f"hello{line}"
         assert self.victim_zero.read_line() == ""
