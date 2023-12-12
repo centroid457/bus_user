@@ -270,14 +270,14 @@ class BusSerial:
 
     # BYTES/STR -------------------------------------------------------------------------------------------------------
     @classmethod
-    def _data_ensure_bytes(cls, data: Union[str, bytes]) -> bytes:
+    def _data_ensure_bytes(cls, data: AnyStr) -> bytes:
         if isinstance(data, bytes):
             return data
         else:
             return bytes(data, encoding=cls.ENCODING)
 
     @classmethod
-    def _data_ensure_string(cls, data: Union[str, bytes]) -> str:
+    def _data_ensure_string(cls, data: AnyStr) -> str:
         if isinstance(data, bytes):
             return data.decode(encoding=cls.ENCODING)
         else:
@@ -311,7 +311,7 @@ class BusSerial:
         # print(f"[OK]read_line={data}")
         return data
 
-    def write_line(self, data: Union[str, bytes]) -> bool:
+    def write_line(self, data: AnyStr) -> bool:
         if not data:
             print(f"[WARN]BLANK write_line={data}")
             return False
@@ -327,7 +327,7 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: Union[str, bytes], ensure_timeout: Optional[float] = None) -> str:
+    def write_read_line(self, data: AnyStr, ensure_timeout: Optional[float] = None) -> str:
         if self.write_line(data):
             return self.read_line(ensure_timeout=ensure_timeout)
 
