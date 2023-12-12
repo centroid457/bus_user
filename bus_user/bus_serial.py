@@ -290,14 +290,26 @@ class BusSerial:
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
         """
-        if need read all buffer - set count = 100 for example
+        if need read all buffer - set count = 0
         """
-        count = count or 1
+        if count is None:
+            count = 1
 
         # LIST -----------------------
         if count > 1:
             result: List[str] = []
             for i in range(count):
+                line = self.read_line(_timeout=_timeout)
+                if line:
+                    result.append(line)
+                else:
+                    break
+            return result
+
+        # ALL -----------------------
+        if count == 0:
+            result: List[str] = []
+            while True:
                 line = self.read_line(_timeout=_timeout)
                 if line:
                     result.append(line)
@@ -350,10 +362,10 @@ class BusSerial:
 
     def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None) -> Union[None, str, List[str]]:
         if self.write_line(data):
-            count = None
-            if isinstance(data, (list, tuple,)):
-                count = len(data)
-            return self.read_line(count=count, _timeout=_timeout)
+            result = self.read_line(count=0, _timeout=_timeout)
+            if isinstance(result, (list, tuple,)) and len(result) == 1:
+                result = result[0]
+            return result
         else:
             return
 
