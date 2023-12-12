@@ -25,7 +25,20 @@ from bus_user import *
 ```
 
 ## GUIDE
+### !. MOST APPROPRIATE COMMAND PROTOCOL
+other protocols mot recommended
+
+1. all cmds must be as params (preferred) in equipment or as special command
+2. [<CMD_NAME>] - read param value or run special command  
+    [IDN] - read value IDN  
+    [DUMP] - run special command 
+3. [<CMD_NAME> <VALUE>] - write value in parameter or run special cmd with param  
+    [VOUT 12.3] - set value into parameter VOUT  
+
+
 ### 1. USAGE COMMANDS MAP
+NOTICE: if bus cmd return several lines (DUMP for example) - you will get all of then in list! 
+
 
 ```python
 from bus_user import *
