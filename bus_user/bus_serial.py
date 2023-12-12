@@ -357,6 +357,11 @@ class BusSerial:
         else:
             return
 
+    def __getattr__(self, item):
+        """if no exists attr/meth
+        """
+        return lambda param=None: self.write_read_line(data=item if param is None else f"{item} {param}")
+
 
 # =====================================================================================================================
 if __name__ == "__main__":

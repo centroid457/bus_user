@@ -109,5 +109,12 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line("hello") == "hello"
         assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]) == [f"hello{line}" for line in range(3)]
 
+    def test__getattr(self):
+        self.victim_zero.connect()
+
+        assert self.victim_zero.hello() == "hello"
+        assert self.victim_zero.hello(123) == "hello 123"
+        assert self.victim_zero.hello("?") == "hello ?"
+
 
 # =====================================================================================================================
