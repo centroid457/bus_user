@@ -66,7 +66,7 @@ class BusSerial:
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
 
-    _source: Serial = Serial()
+    __source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
         # set only address!!!
@@ -75,49 +75,49 @@ class BusSerial:
 
         # apply settings
         if self.ADDRESS:
-            self._source.port = self.ADDRESS
-        self._source.baudrate = self.BAUDRATE
-        self._source.timeout = self.TIMEOUT_READ
-        self._source.write_timeout = self.TIMEOUT_WRITE
+            self.__source.port = self.ADDRESS
+        self.__source.baudrate = self.BAUDRATE
+        self.__source.timeout = self.TIMEOUT_READ
+        self.__source.write_timeout = self.TIMEOUT_WRITE
 
     def __del__(self):
         self.disconnect()
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
-        self._source.close()
+        self.__source.close()
 
     def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None, _silent: Optional[bool] = None) -> Union[bool, NoReturn]:
         if address:
-            self._source.port = address
+            self.__source.port = address
         if _raise is None:
             _raise = self.RAISE
 
-        if self._source.is_open:
+        if self.__source.is_open:
             return True
 
         try:
-            self._source.open()
+            self.__source.open()
         except Exception as exx:
             if not _silent:
                 print(f"{exx!r}")
 
             if "FileNotFoundError" in str(exx):
-                msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
+                msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self.__source}"
                 exx = Exx_SerialAddressNotExists(repr(exx))
 
                 # self.detect_available_ports()
 
             elif "Port must be configured before" in str(exx):
-                msg = f"[ERROR] PORT NOT CONFIGURED {self._source}"
+                msg = f"[ERROR] PORT NOT CONFIGURED {self.__source}"
                 exx = Exx_SerialAddressNotConfigured(repr(exx))
 
             elif "PermissionError" in str(exx):
-                msg = f"[ERROR] PORT ALREADY OPENED {self._source}"
+                msg = f"[ERROR] PORT ALREADY OPENED {self.__source}"
                 exx = Exx_SerialAddressAlreadyOpened(repr(exx))
 
             else:
-                msg = f"[ERROR] PORT OTHER ERROR {self._source}"
+                msg = f"[ERROR] PORT OTHER ERROR {self.__source}"
                 exx = Exx_SerialAddressOtherError(repr(exx))
 
             if not _silent:
@@ -129,7 +129,7 @@ class BusSerial:
                 return False
 
         if not _silent:
-            msg = f"[OK] connected {self._source}"
+            msg = f"[OK] connected {self.__source}"
             print(msg)
         return True
 
@@ -307,12 +307,12 @@ class BusSerial:
 
         # SINGLE ---------------------
         if _timeout:
-            self._source.timeout = _timeout
+            self.__source.timeout = _timeout
 
-        data = self._source.readline()
+        data = self.__source.readline()
 
         if _timeout:
-            self._source.timeout = self.TIMEOUT_READ
+            self.__source.timeout = self.TIMEOUT_READ
 
         # RESULT ----------------------
         if data:
@@ -339,7 +339,7 @@ class BusSerial:
         # SINGLE ---------------------
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
-        data_length = self._source.write(data)
+        data_length = self.__source.write(data)
         print(f"[OK]write_line={data}/{data_length=}")
         if data_length > 0:
             return True
@@ -361,9 +361,9 @@ class BusSerial:
 # =====================================================================================================================
 if __name__ == "__main__":
     # see/use tests
-    ports = BusSerial.detect_available_ports()
-    obj = BusSerial(address=ports[0])
-    obj.connect()
+    # ports = BusSerial.detect_available_ports()
+    # obj = BusSerial(address=ports[0])
+    # obj.connect()
     pass
 
 
