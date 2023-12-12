@@ -65,6 +65,7 @@ class BusSerial:
     RAISE: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
+    # TODO: add other settings
 
     __source: Serial = Serial()
 
