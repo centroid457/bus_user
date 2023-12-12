@@ -83,7 +83,7 @@ class Test_BusSerial:
     def test__rw_multy(self):
         self.victim_zero.connect()
 
-        # separated ----------------------
+        # RW single ----------------------
         for line in range(3):
             assert self.victim_zero.write_line(f"hello{line}") is True
 
@@ -91,11 +91,18 @@ class Test_BusSerial:
             assert self.victim_zero.read_line() == f"hello{line}"
         assert self.victim_zero.read_line() == ""
 
-        # at ones ----------------------
+        # W list ----------------------
         assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
             assert self.victim_zero.read_line() == f"hello{line}"
         assert self.victim_zero.read_line() == ""
+
+        # R list ----------------------
+        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero.read_line(3) == [f"hello{line}" for line in range(3)]
+
+        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero.read_line(10) == [f"hello{line}" for line in range(3)]
 
 
 # =====================================================================================================================

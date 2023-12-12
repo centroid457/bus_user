@@ -289,8 +289,6 @@ class BusSerial:
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
-        # fixme: _timeout - decide if it need or not!
-
         count = count or 1
 
         # LIST -----------------------
@@ -313,7 +311,7 @@ class BusSerial:
         if _timeout:
             self._source.timeout = self.TIMEOUT_READ
 
-        # RESULT
+        # RESULT ----------------------
         if data:
             print(f"[OK]read_line={data}")
         else:
