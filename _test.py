@@ -122,5 +122,7 @@ class Test_BusSerial:
         assert self.victim_zero.hello(123) == "hello 123"
         assert self.victim_zero.hello("?") == "hello ?"
 
+        assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222") == ["hello 000", "111", "222"]
+
 
 # =====================================================================================================================
