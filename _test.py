@@ -70,38 +70,38 @@ class Test_BusSerial:
         self.victim_zero.connect()
 
         # BLANK
-        assert self.victim_zero.write_line("") is False
-        assert self.victim_zero.read_line() == ""
+        assert self.victim_zero._write_line("") is False
+        assert self.victim_zero._read_line() == ""
 
-        assert self.victim_zero.write_line("hello") is True
-        assert self.victim_zero.read_line() == "hello"
-        assert self.victim_zero.read_line() == ""
+        assert self.victim_zero._write_line("hello") is True
+        assert self.victim_zero._read_line() == "hello"
+        assert self.victim_zero._read_line() == ""
 
-        assert self.victim_zero.read_line() == ""
+        assert self.victim_zero._read_line() == ""
 
     def test__r_w_multy(self):
         self.victim_zero.connect()
 
         # RW single ----------------------
         for line in range(3):
-            assert self.victim_zero.write_line(f"hello{line}") is True
+            assert self.victim_zero._write_line(f"hello{line}") is True
 
         for line in range(3):
-            assert self.victim_zero.read_line() == f"hello{line}"
-        assert self.victim_zero.read_line() == ""
+            assert self.victim_zero._read_line() == f"hello{line}"
+        assert self.victim_zero._read_line() == ""
 
         # W list ----------------------
-        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
-            assert self.victim_zero.read_line() == f"hello{line}"
-        assert self.victim_zero.read_line() == ""
+            assert self.victim_zero._read_line() == f"hello{line}"
+        assert self.victim_zero._read_line() == ""
 
         # R list ----------------------
-        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero.read_line(3) == [f"hello{line}" for line in range(3)]
+        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero._read_line(3) == [f"hello{line}" for line in range(3)]
 
-        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero.read_line(10) == [f"hello{line}" for line in range(3)]
+        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero._read_line(10) == [f"hello{line}" for line in range(3)]
 
     def test__rw(self):
         self.victim_zero.connect()
@@ -112,8 +112,8 @@ class Test_BusSerial:
     def test__r_all(self):
         self.victim_zero.connect()
 
-        assert self.victim_zero.write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero.read_line(count=0) == [f"hello{line}" for line in range(3)]
+        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
     def test__getattr(self):
         self.victim_zero.connect()

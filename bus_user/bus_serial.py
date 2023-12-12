@@ -60,6 +60,13 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 TYPE__RW_ANSWER = Union[None, str, List[str]]
 
 
+class BufferWR(NamedTuple):
+    write: str
+    read: TYPE__RW_ANSWER
+    # def __str__(self):
+    #     return f"{self.__class__.__name__}({self.write}--->{self.read})"
+
+
 # =====================================================================================================================
 class BusSerial:
     ADDRESS: str = None
@@ -76,9 +83,13 @@ class BusSerial:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL: str = "FAIL"   # case insensitive
 
+    HISTORY: List[BufferWR] = None
+
     __source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
+        self.HISTORY = []
+
         # set only address!!!
         if address:
             self.ADDRESS = address
@@ -268,6 +279,11 @@ class BusSerial:
     # RW ==============================================================================================================
     pass
 
+    # HISTORY ---------------------------------------------------------------------------------------------------------
+    def history_append(self, write: str, read: TYPE__RW_ANSWER = None) -> None:
+        self.HISTORY.append(BufferWR(write, read))
+
+    # SUCCESS ---------------------------------------------------------------------------------------------------------
     @classmethod
     def answer_is_success(cls, data: str) -> bool:
         return cls.ANSWER_SUCCESS.upper() == data.upper()
@@ -306,7 +322,7 @@ class BusSerial:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!???
-    def read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
+    def _read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
         """
         read line from bus buffer,
         if timedout - return blank line ""
@@ -320,7 +336,7 @@ class BusSerial:
         if count > 1:
             result: List[str] = []
             for i in range(count):
-                line = self.read_line(_timeout=_timeout)
+                line = self._read_line(_timeout=_timeout)
                 if line:
                     result.append(line)
                 else:
@@ -331,7 +347,7 @@ class BusSerial:
         if count == 0:
             result: List[str] = []
             while True:
-                line = self.read_line(_timeout=_timeout)
+                line = self._read_line(_timeout=_timeout)
                 if line:
                     result.append(line)
                 else:
@@ -357,7 +373,7 @@ class BusSerial:
         # print(f"[OK]read_line={data}")
         return data
 
-    def write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
+    def _write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
         """
         just send data into bus!
         :return: result of sent
@@ -369,7 +385,7 @@ class BusSerial:
         # LIST -----------------------
         if isinstance(data, (list, tuple, )):
             for data_i in data:
-                if not self.write_line(data_i):
+                if not self._write_line(data_i):
                     return False
             return True
 
@@ -389,13 +405,39 @@ class BusSerial:
         """
         send data and return all answered lines
         """
-        if self.write_line(data):
-            result = self.read_line(count=0, _timeout=_timeout)
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # FIXME: !!!!! finish!
+        # LIST -------------------------
+
+
+        # SINGLE -----------------------
+        result_summary: TYPE__RW_ANSWER = []
+        result = None
+        if self._write_line(data):
+            result = self._read_line(count=0, _timeout=_timeout)
             if isinstance(result, (list, tuple,)) and len(result) == 1:
                 result = result[0]
-            return result
-        else:
-            return
+                result_summary.append(result)
+            else:
+                result_summary.extend(result)
+
+        self.history_append(data, result)
+
+
+        if len(result_summary) == 1:
+            result_summary = result_summary[0]
+        return result_summary
 
     # CMD MAP =========================================================================================================
     def __getattr__(self, item):
