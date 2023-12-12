@@ -66,10 +66,15 @@ class BusSerial:
     TIMEOUT_READ: float = 0.2
     TIMEOUT_WRITE: float = 0.5
     BAUDRATE: int = 115200
+    # TODO: add other settings
+
     RAISE: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
-    # TODO: add other settings
+
+    # TODO: come up and apply ANSWER_SUCCESS
+    ANSWER_SUCCESS: str = "OK"  # case insensitive
+    ANSWER_FAIL: str = "FAIL"   # case insensitive
 
     __source: Serial = Serial()
 
@@ -263,6 +268,14 @@ class BusSerial:
     # RW ==============================================================================================================
     pass
 
+    @classmethod
+    def answer_is_success(cls, data: str) -> bool:
+        return cls.ANSWER_SUCCESS.upper() == data.upper()
+
+    @classmethod
+    def answer_is_fail(cls, data: str) -> bool:
+        return cls.ANSWER_FAIL.upper() in data.upper()
+
     # EOL -------------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> bytes:
@@ -295,6 +308,9 @@ class BusSerial:
     # TODO: use wrapper for connect/disconnect!???
     def read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
         """
+        read line from bus buffer,
+        if timedout - return blank line ""
+
         if need read all buffer - set count = 0
         """
         if count is None:
@@ -342,6 +358,10 @@ class BusSerial:
         return data
 
     def write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
+        """
+        just send data into bus!
+        :return: result of sent
+        """
         if not data:
             print(f"[WARN]BLANK write_line={data}")
             return False
@@ -366,6 +386,9 @@ class BusSerial:
             return False
 
     def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None) -> TYPE__RW_ANSWER:
+        """
+        send data and return all answered lines
+        """
         if self.write_line(data):
             result = self.read_line(count=0, _timeout=_timeout)
             if isinstance(result, (list, tuple,)) and len(result) == 1:
