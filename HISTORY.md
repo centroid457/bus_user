@@ -3,10 +3,8 @@ Release History
 
 TODOS/WISHES
 ------------
-1. add ...
+1. 
 
-
-0.0.1 (2023-88888888888888888888888-88888888888888888888888)
+0.0.1 (2023-12-12)
 -------------------
-**NEW**
-- 
+- first BusSerial with commands mapping

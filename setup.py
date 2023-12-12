@@ -13,8 +13,10 @@ NAME = "bus_user"
 
 setup(
   version="0.0.1",
-  description="________________",
-  keywords=["________________", ],
+  description="work with equipment over buses like Serial/i2c/...",
+  keywords=[
+    "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
+  ],
   classifiers=[
     # "Topic :: ________________",
 

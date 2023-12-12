@@ -1,4 +1,4 @@
 echo UPDATE PIP
 
-pip install -U NEW_PROJECT____
+pip install -U bus-user
 pause
