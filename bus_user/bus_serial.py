@@ -57,6 +57,8 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 
 
 # =====================================================================================================================
+TYPE__RW_ANSWER = Union[None, str, List[str]]
+
 class BusSerial:
     ADDRESS: str = None
     TIMEOUT_READ: float = 0.2
@@ -361,7 +363,7 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None) -> Union[None, str, List[str]]:
+    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None) -> TYPE__RW_ANSWER:
         if self.write_line(data):
             result = self.read_line(count=0, _timeout=_timeout)
             if isinstance(result, (list, tuple,)) and len(result) == 1:
@@ -373,6 +375,25 @@ class BusSerial:
     # CMD MAP =========================================================================================================
     def __getattr__(self, item):
         """if no exists attr/meth
+
+        USAGE COMMANDS MAP
+        ==================
+
+        1. SHOW (optional) COMMANDS EXPLICITLY by annotations without values!
+        -----------------------------------------------------------------
+            class MySerialDevice(BusSerial):
+                IDN: Callable[[Any], TYPE__RW_ANSWER]
+                ADDR: Callable[[Any], TYPE__RW_ANSWER]
+                DUMP: Callable[[Any], TYPE__RW_ANSWER]
+
+        2. USE in code
+        --------------
+            dev = MySerialDevice()
+            dev.connect()
+            dev.IDN()   # return answer for sent string in port "IDN"
+            dev.VIN()   # return answer for sent string in port "VIN"
+            dev.VIN(12)   # return answer for sent string in port "VIN 12"
+            dev.VIN("12")   # return answer for sent string in port "VIN 12"
         """
         return lambda param=None: self.write_read_line(data=item if param is None else f"{item} {param}")
 
