@@ -34,11 +34,21 @@ other protocols mot recommended
     [DUMP] - run special command 
 3. [<CMD_NAME> <VALUE>] - write value in parameter or run special cmd with param  
     [VOUT 12.3] - set value into parameter VOUT  
+4. [<CMD_NAME> ?] - get available values to write into parameter  
+    [MODE ?] - return [0 1 2 3]
+5. all command sent must return answer  
+    [OK] - if no value was asked
+    [<VALUE>] - if asked some value, returned without measurement unit
+    [FAIL] - any common not specified error
+    [FAIL 0123] - any specified error without description
+    [FAIL 02 VALUE OUT OF RANGE] - any specified error with description (full variant)
 
 
 ### 1. USAGE COMMANDS MAP
-NOTICE: if bus cmd return several lines (DUMP for example) - you will get all of then in list! 
-
+NOTICE:
+1. If bus cmd return several lines (DUMP for example) - you will get all of them in list! 
+2. All answers you will get as string and you must parse it by youself!  
+errors will be get within it.
 
 ```python
 from bus_user import *
