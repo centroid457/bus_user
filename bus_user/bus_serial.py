@@ -369,6 +369,7 @@ class BusSerial:
         else:
             return
 
+    # CMD MAP =========================================================================================================
     def __getattr__(self, item):
         """if no exists attr/meth
         """
