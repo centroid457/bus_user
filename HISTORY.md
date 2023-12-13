@@ -5,6 +5,9 @@ TODOS/WISHES
 ------------
 1. 
 
+
+- add BusI2c (just simple for detect_i2c_devices/*buses)
+
 0.0.2 (2023-12-13)
 -------------------
 - add history class

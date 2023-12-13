@@ -1,2 +1,6 @@
 pytest
 pyserial
+smbus2
+
+object-info
+cli-sender
