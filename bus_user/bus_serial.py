@@ -441,11 +441,16 @@ class BusSerial:
                 result = result[0]
             return result
 
-    def dump_cmds(self, cmds: List[str] = None, as_dict: Optional[bool] = None) -> Union[HistoryIO, Dict[str, str]]:
+    def dump_cmds(self, cmds: List[str] = None) -> HistoryIO:
+        """
+        useful to get results for standard cmds list
+        if you need to read all params from device!
+        """
         cmds = cmds or self.CMDS_DUMP
 
-        result = self.HISTORY
-
+        history = self.write_read_line(cmds, return_type=TypeWrReturn.HISTORY_IO)
+        history.print_io()
+        return history
 
     # CMD MAP =========================================================================================================
     def __getattr__(self, item):
