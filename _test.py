@@ -10,6 +10,49 @@ from bus_user import *
 
 
 # =====================================================================================================================
+class Test_HistoryIO:
+    VICTIM: Type[HistoryIO] = type("VICTIM", (HistoryIO,), {})
+
+    @classmethod
+    def setup_class(cls):
+        pass
+
+    @classmethod
+    def teardown_class(cls):
+        pass
+
+    def setup_method(self, method):
+        self.VICTIM = type("VICTIM", (HistoryIO,), {})
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__add(self):
+        victim: HistoryIO = self.VICTIM()
+        assert victim.history == []
+
+        victim.add_input("11")
+        assert victim.history == [("11", [])]
+        assert victim.list_input() == ["11", ]
+        assert victim.list_output() == []
+
+        victim.add_input("22")
+        assert victim.history == [("11", []), ("22", [])]
+        assert victim.list_input() == ["11", "22"]
+        assert victim.list_output() == []
+
+        victim.add_output("2222")
+        assert victim.history == [("11", []), ("22", ["2222", ])]
+        assert victim.list_input() == ["11", "22"]
+        assert victim.list_output() == ["2222", ]
+
+        victim.add_output("3333")
+        assert victim.history == [("11", []), ("22", ["2222", "3333"])]
+        assert victim.list_input() == ["11", "22"]
+        assert victim.list_output() == ["2222", "3333", ]
+
+        victim.print_io()
+
+
+# =====================================================================================================================
 class Test_BusSerial:
     VICTIM: Type[BusSerial] = type("VICTIM", (BusSerial,), {})
     ports: List[str] = []
