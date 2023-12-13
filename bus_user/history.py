@@ -14,6 +14,9 @@ class HistoryIO:
     def clear(self) -> None:
         self.history.clear()
 
+    def as_dict(self) -> Dict[str, List[str]]:
+        return dict(self.history)
+
     # ADD =============================================================================================================
     def add_input(self, data: str) -> None:
         self.history.append((data, []))

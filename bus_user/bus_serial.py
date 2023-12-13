@@ -3,6 +3,7 @@ import sys
 import glob
 import time
 from typing import *
+from enum import Enum, auto
 
 from serial import Serial
 from serial.tools import list_ports
@@ -62,6 +63,12 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 TYPE__RW_ANSWER = Union[None, str, List[str]]
 
 
+class TypeWrReturn(Enum):
+    ALL_OUTPUT = auto()
+    HISTORY_IO = auto()
+    DICT = auto()
+
+
 # =====================================================================================================================
 class BusSerial:
     ADDRESS: str = None
@@ -70,6 +77,7 @@ class BusSerial:
     BAUDRATE: int = 115200
     # TODO: add other settings
 
+    CMDS_DUMP: List[str] = []
     RAISE: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
@@ -402,30 +410,42 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None) -> TYPE__RW_ANSWER:
+    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None, return_type: TypeWrReturn = None) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER]]:
         """
         send data and return all answered lines
         """
-        # LIST -------------------------
-        if isinstance(data, (list, tuple,)):
-            if len(data) > 1:
-                result_history = HistoryIO()
-                for data_i in data:
-                    data_o = self.write_read_line(data_i)
-                    result_history.add_io(data_i, data_o)
-                return result_history.list_output()
-            else:
-                data = data[0]
-
-        # SINGLE -----------------------
+        history = HistoryIO()
         data_o = None
-        if self._write_line(data):
-            data_o = self._read_line(count=0, _timeout=_timeout)
 
-        if isinstance(data_o, (list, tuple,)) and len(data_o) == 1:
-            data_o = data_o[0]
+        # LIST -------------------------
+        if isinstance(data, (list, tuple,)) and len(data) == 1:
+            return self.write_read_line(data[0])
+        elif isinstance(data, (list, tuple,)):
+            for data_i in data:
+                data_o = self.write_read_line(data_i)
+                history.add_io(data_i, data_o)
+        else:
+            # SINGLE -----------------------
+            if self._write_line(data):
+                data_o = self._read_line(count=0, _timeout=_timeout)
+            history.add_io(data, data_o)
 
-        return data_o
+        # RESULT ----------------------------
+        if return_type == TypeWrReturn.HISTORY_IO:
+            return history
+        elif return_type == TypeWrReturn.DICT:
+            return history.as_dict()
+        else:
+            result = history.list_output()
+            if not isinstance(data, (list, tuple,)) and len(result) == 1:
+                result = result[0]
+            return result
+
+    def dump_cmds(self, cmds: List[str] = None, as_dict: Optional[bool] = None) -> Union[HistoryIO, Dict[str, str]]:
+        cmds = cmds or self.CMDS_DUMP
+
+        result = self.HISTORY
+
 
     # CMD MAP =========================================================================================================
     def __getattr__(self, item):

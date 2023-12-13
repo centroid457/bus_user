@@ -25,19 +25,22 @@ class Test_HistoryIO:
         self.VICTIM = type("VICTIM", (HistoryIO,), {})
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__add(self):
+    def test__add_list_asdict(self):
         victim: HistoryIO = self.VICTIM()
         assert victim.history == []
+        assert victim.as_dict() == {}
 
         victim.add_input("11")
         assert victim.history == [("11", [])]
         assert victim.list_input() == ["11", ]
         assert victim.list_output() == []
+        assert victim.as_dict() == {"11": []}
 
         victim.add_input("22")
         assert victim.history == [("11", []), ("22", [])]
         assert victim.list_input() == ["11", "22"]
         assert victim.list_output() == []
+        assert victim.as_dict() == {"11": [], "22": []}
 
         victim.add_output("2222")
         assert victim.history == [("11", []), ("22", ["2222", ])]
@@ -45,11 +48,30 @@ class Test_HistoryIO:
         assert victim.list_output() == ["2222", ]
 
         victim.add_output("3333")
-        assert victim.history == [("11", []), ("22", ["2222", "3333"])]
+        assert victim.history == [("11", []), ("22", ["2222", "3333", ])]
         assert victim.list_input() == ["11", "22"]
         assert victim.list_output() == ["2222", "3333", ]
 
+        victim.add_output(["4444", "5555" ])
+        assert victim.history == [("11", []), ("22", ["2222", "3333", "4444", "5555", ])]
+        assert victim.list_input() == ["11", "22"]
+        assert victim.list_output() == ["2222", "3333", "4444", "5555", ]
+
         victim.print_io()
+
+    def test__add_io(self):
+        victim: HistoryIO = self.VICTIM()
+        assert victim.history == []
+
+        victim.add_io("11", "1111")
+        assert victim.history == [("11", ["1111", ]), ]
+        assert victim.list_input() == ["11", ]
+        assert victim.list_output() == ["1111", ]
+
+        victim.add_io("22", ["2222", "222222", ])
+        assert victim.history == [("11", ["1111", ]), ("22", ["2222", "222222", ]), ]
+        assert victim.list_input() == ["11", "22"]
+        assert victim.list_output() == ["1111", "2222", "222222", ]
 
     def test__first_output(self):
         victim: HistoryIO = self.VICTIM()
