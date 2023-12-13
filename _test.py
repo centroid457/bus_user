@@ -51,6 +51,15 @@ class Test_HistoryIO:
 
         victim.print_io()
 
+    def test__first_output(self):
+        victim: HistoryIO = self.VICTIM()
+        assert victim.history == []
+
+        victim.add_output("1111")
+        assert victim.history == [("", ["1111"])]
+        assert victim.list_input() == ["", ]
+        assert victim.list_output() == ["1111"]
+
 
 # =====================================================================================================================
 class Test_BusSerial:

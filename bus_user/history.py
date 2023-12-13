@@ -13,6 +13,9 @@ class HistoryIO:
         self.history.append((data, []))
 
     def add_output(self, data: Union[str, List[str]]) -> None:
+        if not self.history:
+            self.add_input("")
+
         output_last = self.history[-1][1]
         if isinstance(data, (tuple, list, )):
             output_last.extend(data)
