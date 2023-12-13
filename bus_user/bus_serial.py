@@ -363,6 +363,9 @@ class BusSerial:
         data = self._data_ensure_string(data)
         # print(f"[OK]read_line={data}")
         self.HISTORY.add_output(data)
+
+        if isinstance(data, (list, tuple,)) and len(data) == 1:
+            data = data[0]
         return data
 
     def _write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
@@ -376,10 +379,13 @@ class BusSerial:
 
         # LIST -----------------------
         if isinstance(data, (list, tuple, )):
-            for data_i in data:
-                if not self._write_line(data_i):
-                    return False
-            return True
+            if len(data) > 1:
+                for data_i in data:
+                    if not self._write_line(data_i):
+                        return False
+                return True
+            else:
+                data = data[0]
 
         # SINGLE ---------------------
         self.HISTORY.add_input(self._data_ensure_string(data))
@@ -400,36 +406,26 @@ class BusSerial:
         """
         send data and return all answered lines
         """
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
-        # FIXME: !!!!! finish!
         # LIST -------------------------
-
+        if isinstance(data, (list, tuple,)):
+            if len(data) > 1:
+                result_history = HistoryIO()
+                for data_i in data:
+                    data_o = self.write_read_line(data_i)
+                    result_history.add_io(data_i, data_o)
+                return result_history.list_output()
+            else:
+                data = data[0]
 
         # SINGLE -----------------------
-        result_summary: TYPE__RW_ANSWER = []
-        result = None
+        data_o = None
         if self._write_line(data):
-            result = self._read_line(count=0, _timeout=_timeout)
-            if isinstance(result, (list, tuple,)) and len(result) == 1:
-                result = result[0]
-                result_summary.append(result)
-            else:
-                result_summary.extend(result)
+            data_o = self._read_line(count=0, _timeout=_timeout)
 
-        if len(result_summary) == 1:
-            result_summary = result_summary[0]
-        return result_summary
+        if isinstance(data_o, (list, tuple,)) and len(data_o) == 1:
+            data_o = data_o[0]
+
+        return data_o
 
     # CMD MAP =========================================================================================================
     def __getattr__(self, item):

@@ -8,6 +8,9 @@ class HistoryIO:
     def __init__(self):
         self.history = []
 
+    def count(self) -> int:
+        return len(self.history)
+
     # ADD =============================================================================================================
     def add_input(self, data: str) -> None:
         self.history.append((data, []))
