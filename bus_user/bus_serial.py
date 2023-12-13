@@ -85,13 +85,13 @@ class BusSerial:
     BAUDRATE: int = 115200
     # TODO: add other settings
 
-    CMDS_DUMP: List[str] = []
+    CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
 
-    # TODO: come up and apply ANSWER_SUCCESS
+    # TODO: come up and apply ANSWER_SUCCESS??? may be not need couse of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
