@@ -60,6 +60,9 @@ class Test_HistoryIO:
         assert victim.list_input() == ["", ]
         assert victim.list_output() == ["1111"]
 
+        victim.clear()
+        assert victim.history == []
+
 
 # =====================================================================================================================
 class Test_BusSerial:
