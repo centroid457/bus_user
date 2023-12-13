@@ -9,6 +9,8 @@ from serial.tools import list_ports
 
 from object_info import ObjectInfo
 
+from .history import HistoryIO
+
 
 # =====================================================================================================================
 class Exx_SerialAddressNotConfigured(Exception):
@@ -60,13 +62,6 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 TYPE__RW_ANSWER = Union[None, str, List[str]]
 
 
-class BufferWR(NamedTuple):
-    write: str
-    read: TYPE__RW_ANSWER
-    # def __str__(self):
-    #     return f"{self.__class__.__name__}({self.write}--->{self.read})"
-
-
 # =====================================================================================================================
 class BusSerial:
     ADDRESS: str = None
@@ -83,12 +78,12 @@ class BusSerial:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL: str = "FAIL"   # case insensitive
 
-    HISTORY: List[BufferWR] = None
+    HISTORY: HistoryIO = None
 
     __source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
-        self.HISTORY = []
+        self.HISTORY = HistoryIO()
 
         # set only address!!!
         if address:
@@ -279,10 +274,6 @@ class BusSerial:
     # RW ==============================================================================================================
     pass
 
-    # HISTORY ---------------------------------------------------------------------------------------------------------
-    def history_append(self, write: str, read: TYPE__RW_ANSWER = None) -> None:
-        self.HISTORY.append(BufferWR(write, read))
-
     # SUCCESS ---------------------------------------------------------------------------------------------------------
     @classmethod
     def answer_is_success(cls, data: str) -> bool:
@@ -371,6 +362,7 @@ class BusSerial:
         data = self._bytes_eol__clear(data)
         data = self._data_ensure_string(data)
         # print(f"[OK]read_line={data}")
+        self.HISTORY.add_output(data)
         return data
 
     def _write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
@@ -390,8 +382,11 @@ class BusSerial:
             return True
 
         # SINGLE ---------------------
+        self.HISTORY.add_input(self._data_ensure_string(data))
+
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
+
         data_length = self.__source.write(data)
         print(f"[OK]write_line={data}/{data_length=}")
         if data_length > 0:
@@ -431,9 +426,6 @@ class BusSerial:
                 result_summary.append(result)
             else:
                 result_summary.extend(result)
-
-        self.history_append(data, result)
-
 
         if len(result_summary) == 1:
             result_summary = result_summary[0]
