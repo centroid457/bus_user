@@ -1,4 +1,5 @@
 import pathlib
+import re
 import sys
 import glob
 import time
@@ -43,6 +44,13 @@ class Exx_SerialAddressOtherError(Exception):
     pass
 
 
+class Exx_SerialReadFailPattern(Exception):
+    """
+    if read string which match error pattern
+    """
+    pass
+
+
 class Exx_SerialPL2303IncorrectDriver(Exception):
     """
     REASON
@@ -78,13 +86,14 @@ class BusSerial:
     # TODO: add other settings
 
     CMDS_DUMP: List[str] = []
-    RAISE: bool = True
+    RAISE_CONNECT: bool = True
+    RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
 
     # TODO: come up and apply ANSWER_SUCCESS
     ANSWER_SUCCESS: str = "OK"  # case insensitive
-    ANSWER_FAIL: str = "FAIL"   # case insensitive
+    ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
     HISTORY: HistoryIO = None
 
@@ -115,7 +124,7 @@ class BusSerial:
         if address:
             self.__source.port = address
         if _raise is None:
-            _raise = self.RAISE
+            _raise = self.RAISE_CONNECT
 
         if self.__source.is_open:
             return True
@@ -284,12 +293,31 @@ class BusSerial:
 
     # SUCCESS ---------------------------------------------------------------------------------------------------------
     @classmethod
-    def answer_is_success(cls, data: str) -> bool:
+    def answer_is_success(cls, data: AnyStr) -> bool:
+        data = cls._data_ensure_string(data)
         return cls.ANSWER_SUCCESS.upper() == data.upper()
 
     @classmethod
-    def answer_is_fail(cls, data: str) -> bool:
-        return cls.ANSWER_FAIL.upper() in data.upper()
+    def answer_is_fail(cls, data: AnyStr, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
+        if _raise is None:
+            _raise = cls.RAISE_READ_FAIL_PATTERN
+
+        data = cls._data_ensure_string(data)
+        if isinstance(cls.ANSWER_FAIL_PATTERN, str):
+            patterns = [cls.ANSWER_FAIL_PATTERN, ]
+        else:
+            patterns = cls.ANSWER_FAIL_PATTERN
+
+        for pattern in patterns:
+            if re.search(pattern, data, flags=re.IGNORECASE):
+                if _raise:
+                    msg = f"[ERROR] match fail [{pattern=}/{data=}]"
+                    print(msg)
+                    raise Exx_SerialReadFailPattern(msg)
+                else:
+                    return True
+
+        return False
 
     # EOL -------------------------------------------------------------------------------------------------------------
     @classmethod
@@ -320,8 +348,8 @@ class BusSerial:
             return str(data)
 
     # RW --------------------------------------------------------------------------------------------------------------
-    # TODO: use wrapper for connect/disconnect!???
-    def _read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str]]:
+    # TODO: use wrapper for connect/disconnect!??? - NO!
+    def _read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str], NoReturn]:
         """
         read line from bus buffer,
         if timedout - return blank line ""
@@ -372,8 +400,8 @@ class BusSerial:
         # print(f"[OK]read_line={data}")
         self.HISTORY.add_output(data)
 
-        if isinstance(data, (list, tuple,)) and len(data) == 1:
-            data = data[0]
+        self.answer_is_fail(data)
+
         return data
 
     def _write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
@@ -410,7 +438,12 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None, return_type: Optional[TypeWrReturn] = None) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER]]:
+    def write_read_line(
+            self,
+            data: Union[AnyStr, List[AnyStr]],
+            _timeout: Optional[float] = None,
+            return_type: Optional[TypeWrReturn] = None
+    ) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER], NoReturn]:
         """
         send data and return all answered lines
         """
@@ -441,7 +474,7 @@ class BusSerial:
                 result = result[0]
             return result
 
-    def dump_cmds(self, cmds: List[str] = None) -> HistoryIO:
+    def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
         useful to get results for standard cmds list
         if you need to read all params from device!

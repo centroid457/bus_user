@@ -204,6 +204,15 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.HISTORY_IO).as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
+    def test__rw_ReadFailPattern(self):
+        self.victim_zero.connect()
+        try:
+            self.victim_zero.write_read_line("123 FAil 123")
+        except:
+            assert True
+        else:
+            assert False
+
     def test__r_all(self):
         self.victim_zero.connect()
 
