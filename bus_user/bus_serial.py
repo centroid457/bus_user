@@ -410,7 +410,7 @@ class BusSerial:
             print(msg)
             return False
 
-    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None, return_type: TypeWrReturn = None) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER]]:
+    def write_read_line(self, data: Union[AnyStr, List[AnyStr]], _timeout: Optional[float] = None, return_type: Optional[TypeWrReturn] = None) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER]]:
         """
         send data and return all answered lines
         """
