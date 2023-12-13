@@ -419,16 +419,16 @@ class BusSerial:
 
         # LIST -------------------------
         if isinstance(data, (list, tuple,)) and len(data) == 1:
-            return self.write_read_line(data[0])
+            return self.write_read_line(data[0], _timeout=_timeout, return_type=return_type)
         elif isinstance(data, (list, tuple,)):
             for data_i in data:
-                data_o = self.write_read_line(data_i)
-                history.add_io(data_i, data_o)
+                data_o = self.write_read_line(data_i, _timeout=_timeout, return_type=None)
+                history.add_io(self._data_ensure_string(data_i), data_o)
         else:
             # SINGLE -----------------------
             if self._write_line(data):
                 data_o = self._read_line(count=0, _timeout=_timeout)
-            history.add_io(data, data_o)
+            history.add_io(self._data_ensure_string(data), data_o)
 
         # RESULT ----------------------------
         if return_type == TypeWrReturn.HISTORY_IO:
