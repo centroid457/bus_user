@@ -187,19 +187,22 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]) == [f"hello{line}" for line in range(3)]
 
         # params ------------
-        assert self.victim_zero.write_read_line("hello") == "hello"
+        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.DICT) == {"hello": ["hello", ], }
+        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.ALL_OUTPUT) == "hello"
 
+        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.DICT) == {"11": ["11", ], "22": ["22", ], }
+        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.ALL_OUTPUT) == ["11", "22"]
 
+        history = HistoryIO()
+        history.add_io("hello", "hello")
+        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.HISTORY_IO).as_dict() == history.as_dict()
+        assert history.check_equal_io() is True
 
-
-
-
-
-
-
-
-
-
+        history = HistoryIO()
+        history.add_io("11", "11")
+        history.add_io("22", "22")
+        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.HISTORY_IO).as_dict() == history.as_dict()
+        assert history.check_equal_io() is True
 
     def test__r_all(self):
         self.victim_zero.connect()
