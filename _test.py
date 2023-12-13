@@ -186,6 +186,21 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line("hello") == "hello"
         assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]) == [f"hello{line}" for line in range(3)]
 
+        # params ------------
+        assert self.victim_zero.write_read_line("hello") == "hello"
+
+
+
+
+
+
+
+
+
+
+
+
+
     def test__r_all(self):
         self.victim_zero.connect()
 
