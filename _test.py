@@ -228,6 +228,9 @@ class Test_BusSerial:
         else:
             assert False
 
+        self.victim_zero.RAISE_READ_FAIL_PATTERN = False
+        assert self.victim_zero.write_read_line("123 FAil 123").last_output == "123 FAil 123"
+
     def test__r_all(self):
         self.victim_zero.connect()
 

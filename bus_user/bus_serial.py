@@ -292,21 +292,19 @@ class BusSerial:
     pass
 
     # SUCCESS ---------------------------------------------------------------------------------------------------------
-    @classmethod
-    def answer_is_success(cls, data: AnyStr) -> bool:
-        data = cls._data_ensure_string(data)
-        return cls.ANSWER_SUCCESS.upper() == data.upper()
+    def answer_is_success(self, data: AnyStr) -> bool:
+        data = self._data_ensure_string(data)
+        return self.ANSWER_SUCCESS.upper() == data.upper()
 
-    @classmethod
-    def answer_is_fail(cls, data: AnyStr, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
+    def answer_is_fail(self, data: AnyStr, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
         if _raise is None:
-            _raise = cls.RAISE_READ_FAIL_PATTERN
+            _raise = self.RAISE_READ_FAIL_PATTERN
 
-        data = cls._data_ensure_string(data)
-        if isinstance(cls.ANSWER_FAIL_PATTERN, str):
-            patterns = [cls.ANSWER_FAIL_PATTERN, ]
+        data = self._data_ensure_string(data)
+        if isinstance(self.ANSWER_FAIL_PATTERN, str):
+            patterns = [self.ANSWER_FAIL_PATTERN, ]
         else:
-            patterns = cls.ANSWER_FAIL_PATTERN
+            patterns = self.ANSWER_FAIL_PATTERN
 
         for pattern in patterns:
             if re.search(pattern, data, flags=re.IGNORECASE):
