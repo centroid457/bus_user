@@ -27,8 +27,10 @@ class HistoryIO:
 
         output_last = self.history[-1][1]
         if isinstance(data, (tuple, list, )):
+            # LIST
             output_last.extend(data)
         else:
+            # SINGLE
             output_last.append(data)
 
     def add_io(self, data_i: str, data_o: Union[str, List[str]]) -> None:

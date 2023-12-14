@@ -12,7 +12,7 @@ with open("README.md", "r") as f:
 NAME = "bus_user"
 
 setup(
-  version="0.0.2",
+  version="0.0.3",
   description="work with equipment over buses like Serial/i2c/...",
   keywords=[
     "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
