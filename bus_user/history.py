@@ -35,6 +35,11 @@ class HistoryIO:
         self.add_input(data_i)
         self.add_output(data_o)
 
+    def add_history(self, history: 'HistoryIO') -> None:
+        for data_i, data_o in history.history:
+            self.add_input(data_i)
+            self.add_output(data_o)
+
     # CHECK ===========================================================================================================
     def check_equal_io(self) -> bool:
         """
@@ -44,6 +49,19 @@ class HistoryIO:
             if not (len(data_o) == 1 and data_o[0] == data_i):
                 return False
         return True
+
+    # LAST ============================================================================================================
+    @property
+    def last_input(self) -> str:
+        if self.history:
+            return self.history[-1][0]
+        return ""
+
+    @property
+    def last_output(self) -> str:
+        if self.history and self.history[-1][-1]:
+            return self.history[-1][-1][-1]
+        return ""
 
     # LIST+PRINT ======================================================================================================
     def list_input(self) -> List[str]:

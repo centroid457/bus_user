@@ -30,57 +30,73 @@ class Test_HistoryIO:
         assert victim.history == []
         assert victim.as_dict() == {}
 
-        victim.add_input("11")
-        assert victim.history == [("11", [])]
-        assert victim.list_input() == ["11", ]
+        victim.add_input("in1")
+        assert victim.history == [("in1", [])]
+        assert victim.list_input() == ["in1", ]
         assert victim.list_output() == []
-        assert victim.as_dict() == {"11": []}
+        assert victim.as_dict() == {"in1": []}
 
-        victim.add_input("22")
-        assert victim.history == [("11", []), ("22", [])]
-        assert victim.list_input() == ["11", "22"]
+        victim.add_input("in2")
+        assert victim.history == [("in1", []), ("in2", [])]
+        assert victim.list_input() == ["in1", "in2"]
         assert victim.list_output() == []
-        assert victim.as_dict() == {"11": [], "22": []}
+        assert victim.as_dict() == {"in1": [], "in2": []}
 
-        victim.add_output("2222")
-        assert victim.history == [("11", []), ("22", ["2222", ])]
-        assert victim.list_input() == ["11", "22"]
-        assert victim.list_output() == ["2222", ]
+        victim.add_output("out2")
+        assert victim.history == [("in1", []), ("in2", ["out2", ])]
+        assert victim.list_input() == ["in1", "in2"]
+        assert victim.list_output() == ["out2", ]
 
-        victim.add_output("3333")
-        assert victim.history == [("11", []), ("22", ["2222", "3333", ])]
-        assert victim.list_input() == ["11", "22"]
-        assert victim.list_output() == ["2222", "3333", ]
+        victim.add_output("out22")
+        assert victim.history == [("in1", []), ("in2", ["out2", "out22", ])]
+        assert victim.list_input() == ["in1", "in2"]
+        assert victim.list_output() == ["out2", "out22", ]
 
-        victim.add_output(["4444", "5555" ])
-        assert victim.history == [("11", []), ("22", ["2222", "3333", "4444", "5555", ])]
-        assert victim.list_input() == ["11", "22"]
-        assert victim.list_output() == ["2222", "3333", "4444", "5555", ]
+        victim.add_output(["out222", "out2222"])
+        assert victim.history == [("in1", []), ("in2", ["out2", "out22", "out222", "out2222", ])]
+        assert victim.list_input() == ["in1", "in2"]
+        assert victim.list_output() == ["out2", "out22", "out222", "out2222", ]
 
         victim.print_io()
 
-    def test__add_io(self):
+    def test__add_io__list_last(self):
+        victim: HistoryIO = self.VICTIM()
+        assert victim.history == []
+        assert victim.last_input == ""
+        assert victim.last_output == ""
+
+        victim.add_io("in1", "out1")
+        assert victim.history == [("in1", ["out1", ]), ]
+        assert victim.list_input() == ["in1", ]
+        assert victim.list_output() == ["out1", ]
+        assert victim.last_input == "in1"
+        assert victim.last_output == "out1"
+
+        victim.add_io("in2", ["out2", "out22", ])
+        assert victim.history == [("in1", ["out1", ]), ("in2", ["out2", "out22", ]), ]
+        assert victim.list_input() == ["in1", "in2"]
+        assert victim.list_output() == ["out1", "out2", "out22", ]
+        assert victim.last_input == "in2"
+        assert victim.last_output == "out22"
+
+    def test__add_history(self):
         victim: HistoryIO = self.VICTIM()
         assert victim.history == []
 
-        victim.add_io("11", "1111")
-        assert victim.history == [("11", ["1111", ]), ]
-        assert victim.list_input() == ["11", ]
-        assert victim.list_output() == ["1111", ]
+        history = HistoryIO()
+        history.add_io("in1", "out1")
 
-        victim.add_io("22", ["2222", "222222", ])
-        assert victim.history == [("11", ["1111", ]), ("22", ["2222", "222222", ]), ]
-        assert victim.list_input() == ["11", "22"]
-        assert victim.list_output() == ["1111", "2222", "222222", ]
+        victim.add_history(history)
+        assert victim.history == [("in1", ["out1", ]), ]
 
     def test__first_output(self):
         victim: HistoryIO = self.VICTIM()
         assert victim.history == []
 
-        victim.add_output("1111")
-        assert victim.history == [("", ["1111"])]
+        victim.add_output("out0")
+        assert victim.history == [("", ["out0", ])]
         assert victim.list_input() == ["", ]
-        assert victim.list_output() == ["1111"]
+        assert victim.list_output() == ["out0"]
 
         victim.clear()
         assert victim.history == []
@@ -183,25 +199,24 @@ class Test_BusSerial:
     def test__rw(self):
         self.victim_zero.connect()
 
-        assert self.victim_zero.write_read_line("hello") == "hello"
-        assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]) == [f"hello{line}" for line in range(3)]
+        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+        assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
 
-        # params ------------
-        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.DICT) == {"hello": ["hello", ], }
-        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.ALL_OUTPUT) == "hello"
+        # params -----------------------
+        assert self.victim_zero.write_read_line("hello").as_dict() == {"hello": ["hello", ], }
 
-        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.DICT) == {"11": ["11", ], "22": ["22", ], }
-        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.ALL_OUTPUT) == ["11", "22"]
+        assert self.victim_zero.write_read_line(["11", "22"]).list_input() == ["11", "22"]
+        assert self.victim_zero.write_read_line(["11", "22"]).as_dict() == {"11": ["11", ], "22": ["22", ], }
 
         history = HistoryIO()
         history.add_io("hello", "hello")
-        assert self.victim_zero.write_read_line("hello", return_type=TypeWrReturn.HISTORY_IO).as_dict() == history.as_dict()
+        assert self.victim_zero.write_read_line("hello").as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
         history = HistoryIO()
         history.add_io("11", "11")
         history.add_io("22", "22")
-        assert self.victim_zero.write_read_line(["11", "22"], return_type=TypeWrReturn.HISTORY_IO).as_dict() == history.as_dict()
+        assert self.victim_zero.write_read_line(["11", "22"]).as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
     def test__rw_ReadFailPattern(self):
@@ -222,11 +237,11 @@ class Test_BusSerial:
     def test__getattr(self):
         self.victim_zero.connect()
 
-        assert self.victim_zero.hello() == "hello"
-        assert self.victim_zero.hello(123) == "hello 123"
-        assert self.victim_zero.hello("?") == "hello ?"
+        assert self.victim_zero.hello().last_output == "hello"
+        assert self.victim_zero.hello(123).last_output == "hello 123"
+        assert self.victim_zero.hello("?").last_output == "hello ?"
 
-        assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222") == ["hello 000", "111", "222"]
+        assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]
 
 
 # =====================================================================================================================

@@ -441,38 +441,27 @@ class BusSerial:
     def write_read_line(
             self,
             data: Union[AnyStr, List[AnyStr]],
-            _timeout: Optional[float] = None,
-            return_type: Optional[TypeWrReturn] = None
-    ) -> Union[TYPE__RW_ANSWER, HistoryIO, Dict[str, TYPE__RW_ANSWER], NoReturn]:
+            _timeout: Optional[float] = None
+    ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return all answered lines
         """
         history = HistoryIO()
-        data_o = None
 
         # LIST -------------------------
-        if isinstance(data, (list, tuple,)) and len(data) == 1:
-            return self.write_read_line(data[0], _timeout=_timeout, return_type=return_type)
-        elif isinstance(data, (list, tuple,)):
+        if isinstance(data, (list, tuple,)):
             for data_i in data:
-                data_o = self.write_read_line(data_i, _timeout=_timeout, return_type=None)
-                history.add_io(self._data_ensure_string(data_i), data_o)
+                history_i = self.write_read_line(data_i, _timeout=_timeout)
+                history.add_history(history_i)
         else:
-            # SINGLE -----------------------
+            # SINGLE LAST -----------------------
+            data_o = ""
             if self._write_line(data):
                 data_o = self._read_line(count=0, _timeout=_timeout)
             history.add_io(self._data_ensure_string(data), data_o)
 
         # RESULT ----------------------------
-        if return_type == TypeWrReturn.HISTORY_IO:
-            return history
-        elif return_type == TypeWrReturn.DICT:
-            return history.as_dict()
-        else:
-            result = history.list_output()
-            if not isinstance(data, (list, tuple,)) and len(result) == 1:
-                result = result[0]
-            return result
+        return history
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
@@ -481,12 +470,12 @@ class BusSerial:
         """
         cmds = cmds or self.CMDS_DUMP
 
-        history = self.write_read_line(cmds, return_type=TypeWrReturn.HISTORY_IO)
+        history = self.write_read_line(cmds)
         history.print_io()
         return history
 
     # CMD MAP =========================================================================================================
-    def __getattr__(self, item):
+    def __getattr__(self, item) -> Callable[..., HistoryIO]:
         """if no exists attr/meth
 
         USAGE COMMANDS MAP
