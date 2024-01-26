@@ -1,6 +1,12 @@
+# COMMON ===================
 pytest
+requirements-checker
+object-info
+
+# ========================================
+# SPECIAL FOR THIS PROJECT ---------------
 pyserial
 smbus2
+cli-user
 
-object-info
-cli-sender
+# ========================================

@@ -10,7 +10,7 @@ import re
 from typing import *
 
 from object_info import ObjectInfo
-from cli_sender import CliSender
+from cli_user import CliUser
 
 
 # =====================================================================================================================
@@ -50,7 +50,7 @@ class BusI2c:
             buses = re.findall(pattern=r"i2c-(\d+) ", string=string)
             print(f"found {buses=}")
         """
-        cli = CliSender()
+        cli = CliUser()
         cli.send("i2cdetect -l")
         buses = re.findall(pattern=Patterns.I2C_BUS_ID, string=cli.last_stdout)
         print(f"found {buses=}")
@@ -82,7 +82,7 @@ class BusI2c:
         else:
             buses = [bus_id, ]
 
-        cli = CliSender()
+        cli = CliUser()
         bus_devices: Dict[int, List[int]] = {}
         for bus in buses:
             cli.send(f"i2cdetect -y {bus}")

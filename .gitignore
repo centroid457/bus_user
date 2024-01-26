@@ -1,26 +1,46 @@
-# virtual env python
+# PYTHON ===================
+# virtual env --------------
 .venv/
 venv/
 env/
 
-# byte-compiled
+# byte-compiled ------------
 **/__pycache__/
 **/*.py[cod]
 
-# pycharm
+# IDE ----------------------
 .idea/
+.vscode/
 
-# PYTEST
+# PYTEST -------------------
 **/.pytest_cache/
 
-# TEMP
-TEMPORARY/
--*
-
-# user saved data
-USERDATA/
-
-# DISTRIBUTION
+# PYPI DISTRIBUTION --------
 build/
 dist/
 *.egg-info/
+
+# documentation ------------
+documentation/build/*
+documentation/source/_build/*
+
+# some other ---------------
+htmlcov/
+.coverage
+*~lock*
+manage.sh
+todo.org
+*.orig
+
+# USER =====================
+# TEMP ---------------------
+TEMPORARY/
+-*
+
+# user saved data ----------
+USERDATA/
+
+# ========================================
+# SPECIAL FOR THIS PROJECT ---------------
+
+# ========================================

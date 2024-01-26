@@ -1,30 +1,9 @@
-# bus_user
-Designed to work with equipment over buses like Serial/i2c/...
+# bus_user (v0.0.4)
 
+## DESCRIPTION_SHORT
+Work with equipment over buses like serial/i2c/...
 
-## Features
-1. Serial bus usage! with simply using commands
-
-
-## License
-See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
-
-
-## Release history
-See the [HISTORY.md](HISTORY.md) file for release history.
-
-
-## Installation
-```commandline
-pip install bus-user
-```
-
-## Import
-```python
-from bus_user import *
-```
-
-## GUIDE
+## DESCRIPTION_LONG
 ### !. MOST APPROPRIATE COMMAND PROTOCOL
 other protocols mot recommended
 
@@ -44,13 +23,44 @@ other protocols mot recommended
     [FAIL 02 VALUE OUT OF RANGE] - any specified error with description (full variant)
 
 
-### 1. USAGE COMMANDS MAP
-NOTICE:
-1. If bus cmd return several lines (DUMP for example) - you will get all of them in list! 
-2. All answers you will get as string and you must parse it by youself!  
-errors will be get within it.
+## Features
+1. Serial bus usage! with simply using commands  
 
+
+********************************************************************************
+## License
+See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
+
+
+## Release history
+See the [HISTORY.md](HISTORY.md) file for release history.
+
+
+## Installation
+```commandline
+pip install bus-user
+```
+
+
+## Import
 ```python
+from bus_user import *
+```
+
+
+********************************************************************************
+## USAGE EXAMPLES
+See tests and sourcecode for other examples.
+
+------------------------------
+### 1. example1.py
+```python
+# NOTICE:
+# 1. If bus cmd return several lines (DUMP for example) - you will get all of them in list! 
+# 2. All answers you will get as string and you must parse it by youself!  
+# errors will be get within it.
+
+
 from bus_user import *
 
 # SHOW (optional) COMMANDS EXPLICITLY by annotations without values!
@@ -69,3 +79,5 @@ if dev.connect():
     answer3 = dev.VIN(12)   # return answer for sent string in port "VIN 12"
     answer4 = dev.VIN("12")   # return answer for sent string in port "VIN 12"
 ```
+
+********************************************************************************
