@@ -146,8 +146,6 @@ class Test_BusSerial:
         assert self.VICTIM._data_ensure_string(b"111") == "111"
 
     def test__eol(self):
-        # todo: work with several lines???
-
         self.VICTIM.EOL = b"\n"
         assert self.VICTIM._bytes_eol__ensure(b"111") == b"111\n"
         assert self.VICTIM._bytes_eol__ensure(b"111\n") == b"111\n"
