@@ -2,7 +2,7 @@
 
 ********************************************************************************
 ## TODO
-1. add all other port settings into BusSerial  
+1. add all other port settings into BusSerial_Base  
 2. test work with several lines EOL  
 
 ********************************************************************************
@@ -27,6 +27,6 @@
 
 0.0.1 (2023-12-12)
 -------------------
-- first BusSerial with commands mapping
+- first BusSerial_Base with commands mapping
 
 ********************************************************************************

@@ -104,9 +104,9 @@ class Test_HistoryIO:
 
 # =====================================================================================================================
 class Test_BusSerial:
-    VICTIM: Type[BusSerial] = type("VICTIM", (BusSerial,), {})
+    VICTIM: Type[BusSerial_Base] = type("VICTIM", (BusSerial_Base,), {})
     ports: List[str] = []
-    victim_zero: BusSerial = None
+    victim_zero: BusSerial_Base = None
 
     @classmethod
     def setup_class(cls):
@@ -123,7 +123,7 @@ class Test_BusSerial:
             cls.victim_zero.disconnect()
 
     def setup_method(self, method):
-        self.VICTIM = type("VICTIM", (BusSerial,), {})
+        self.VICTIM = type("VICTIM", (BusSerial_Base,), {})
         self.victim_zero = self.VICTIM(self.ports[0])
 
     # -----------------------------------------------------------------------------------------------------------------
@@ -132,10 +132,10 @@ class Test_BusSerial:
         assert len(ports) > 0
 
     def test__connect_address_existed(self):
-        assert BusSerial(address=self.ports[0]).address_check_exists() is True
+        assert BusSerial_Base(address=self.ports[0]).address_check_exists() is True
 
     def test__connect_address_NOTexisted(self):
-        assert BusSerial(address="HELLO").address_check_exists() is False
+        assert BusSerial_Base(address="HELLO").address_check_exists() is False
 
     def test__usure_bytes(self):
         assert self.VICTIM._data_ensure_bytes("111") == b"111"
@@ -235,6 +235,32 @@ class Test_BusSerial:
         assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
         assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
+
+# =====================================================================================================================
+class Test_BusSerialWGetattr:
+    VICTIM: Type[BusSerialWGetattr_Base] = type("VICTIM", (BusSerialWGetattr_Base,), {})
+    ports: List[str] = []
+    victim_zero: BusSerialWGetattr_Base = None
+
+    @classmethod
+    def setup_class(cls):
+        cls.ports = cls.VICTIM.detect_available_ports()
+        if len(cls.ports) != 1:
+            msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
+            print(msg)
+            raise Exception(msg)
+        # cls.victim_zero = cls.VICTIM(cls.ports[0])
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim_zero:
+            cls.victim_zero.disconnect()
+
+    def setup_method(self, method):
+        self.VICTIM = type("VICTIM", (BusSerialWGetattr_Base,), {})
+        self.victim_zero = self.VICTIM(self.ports[0])
+
+    # -----------------------------------------------------------------------------------------------------------------
     def test__getattr(self):
         self.victim_zero.connect()
 

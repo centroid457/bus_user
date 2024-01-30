@@ -55,7 +55,7 @@ other protocols mot recommended
     VERSION: Tuple[int, int, int] = (0, 0, 4)
     VERSION_STR: str = ".".join(map(str, VERSION))
     TODO: List[str] = [
-        "add all other port settings into BusSerial",
+        "add all other port settings into BusSerial_Base",
         "test work with several lines EOL"
     ]
     FIXME: List[str] = [
