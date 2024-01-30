@@ -261,6 +261,7 @@ class Test_BusSerialWGetattr:
         self.victim_zero = self.VICTIM(self.ports[0])
 
     # -----------------------------------------------------------------------------------------------------------------
+    # FIX WORK IN FULL PIPELINE!!!!
     def test__getattr(self):
         self.victim_zero.connect()
 
