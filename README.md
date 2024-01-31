@@ -1,4 +1,4 @@
-# bus_user (v0.0.4)
+# bus_user (v0.0.5)
 
 ## DESCRIPTION_SHORT
 Work with equipment over buses like serial/i2c/...
@@ -33,7 +33,7 @@ See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
 
 
 ## Release history
-See the [HISTORY.md](HISTORY.md) file for release history.
+See the [history.md](history.md) file for release history.
 
 
 ## Installation
@@ -54,7 +54,6 @@ See tests and sourcecode for other examples.
 
 ------------------------------
 ### 1. example1.py
-
 ```python
 # NOTICE:
 # 1. If bus cmd return several lines (DUMP for example) - you will get all of them in list! 
@@ -64,23 +63,21 @@ See tests and sourcecode for other examples.
 
 from bus_user import *
 
-
 # SHOW (optional) COMMANDS EXPLICITLY by annotations without values!
 # ------------------------------------------------------------------
-class MySerialDevice(BusSerial_Base):
+class MySerialDevice(BusSerialWGetattr_Base):
     IDN: Callable[[Any], TYPE__RW_ANSWER]
     ADDR: Callable[[Any], TYPE__RW_ANSWER]
     DUMP: Callable[[Any], TYPE__RW_ANSWER]
-
 
 # USE in code
 # -----------
 dev = MySerialDevice()
 if dev.connect():
-    answer1 = dev.IDN()  # return answer for sent string in port "IDN"
-    answer2 = dev.VIN()  # return answer for sent string in port "VIN"
-    answer3 = dev.VIN(12)  # return answer for sent string in port "VIN 12"
-    answer4 = dev.VIN("12")  # return answer for sent string in port "VIN 12"
+    answer1 = dev.IDN()   # return answer for sent string in port "IDN"
+    answer2 = dev.VIN()   # return answer for sent string in port "VIN"
+    answer3 = dev.VIN(12)   # return answer for sent string in port "VIN 12"
+    answer4 = dev.VIN("12")   # return answer for sent string in port "VIN 12"
 ```
 
 ********************************************************************************

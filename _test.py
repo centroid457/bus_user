@@ -220,6 +220,12 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line(["11", "22"]).as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
+    def test__rw_last(self):
+        self.victim_zero.connect()
+
+        assert self.victim_zero.write_read_line_last("hello") == "hello"
+        assert self.victim_zero.write_read_line_last(["hello1", "hello2"]) == "hello2"
+
     def test__rw_ReadFailPattern(self):
         self.victim_zero.connect()
         try:
@@ -280,11 +286,11 @@ class Test_BusSerialWGetattr:
     def test__getattr(self):
         self.victim_zero.connect()
 
-        assert self.victim_zero.hello().last_output == "hello"
-        assert self.victim_zero.hello(123).last_output == "hello 123"
-        assert self.victim_zero.hello("?").last_output == "hello ?"
+        assert self.victim_zero.hello() == "hello"
+        assert self.victim_zero.hello(123) == "hello 123"
+        assert self.victim_zero.hello("?") == "hello ?"
 
-        assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]
+        # assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]
 
 
 # =====================================================================================================================

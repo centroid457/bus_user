@@ -442,7 +442,7 @@ class BusSerial_Base:
             _timeout: Optional[float] = None
     ) -> Union[HistoryIO, NoReturn]:
         """
-        send data and return all answered lines
+        send data and return history
         """
         history = HistoryIO()
 
@@ -460,6 +460,17 @@ class BusSerial_Base:
 
         # RESULT ----------------------------
         return history
+
+    def write_read_line_last(
+            self,
+            data: Union[AnyStr, List[AnyStr]],
+            _timeout: Optional[float] = None
+    ) -> Union[str, NoReturn]:
+        """
+        it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
+        return always last_output
+        """
+        return self.write_read_line(data=data, _timeout=_timeout).last_output
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
@@ -497,7 +508,7 @@ class BusSerialWGetattr_Base(BusSerial_Base):
             dev.VIN(12)   # return answer for sent string in port "VIN 12"
             dev.VIN("12")   # return answer for sent string in port "VIN 12"
         """
-        return lambda param=None: self.write_read_line(data=item if param is None else f"{item} {param}")
+        return lambda param=None: self.write_read_line_last(data=item if param is None else f"{item} {param}")
 
 
 # =====================================================================================================================

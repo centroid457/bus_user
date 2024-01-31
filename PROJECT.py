@@ -52,7 +52,7 @@ other protocols mot recommended
     ]
 
     # history -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 0, 4)
+    VERSION: Tuple[int, int, int] = (0, 0, 5)
     VERSION_STR: str = ".".join(map(str, VERSION))
     TODO: List[str] = [
         "add all other port settings into BusSerial_Base",
@@ -62,7 +62,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "just apply new pypi template 0.0.2"
+        "add write_read_line_last"
     ]
 
 
