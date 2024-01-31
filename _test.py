@@ -119,8 +119,11 @@ class Test_BusSerial:
 
     @classmethod
     def teardown_class(cls):
-        if cls.victim_zero:
-            cls.victim_zero.disconnect()
+        pass
+
+    def teardown_method(self, method):
+        if self.victim_zero:
+            self.victim_zero.disconnect()
 
     def setup_method(self, method):
         self.VICTIM = type("VICTIM", (BusSerial_Base,), {})
@@ -234,6 +237,18 @@ class Test_BusSerial:
 
         assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
         assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
+
+    def test__pipeline_open(self):
+        self.victim_zero.disconnect()
+        self.victim_zero = self.VICTIM(self.ports[0])
+        self.victim_zero.connect()
+        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+
+        self.victim_zero.disconnect()
+        self.victim_zero = self.VICTIM(self.ports[0])
+        self.victim_zero.connect()
+        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+        self.victim_zero.disconnect()
 
 
 # =====================================================================================================================
