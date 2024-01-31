@@ -47,7 +47,7 @@ class BusI2c:
             i2c-1   i2c             bcm2835 (i2c@7e804000)                  I2C adapter
             i2c-2   i2c             bcm2835 (i2c@7e805000)                  I2C adapter
             '''
-            buses = re.findall(pattern=r"i2c-(\d+) ", string=string)
+            buses = re.findall(pattern=r"i2c-(\\d+) ", string=string)
             print(f"found {buses=}")
         """
         cli = CliUser()
