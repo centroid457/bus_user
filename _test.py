@@ -238,7 +238,7 @@ class Test_BusSerial:
         assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
         assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
-    def test__pipeline_open(self):
+    def test__pipeline_open_close(self):
         self.victim_zero.disconnect()
         self.victim_zero = self.VICTIM(self.ports[0])
         self.victim_zero.connect()
