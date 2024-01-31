@@ -51,7 +51,7 @@ other protocols mot recommended
         "Serial bus usage! with simply using commands",
     ]
 
-    # HISTORY -----------------------------------------------
+    # history -----------------------------------------------
     VERSION: Tuple[int, int, int] = (0, 0, 4)
     VERSION_STR: str = ".".join(map(str, VERSION))
     TODO: List[str] = [

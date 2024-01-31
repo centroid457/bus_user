@@ -122,7 +122,7 @@ class Readme(ReleaseFileBase):
             f"",
             f"",
             f"## Release history",
-            f"See the [HISTORY.md](HISTORY.md) file for release history.",
+            f"See the [history.md](history.md) file for release history.",
 
             f"",
             f"",
@@ -254,7 +254,7 @@ class History(ReleaseFileBase):
 
     def append_main(self):
         lines = [
-            f"# RELEASE HISTORY",
+            f"# RELEASE history",
             f"",
             self.LINE_SEPARATOR_MAIN,
             *self._lines_create__group(PROJECT.TODO, "## TODO"),

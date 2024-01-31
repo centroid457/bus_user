@@ -79,6 +79,7 @@ class TypeWrReturn(Enum):
 
 # =====================================================================================================================
 class BusSerial_Base:
+    # SETTINGS ------------------------------------------------
     ADDRESS: str = None
     TIMEOUT_READ: float = 0.2
     TIMEOUT_WRITE: float = 0.5
@@ -94,12 +95,12 @@ class BusSerial_Base:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
-    HISTORY: HistoryIO = None
-
+    # AUX -----------------------------------------------------
+    history: HistoryIO = None
     __source: Serial = Serial()
 
     def __init__(self, address: Optional[str] = None):
-        self.HISTORY = HistoryIO()
+        self.history = HistoryIO()
 
         # set only address!!!
         if address:
@@ -395,7 +396,7 @@ class BusSerial_Base:
         data = self._bytes_eol__clear(data)
         data = self._data_ensure_string(data)
         # print(f"[OK]read_line={data}")
-        self.HISTORY.add_output(data)
+        self.history.add_output(data)
 
         self.answer_is_fail(data)
 
@@ -421,7 +422,7 @@ class BusSerial_Base:
                 data = data[0]
 
         # SINGLE ---------------------
-        self.HISTORY.add_input(self._data_ensure_string(data))
+        self.history.add_input(self._data_ensure_string(data))
 
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
