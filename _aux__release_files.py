@@ -7,6 +7,11 @@ from PROJECT import PROJECT
 
 
 # =====================================================================================================================
+# VERSION = (0, 0, 1)   # keep russian lang by using utf-8
+VERSION = (0, 0, 2)   # reuse utf8+ del all capitalizing()
+
+
+# =====================================================================================================================
 class Exx_HistorySameVersionOrNews(Exception):
     pass
 
@@ -33,7 +38,7 @@ class ReleaseFileBase:
             lines = ""
         if isinstance(lines, str):
             lines = [lines, ]
-        with self.filepath.open("a") as fo_append:
+        with self.filepath.open("a", encoding="utf8") as fo_append:
             for lines in lines:
                 fo_append.write(f"{lines}\n")
 
@@ -105,7 +110,7 @@ class Readme(ReleaseFileBase):
 
             f"",
             f"## DESCRIPTION_SHORT",
-            f"{PROJECT.DESCRIPTION_SHORT.capitalize().strip()}",
+            f"{PROJECT.DESCRIPTION_SHORT.strip()}",
 
             f"",
             f"## DESCRIPTION_LONG",
@@ -122,7 +127,7 @@ class Readme(ReleaseFileBase):
             f"",
             f"",
             f"## Release history",
-            f"See the [history.md](history.md) file for release history.",
+            f"See the [HISTORY.md](HISTORY.md) file for release history.",
 
             f"",
             f"",
@@ -220,6 +225,9 @@ class History(ReleaseFileBase):
 
         # ----------------------------
         for news_item in PROJECT.NEWS:
+            if isinstance(news_item, list):
+                news_item = news_item[0]
+
             if re.search(r'- ' + str(news_item) + r'\s*\n', self.LAST_NEWS):
                 msg = f"exists_news"
                 print(msg)
@@ -254,7 +262,7 @@ class History(ReleaseFileBase):
 
     def append_main(self):
         lines = [
-            f"# RELEASE history",
+            f"# RELEASE HISTORY",
             f"",
             self.LINE_SEPARATOR_MAIN,
             *self._lines_create__group(PROJECT.TODO, "## TODO"),

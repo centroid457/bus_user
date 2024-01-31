@@ -1,7 +1,7 @@
 # bus_user (v0.0.5)
 
 ## DESCRIPTION_SHORT
-Work with equipment over buses like serial/i2c/...
+work with equipment over buses like Serial/i2c/...
 
 ## DESCRIPTION_LONG
 ### !. MOST APPROPRIATE COMMAND PROTOCOL
@@ -33,7 +33,7 @@ See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
 
 
 ## Release history
-See the [history.md](history.md) file for release history.
+See the [HISTORY.md](HISTORY.md) file for release history.
 
 
 ## Installation

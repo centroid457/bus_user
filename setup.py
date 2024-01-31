@@ -1,10 +1,21 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from PROJECT import PROJECT
 
 
 # =====================================================================================================================
-with open("README.md", "r") as f:
+# VERSION = (0, 0, 1)   # use find_packages to keep all internal pkgs for pypi
+VERSION = (0, 0, 2)   # fix ability to read russian text in readme
+
+
+# =====================================================================================================================
+with open("README.md", mode="r", encoding="utf8") as f:
     readme = f.read()
+
+
+packages = [PROJECT.NAME_IMPORT, ]
+pkgs_internal = find_packages(where=PROJECT.NAME_IMPORT)
+for name in pkgs_internal:
+    packages.append(f"{PROJECT.NAME_IMPORT}.{name}")
 
 
 # =====================================================================================================================
@@ -42,7 +53,7 @@ setup(
     "Source": f"https://github.com/centroid457/{PROJECT.NAME_IMPORT}",
   },
 
-  packages=[PROJECT.NAME_IMPORT, ],
+  packages=packages,
   install_requires=[],
   python_requires=">=3.6"
 )

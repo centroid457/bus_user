@@ -1,12 +1,11 @@
 import pathlib
 from PROJECT import PROJECT
 
-
 from requirements_checker import Packages
 
 
 # =====================================================================================================================
-__version__ = "0.0.1"
+VERSION = (0, 0, 1)   # use direct upgrade this module by PROJECT.NAME_INSTALL
 
 
 # =====================================================================================================================
