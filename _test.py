@@ -259,9 +259,9 @@ class Test_BusSerial:
 
 # =====================================================================================================================
 class Test_BusSerialWGetattr:
-    VICTIM: Type[BusSerialWGetattr_Base] = type("VICTIM", (BusSerialWGetattr_Base,), {})
+    VICTIM: Type[BusSerialBase__GetattrDictDirect] = type("VICTIM", (BusSerialBase__GetattrDictDirect,), {})
     ports: List[str] = []
-    victim_zero: BusSerialWGetattr_Base = None
+    victim_zero: BusSerialBase__GetattrDictDirect = None
 
     @classmethod
     def setup_class(cls):
@@ -278,7 +278,7 @@ class Test_BusSerialWGetattr:
             cls.victim_zero.disconnect()
 
     def setup_method(self, method):
-        self.VICTIM = type("VICTIM", (BusSerialWGetattr_Base,), {})
+        self.VICTIM = type("VICTIM", (BusSerialBase__GetattrDictDirect,), {})
         self.victim_zero = self.VICTIM(self.ports[0])
 
     # -----------------------------------------------------------------------------------------------------------------
@@ -287,7 +287,10 @@ class Test_BusSerialWGetattr:
         self.victim_zero.connect()
 
         assert self.victim_zero.hello() == "hello"
-        assert self.victim_zero.hello(123) == "hello 123"
+        assert self.victim_zero.hello(12) == "hello 12"
+        assert self.victim_zero.hello(12, 13) == "hello 12 13"
+        assert self.victim_zero.hello("12 13") == "hello 12 13"
+        assert self.victim_zero.hello(CH1=12, CH2=13) == "hello CH1=12 CH2=13"
         assert self.victim_zero.hello("?") == "hello ?"
 
         # assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]

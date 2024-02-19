@@ -478,14 +478,13 @@ class BusSerial_Base:
         if you need to read all params from device!
         """
         cmds = cmds or self.CMDS_DUMP
-
         history = self.write_read_line(cmds)
         history.print_io()
         return history
 
 
 # =====================================================================================================================
-class BusSerialWGetattr_Base(BusSerial_Base):
+class BusSerialBase__GetattrDictDirect(BusSerial_Base):
     def __getattr__(self, item) -> Callable[..., HistoryIO]:
         """if no exists attr/meth
 
@@ -507,9 +506,27 @@ class BusSerialWGetattr_Base(BusSerial_Base):
             dev.VIN()   # return answer for sent string in port "VIN"
             dev.VIN(12)   # return answer for sent string in port "VIN 12"
             dev.VIN("12")   # return answer for sent string in port "VIN 12"
+            dev.VIN("12 13")  # return answer for sent string in port "VIN 12 13"
+            dev.VIN(12, 13)   # return answer for sent string in port "VIN 12 13" by args
+            dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
+            dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
         """
+        return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
 
-        return lambda arg=None: self.write_read_line_last(data=item if not arg else f"{item} {arg}")
+    def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
+        result = f"{cmd}"
+        if args:
+            for arg in args:
+                result += f" {arg}"
+        if kwargs:
+            for name, value in kwargs.items():
+                result += f" {name}={value}"
+        return result
+
+
+class BusSerialBase__GetattrCommands(BusSerial_Base):
+    def __getattr__(self, item) -> Callable[..., HistoryIO]:
+        pass
 
 
 # =====================================================================================================================
