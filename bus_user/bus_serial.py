@@ -482,6 +482,17 @@ class BusSerial_Base:
         history.print_io()
         return history
 
+    # CMD =============================================================================================================
+    def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
+        result = f"{cmd}"
+        if args:
+            for arg in args:
+                result += f" {arg}"
+        if kwargs:
+            for name, value in kwargs.items():
+                result += f" {name}={value}"
+        return result
+
 
 # =====================================================================================================================
 class BusSerialBase__GetattrDictDirect(BusSerial_Base):
@@ -512,16 +523,6 @@ class BusSerialBase__GetattrDictDirect(BusSerial_Base):
             dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
         """
         return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
-
-    def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
-        result = f"{cmd}"
-        if args:
-            for arg in args:
-                result += f" {arg}"
-        if kwargs:
-            for name, value in kwargs.items():
-                result += f" {name}={value}"
-        return result
 
 
 class BusSerialBase__GetattrCommands(BusSerial_Base):

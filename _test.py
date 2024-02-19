@@ -140,11 +140,11 @@ class Test_BusSerial:
     def test__connect_address_NOTexisted(self):
         assert BusSerial_Base(address="HELLO").address_check_exists() is False
 
-    def test__usure_bytes(self):
+    def test__ensure_bytes(self):
         assert self.VICTIM._data_ensure_bytes("111") == b"111"
         assert self.VICTIM._data_ensure_bytes(b"111") == b"111"
 
-    def test__usure_str(self):
+    def test__ensure_str(self):
         assert self.VICTIM._data_ensure_string("111") == "111"
         assert self.VICTIM._data_ensure_string(b"111") == "111"
 
