@@ -5,7 +5,8 @@ from requirements_checker import Packages
 
 
 # =====================================================================================================================
-VERSION = (0, 0, 1)   # use direct upgrade this module by PROJECT.NAME_INSTALL
+# VERSION = (0, 0, 1)   # use direct upgrade this module by PROJECT.NAME_INSTALL
+VERSION = (0, 0, 2)   # fix requirements.txt
 
 
 # =====================================================================================================================
@@ -21,8 +22,8 @@ print()
 print("3=upgrade__centroid457=================================")
 pkgs_cli.upgrade__centroid457()
 print()
-print("4=requirements.txt======================================")
-filepath = pathlib.Path(__file__).parent.joinpath("requirements.txt")   # FIXME: not working!
+print("4=requirements.txt=====================================")
+filepath = pathlib.Path(__file__).parent.joinpath("requirements.txt")
 pkgs_cli.upgrade_file(filepath)
 
 

@@ -3,12 +3,13 @@ import re
 import time
 from typing import *
 
-from PROJECT import PROJECT
+# from PROJECT import PROJECT
 
 
 # =====================================================================================================================
 # VERSION = (0, 0, 1)   # keep russian lang by using utf-8
-VERSION = (0, 0, 2)   # reuse utf8+ del all capitalizing()
+# VERSION = (0, 0, 2)   # reuse utf8+ del all capitalizing()
+VERSION = (0, 0, 3)   # detach dependence from importing PRJ
 
 
 # =====================================================================================================================
@@ -20,10 +21,14 @@ class Exx_HistorySameVersionOrNews(Exception):
 class ReleaseFileBase:
     # ------------------------------------------------
     FILE_NAME: str = "FILE.md"
+    PROJECT: Type['PROJECT'] = None
 
     # ------------------------------------------------
     LINE_SEPARATOR_MAIN: str = "*" * 80
     LINE_SEPARATOR_PART: str = "-" * 30
+
+    def __init__(self, project: Type['PROJECT']):
+        self.PROJECT = project
 
     @property
     def filepath(self) -> pathlib.Path:
@@ -34,10 +39,13 @@ class ReleaseFileBase:
         self.filepath.write_text("")
 
     def _file_append_lines(self, lines: Optional[Union[str, List[str]]] = None) -> None:
+        # LINES ---------------------------------
         if not lines:
             lines = ""
         if isinstance(lines, str):
             lines = [lines, ]
+
+        # WRITE ---------------------------------
         with self.filepath.open("a", encoding="utf8") as fo_append:
             for lines in lines:
                 fo_append.write(f"{lines}\n")
@@ -63,12 +71,12 @@ class ReleaseFileBase:
                 group.append(f"{bullet}{line}  ")
         return group
 
-    def autogenerate(self, project: Optional[Type[PROJECT]] = None) -> None:
+    def generate(self) -> None:
         pass
 
 
 # =====================================================================================================================
-class Readme(ReleaseFileBase):
+class ReleaseReadme(ReleaseFileBase):
     # ------------------------------------------------
     FILE_NAME: str = "README.md"
 
@@ -82,9 +90,7 @@ class Readme(ReleaseFileBase):
     LINE_FILE_FOOTER: str = "```"
 
     # GENERATE ========================================================================================================
-    def autogenerate(self, project: Optional[Type[PROJECT]] = None) -> None:
-        project = project or PROJECT
-
+    def generate(self) -> None:
         self._file_clear()
         self.append_main()
         self.append_examples()
@@ -96,7 +102,7 @@ class Readme(ReleaseFileBase):
             f"",
             f"## Features",
         ]
-        for num, feature in enumerate(PROJECT.FEATURES, start=1):
+        for num, feature in enumerate(self.PROJECT.FEATURES, start=1):
             if isinstance(feature, list):
                 features.append(f"{num}. {feature[0]}:  ")
                 for block in feature[1:]:
@@ -106,15 +112,15 @@ class Readme(ReleaseFileBase):
 
         # SUMMARY ----------------------------------------------------
         lines = [
-            f"# {PROJECT.NAME_IMPORT} (v{PROJECT.VERSION_STR})",
+            f"# {self.PROJECT.NAME_IMPORT} (v{self.PROJECT.VERSION_STR})",
 
             f"",
             f"## DESCRIPTION_SHORT",
-            f"{PROJECT.DESCRIPTION_SHORT.strip()}",
+            f"{self.PROJECT.DESCRIPTION_SHORT.strip()}",
 
             f"",
             f"## DESCRIPTION_LONG",
-            f"{PROJECT.DESCRIPTION_LONG.strip()}",
+            f"{self.PROJECT.DESCRIPTION_LONG.strip()}",
 
             *features,
 
@@ -133,14 +139,14 @@ class Readme(ReleaseFileBase):
             f"",
             f"## Installation",
             f"```commandline",
-            f"pip install {PROJECT.NAME_INSTALL}",
+            f"pip install {self.PROJECT.NAME_INSTALL}",
             f"```",
 
             f"",
             f"",
             f"## Import",
             f"```python",
-            f"from {PROJECT.NAME_IMPORT} import *",
+            f"from {self.PROJECT.NAME_IMPORT} import *",
             f"```",
         ]
         self._file_append_lines(lines)
@@ -178,7 +184,7 @@ class Readme(ReleaseFileBase):
 
 
 # =====================================================================================================================
-class History(ReleaseFileBase):
+class ReleaseHistory(ReleaseFileBase):
     # ------------------------------------------------
     FILE_NAME: str = "HISTORY.md"
 
@@ -218,13 +224,13 @@ class History(ReleaseFileBase):
 
     def check_new_release__is_correct(self) -> bool:
         # ----------------------------
-        if self.LAST_NEWS.startswith(f"{PROJECT.VERSION_STR} ("):
+        if self.LAST_NEWS.startswith(f"{self.PROJECT.VERSION_STR} ("):
             msg = f"exists_version"
             print(msg)
             return False
 
         # ----------------------------
-        for news_item in PROJECT.NEWS:
+        for news_item in self.PROJECT.NEWS:
             if isinstance(news_item, list):
                 news_item = news_item[0]
 
@@ -241,15 +247,14 @@ class History(ReleaseFileBase):
         group: List[str] = [
             f"## NEWS",
             "",
-            f"{PROJECT.VERSION_STR} ({time.strftime('%Y/%m/%d %H:%M:%S')})",
+            f"{self.PROJECT.VERSION_STR} ({time.strftime('%Y/%m/%d %H:%M:%S')})",
             self.LINE_SEPARATOR_PART,
         ]
-        news_new = self._lines_create__group(PROJECT.NEWS, nums=False)
+        news_new = self._lines_create__group(self.PROJECT.NEWS, nums=False)
         group.extend(news_new)
         return group
 
-    def autogenerate(self, project: Optional[Type[PROJECT]] = None) -> None:
-        project = project or PROJECT
+    def generate(self) -> None:
         # PREPARE --------------------------------------
         self.load_last_news()
         if not self.check_new_release__is_correct():
@@ -265,10 +270,10 @@ class History(ReleaseFileBase):
             f"# RELEASE HISTORY",
             f"",
             self.LINE_SEPARATOR_MAIN,
-            *self._lines_create__group(PROJECT.TODO, "## TODO"),
+            *self._lines_create__group(self.PROJECT.TODO, "## TODO"),
             f"",
             self.LINE_SEPARATOR_MAIN,
-            *self._lines_create__group(PROJECT.FIXME, "## FIXME"),
+            *self._lines_create__group(self.PROJECT.FIXME, "## FIXME"),
             f"",
             self.LINE_SEPARATOR_MAIN,
             *self.lines_create__news(),
@@ -281,14 +286,14 @@ class History(ReleaseFileBase):
 
 
 # =====================================================================================================================
-def update(project: Optional[Type[PROJECT]] = None):
-    Readme().autogenerate(project)
-    History().autogenerate(project)
+def release_files_update(project: Type['PROJECT']):
+    ReleaseReadme(project).generate()
+    ReleaseHistory(project).generate()
 
 
 # =====================================================================================================================
 if __name__ == '__main__':
-    update()
+    pass
 
 
 # =====================================================================================================================

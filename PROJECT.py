@@ -1,11 +1,13 @@
 from typing import *
+from _aux__release_files import release_files_update
+
+
+# =====================================================================================================================
+VERSION = (0, 0, 3)   # 1/deprecate _VERSION_TEMPLATE from PRJ object +2/place update_prj here in __main__ +3/separate finalize attrs
 
 
 # =====================================================================================================================
 class PROJECT:
-    # AUX --------------------------------------------------
-    _VERSION_TEMPLATE: Tuple[int] = (0, 0, 2)
-
     # AUTHOR -----------------------------------------------
     AUTHOR_NAME: str = "Andrei Starichenko"
     AUTHOR_EMAIL: str = "centroid@mail.ru"
@@ -13,7 +15,6 @@ class PROJECT:
 
     # PROJECT ----------------------------------------------
     NAME_IMPORT: str = "bus_user"
-    NAME_INSTALL: str = NAME_IMPORT.replace("_", "-")
     KEYWORDS: List[str] = [
         "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
     ]
@@ -51,9 +52,8 @@ other protocols mot recommended
         "Serial bus usage! with simply using commands",
     ]
 
-    # history -----------------------------------------------
+    # HISTORY -----------------------------------------------
     VERSION: Tuple[int, int, int] = (0, 0, 5)
-    VERSION_STR: str = ".".join(map(str, VERSION))
     TODO: List[str] = [
         "add all other port settings into BusSerial_Base",
         "test work with several lines EOL"
@@ -62,13 +62,17 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "add write_read_line_last"
+        ""
     ]
+
+    # FINALIZE -----------------------------------------------
+    VERSION_STR: str = ".".join(map(str, VERSION))
+    NAME_INSTALL: str = NAME_IMPORT.replace("_", "-")
 
 
 # =====================================================================================================================
 if __name__ == '__main__':
-    pass
+    release_files_update(PROJECT)
 
 
 # =====================================================================================================================
