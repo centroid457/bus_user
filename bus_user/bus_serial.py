@@ -253,7 +253,7 @@ class BusSerial_Base:
 
         # find not opened ports ----------------------------------------
         for obj in list_ports.comports():
-            ObjectInfo(obj).print(hide_skipped=True, hide_build_in=True)
+            # ObjectInfo(obj).print(hide_skipped=True, hide_build_in=True)
             result.append(obj.name)
             if Exx_SerialPL2303IncorrectDriver.MARKER in str(obj):
                 msg = f'[WARN] incorrect driver [{Exx_SerialPL2303IncorrectDriver.MARKER}]'
@@ -508,7 +508,8 @@ class BusSerialWGetattr_Base(BusSerial_Base):
             dev.VIN(12)   # return answer for sent string in port "VIN 12"
             dev.VIN("12")   # return answer for sent string in port "VIN 12"
         """
-        return lambda param=None: self.write_read_line_last(data=item if param is None else f"{item} {param}")
+
+        return lambda arg=None: self.write_read_line_last(data=item if not arg else f"{item} {arg}")
 
 
 # =====================================================================================================================
