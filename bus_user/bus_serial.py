@@ -91,6 +91,8 @@ class BusSerial_Base:
     ENCODING: str = "utf-8"
     EOL: bytes = b"\n"
 
+    CMD_PREFIX: Optional[str] = None
+
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
@@ -120,7 +122,12 @@ class BusSerial_Base:
     def disconnect(self) -> None:
         self.__source.close()
 
-    def connect(self, address: Optional[str] = None, _raise: Optional[bool] = None, _silent: Optional[bool] = None) -> Union[bool, NoReturn]:
+    def connect(
+            self,
+            address: Optional[str] = None,
+            _raise: Optional[bool] = None,
+            _silent: Optional[bool] = None
+    ) -> Union[bool, NoReturn]:
         if address:
             self.__source.port = address
         if _raise is None:
@@ -164,7 +171,15 @@ class BusSerial_Base:
         if not _silent:
             msg = f"[OK] connected {self.__source}"
             print(msg)
+
+        self.cmd_prefix__set()
         return True
+
+    def cmd_prefix__set(self) -> None:
+        """
+        OVERWRITE IF NEED!
+        """
+        return
 
     # DETECT PORTS ====================================================================================================
     def address_check_exists(self) -> bool:
@@ -484,10 +499,17 @@ class BusSerial_Base:
 
     # CMD =============================================================================================================
     def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
-        result = f"{cmd}"
+        result = ""
+
+        if self.CMD_PREFIX:
+            result += f"{self.CMD_PREFIX}"
+
+        result += f"{cmd}"
+
         if args:
             for arg in args:
                 result += f" {arg}"
+
         if kwargs:
             for name, value in kwargs.items():
                 result += f" {name}={value}"
