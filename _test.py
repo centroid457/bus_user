@@ -291,6 +291,7 @@ class Test_BusSerialWGetattr:
         assert self.victim_zero.hello(12, 13) == "hello 12 13"
         assert self.victim_zero.hello("12 13") == "hello 12 13"
         assert self.victim_zero.hello(CH1=12, CH2=13) == "hello CH1=12 CH2=13"
+        assert self.victim_zero.hello(12, CH2=13) == "hello 12 CH2=13"
         assert self.victim_zero.hello("?") == "hello ?"
 
         # assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]
