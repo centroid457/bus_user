@@ -85,8 +85,8 @@ class TypeWrReturn(Enum):
 class BusSerial_Base:
     # SETTINGS ------------------------------------------------
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
-
     ADDRESS: str = None
+
     TIMEOUT_READ: float = 0.2
     TIMEOUT_WRITE: float = 0.5
     BAUDRATE: int = 115200
@@ -103,7 +103,7 @@ class BusSerial_Base:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
-    GETATTR_SEND_STARTSWITH: str = "SEND__"
+    GETATTR_SEND_STARTSWITH: str = "send__"
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None

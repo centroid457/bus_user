@@ -332,7 +332,7 @@ class Test_BusSerialWGetattr:
         assert self.victim.hello("?") == "hello ?"
 
     def test__GETATTR_SEND_STARTSWITH(self):
-        assert self.victim.SEND__hello() == "hello"
+        assert self.victim.send__hello() == "hello"
 
     def test__CMD_PREFIX(self):
         self.victim.CMD_PREFIX = "DEV:01:"
@@ -345,8 +345,10 @@ class Test_BusSerialWGetattr:
 # =====================================================================================================================
 class Test_Emulator:
     Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
-    victim1: BusSerialBase__GetattrDictDirect = None
-    victim2: BusSerialBase__GetattrDictDirect = None
+    victim: BusSerialBase__GetattrDictDirect = None
+
+    VictimEmu: Type[DevEmulator_CmdTheme] = type("Victim", (DevEmulator_CmdTheme,), {})
+    victim_emu: DevEmulator_CmdTheme = None
 
     @classmethod
     def setup_class(cls):
@@ -356,27 +358,33 @@ class Test_Emulator:
             print(msg)
             raise Exception(msg)
 
+        cls.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
+        cls.Victim.TIMEOUT_READ = 1
+        cls.Victim.TIMEOUT_WRITE = 1
+
+        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        cls.Victim.TIMEOUT_READ = 1
+        cls.Victim.TIMEOUT_WRITE = 1
+
+        cls.victim = cls.Victim()
+        cls.victim.connect()
+
+        cls.victim_emu = cls.VictimEmu()
+        cls.victim_emu.start()
+
     @classmethod
     def teardown_class(cls):
-        if cls.victim1:
-            cls.victim1.disconnect()
-        if cls.victim2:
-            cls.victim2.disconnect()
+        if cls.victim:
+            cls.victim.disconnect()
+        if cls.victim_emu:
+            cls.victim_emu.disconnect()
 
     def setup_method(self, method):
-        self.Victim = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
-        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-
-        self.victim1 = self.Victim()
-        self.victim1.connect()
-
-        self.victim2 = self.Victim()
-        self.victim2.connect()
+        pass
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__getattr(self):
-        assert self.victim1.hello() == "hello"
-        assert self.victim1.hello(12) == "hello 12"
+        assert self.victim.ECHO(123) == "ECHO 123"
 
 
 # =====================================================================================================================

@@ -17,11 +17,13 @@ class AnswerResult:
 
 class LineParsed:
     # PREFIX: str = ""
+    LINE: str
     CMD: str
     ARGS: List[str]
     KWARGS: Dict[str, str]
 
     def __init__(self, line: str, prefix: Optional[str] = None):
+        self.LINE = line
         self.CMD = ""
         self.ARGS = []
         self.KWARGS = {}
@@ -49,9 +51,17 @@ class DevEmulator_Base:
     SERIAL_CLS: Type[BusSerial_Base] = BusSerialBase__GetattrDictDirect
     SERIAL: BusSerial_Base
 
+    ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
+    ADDRESS: str = None
+
+    TIMEOUT_READ: float = 1
+
     def __init__(self):
         super().__init__()
         self.SERIAL = self.SERIAL_CLS()
+        self.SERIAL.ADDRESS = self.ADDRESS
+        self.SERIAL.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
+        self.SERIAL.connect()
 
 
 # =====================================================================================================================
@@ -66,8 +76,8 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
     STARTSWITH__CMD: str = "cmd__"
     STARTSWITH__SCRIPT: str = "script__"
 
-    def __init__(self, params: Dict[str, Any]):
-        self._PARAMS = params
+    def __init__(self, params: Optional[Dict[str, Any]] = None):
+        self._PARAMS = params or {}
         super().__init__()
 
     def run(self) -> None:
@@ -76,22 +86,30 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
             print(msg)
             return
         while True:
-            line = self.SERIAL._read_line(_timeout=0.5)
+            line = self.SERIAL._read_line(_timeout=self.TIMEOUT_READ)
             if line:
                 self.execute_line(line)
 
     # -----------------------------------------------------------------------------------------------------------------
-    def execute_line(self, line: str) -> str:
+    def execute_line(self, line: str) -> bool:
         line_parsed = LineParsed(line, prefix=self.SERIAL.CMD_PREFIX)
-        return self.cmd__(line_parsed)
+        result = self.cmd__(line_parsed)
+        return self.SERIAL._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__(self, line_parsed: LineParsed) -> str:
-        meth_cmd = getattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}")
-        if not meth_cmd:
+        if not hasattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}"):
             return AnswerResult.ERR__NAME_CMD
 
+        meth_cmd = getattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}")
         return meth_cmd(line_parsed)
+
+    def cmd__ECHO(self, line_parsed: LineParsed) -> str:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return line_parsed.LINE
 
     def cmd__GET(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
