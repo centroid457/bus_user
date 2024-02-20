@@ -177,8 +177,9 @@ class BusSerial_Base:
 
     def cmd_prefix__set(self) -> None:
         """
-        OVERWRITE IF NEED!
+        OVERWRITE IF NEED/USED!
         """
+        # self.CMD_PREFIX = ""
         return
 
     # DETECT PORTS ====================================================================================================
@@ -518,7 +519,7 @@ class BusSerial_Base:
 
 # =====================================================================================================================
 class BusSerialBase__GetattrDictDirect(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., HistoryIO]:
+    def __getattr__(self, item) -> Callable[..., str]:
         """if no exists attr/meth
 
         USAGE COMMANDS MAP
@@ -548,7 +549,7 @@ class BusSerialBase__GetattrDictDirect(BusSerial_Base):
 
 
 class BusSerialBase__GetattrCommands(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., HistoryIO]:
+    def __getattr__(self, item) -> Callable[..., str]:
         pass
 
 
