@@ -30,6 +30,10 @@ class Exx_SerialAddressNotExists(Exception):
     pass
 
 
+class Exx_SerialAddressNoVacant(Exception):
+    pass
+
+
 class Exx_SerialAddressAlreadyOpened(Exception):
     """
     SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
@@ -80,6 +84,8 @@ class TypeWrReturn(Enum):
 # =====================================================================================================================
 class BusSerial_Base:
     # SETTINGS ------------------------------------------------
+    ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
+
     ADDRESS: str = None
     TIMEOUT_READ: float = 0.2
     TIMEOUT_WRITE: float = 0.5
@@ -88,7 +94,7 @@ class BusSerial_Base:
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
-    ENCODING: str = "utf-8"
+    ENCODING: str = "utf8"
     EOL: bytes = b"\n"
 
     CMD_PREFIX: Optional[str] = None
@@ -112,8 +118,6 @@ class BusSerial_Base:
             self.ADDRESS = address
 
         # apply settings
-        if self.ADDRESS:
-            self.__source.port = self.ADDRESS
         self.__source.baudrate = self.BAUDRATE
         self.__source.timeout = self.TIMEOUT_READ
         self.__source.write_timeout = self.TIMEOUT_WRITE
@@ -131,14 +135,25 @@ class BusSerial_Base:
             _raise: Optional[bool] = None,
             _silent: Optional[bool] = None
     ) -> Union[bool, NoReturn]:
-        if address:
-            self.__source.port = address
+        # SETTINGS ---------------------------------
         if _raise is None:
             _raise = self.RAISE_CONNECT
 
         if self.__source.is_open:
             return True
 
+        address = address or self.ADDRESS
+        if not address:
+            if self.ADDRESS_APPLY_FIRST_VACANT:
+                for address in self.detect_available_ports():
+                    if self.connect(address=address, _raise=False):
+                        return True
+
+                print(Exx_SerialAddressNoVacant)
+                raise Exx_SerialAddressNoVacant()
+
+        # WORK ---------------------------------
+        self.__source.port = address
         try:
             self.__source.open()
         except Exception as exx:
@@ -206,10 +221,12 @@ class BusSerial_Base:
             print(f"[OK] detected serial ports {result}")
         else:
             print("[WARN] detected no serial ports")
+
+        cls.addresses = result
         return result
 
     @staticmethod
-    def _detect_available_ports_1__standard_method():
+    def _detect_available_ports_1__standard_method() -> Union[List[str], NoReturn]:
         """
         WINDOWS - USB
             ==========OBJECTINFO.PRINT==========================================================================

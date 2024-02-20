@@ -132,6 +132,18 @@ class Test_BusSerial:
         self.victim_zero.CMD_PREFIX = ""
 
     # -----------------------------------------------------------------------------------------------------------------
+    def test__ADDRESS_APPLY_FIRST_VACANT(self):
+        assert self.victim_zero.connect()
+        self.victim_zero.disconnect()
+
+        self.victim_zero.ADDRESS = None
+
+        self.victim_zero.ADDRESS_APPLY_FIRST_VACANT = False
+        assert not self.victim_zero.connect(_raise=False)
+
+        self.victim_zero.ADDRESS_APPLY_FIRST_VACANT = True
+        assert self.victim_zero.connect(_raise=False)
+
     def test__connect_multy(self):
         assert self.victim_zero.connect()
         assert self.victim_zero.connect()

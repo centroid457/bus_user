@@ -1,5 +1,6 @@
 from .history import *
 from .serial_user import *
+from .serial_emulator import *
 
 # from .bus_i2c import *  # import only Linux supported modul return exx
 try:
