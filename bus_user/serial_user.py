@@ -135,6 +135,9 @@ class BusSerial_Base:
             _raise: Optional[bool] = None,
             _silent: Optional[bool] = None
     ) -> Union[bool, NoReturn]:
+        msg = None
+        exx = None
+
         # SETTINGS ---------------------------------
         if _raise is None:
             _raise = self.RAISE_CONNECT
@@ -145,39 +148,50 @@ class BusSerial_Base:
         address = address or self.ADDRESS
         if not address:
             if self.ADDRESS_APPLY_FIRST_VACANT:
-                for address in self.detect_available_ports():
-                    if self.connect(address=address, _raise=False):
-                        return True
+                ports = self.detect_available_ports()
+                if not ports:
+                    msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
+                    exx = Exx_SerialAddressNotExists(msg)
 
-                print(Exx_SerialAddressNoVacant)
-                raise Exx_SerialAddressNoVacant()
+                else:
+                    for address in ports:
+                        if self.connect(address=address, _raise=False):
+                            return True
 
-        # WORK ---------------------------------
-        self.__source.port = address
-        try:
-            self.__source.open()
-        except Exception as exx:
-            if not _silent:
-                print(f"{exx!r}")
-
-            if "FileNotFoundError" in str(exx):
-                msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self.__source}"
-                exx = Exx_SerialAddressNotExists(repr(exx))
-
-                # self.detect_available_ports()
-
-            elif "Port must be configured before" in str(exx):
-                msg = f"[ERROR] PORT NOT CONFIGURED {self.__source}"
-                exx = Exx_SerialAddressNotConfigured(repr(exx))
-
-            elif "PermissionError" in str(exx):
-                msg = f"[ERROR] PORT ALREADY OPENED {self.__source}"
-                exx = Exx_SerialAddressAlreadyOpened(repr(exx))
-
+                    msg = Exx_SerialAddressNoVacant
+                    exx = Exx_SerialAddressNoVacant()
             else:
-                msg = f"[ERROR] PORT OTHER ERROR {self.__source}"
-                exx = Exx_SerialAddressOtherError(repr(exx))
+                msg = Exx_SerialAddressNotConfigured
+                exx = Exx_SerialAddressNotConfigured()
+        else:
+            # WORK ---------------------------------
+            self.__source.port = address
+            try:
+                self.__source.open()
+            except Exception as _exx:
+                if not _silent:
+                    print(f"{_exx!r}")
 
+                if "FileNotFoundError" in str(_exx):
+                    msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self.__source}"
+                    exx = Exx_SerialAddressNotExists(repr(_exx))
+
+                    # self.detect_available_ports()
+
+                elif "Port must be configured before" in str(_exx):
+                    msg = f"[ERROR] PORT NOT CONFIGURED {self.__source}"
+                    exx = Exx_SerialAddressNotConfigured(repr(_exx))
+
+                elif "PermissionError" in str(_exx):
+                    msg = f"[ERROR] PORT ALREADY OPENED {self.__source}"
+                    exx = Exx_SerialAddressAlreadyOpened(repr(_exx))
+
+                else:
+                    msg = f"[ERROR] PORT OTHER ERROR {self.__source}"
+                    exx = Exx_SerialAddressOtherError(repr(_exx))
+
+        # FINISH --------------------------------------
+        if exx:
             if not _silent:
                 print(msg)
 
