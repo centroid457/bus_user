@@ -438,6 +438,7 @@ class BusSerial_Base:
                 data = data[0]
 
         # SINGLE ---------------------
+        data = self._create_cmd_line(data)
         self.history.add_input(self._data_ensure_string(data))
 
         data = self._data_ensure_bytes(data)
@@ -502,7 +503,7 @@ class BusSerial_Base:
     def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
         result = ""
 
-        if self.CMD_PREFIX:
+        if self.CMD_PREFIX and not cmd.startswith(self.CMD_PREFIX):
             result += f"{self.CMD_PREFIX}"
 
         result += f"{cmd}"

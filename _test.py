@@ -121,15 +121,22 @@ class Test_BusSerial:
     def teardown_class(cls):
         pass
 
-    def teardown_method(self, method):
-        if self.victim_zero:
-            self.victim_zero.disconnect()
-
     def setup_method(self, method):
         self.VICTIM = type("VICTIM", (BusSerial_Base,), {})
         self.victim_zero = self.VICTIM(self.ports[0])
 
+    def teardown_method(self, method):
+        if self.victim_zero:
+            self.victim_zero.disconnect()
+
+        self.victim_zero.CMD_PREFIX = ""
+
     # -----------------------------------------------------------------------------------------------------------------
+    def test__connect_multy(self):
+        assert self.victim_zero.connect()
+        assert self.victim_zero.connect()
+        assert self.victim_zero.connect()
+
     def test__detect_available_ports(self):
         ports = self.VICTIM.detect_available_ports()
         assert len(ports) > 0
@@ -245,6 +252,8 @@ class Test_BusSerial:
         assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
     def test__pipeline_open_close(self):
+        self.victim_zero.connect()
+
         self.victim_zero.disconnect()
         self.victim_zero = self.VICTIM(self.ports[0])
         self.victim_zero.connect()
@@ -255,6 +264,15 @@ class Test_BusSerial:
         self.victim_zero.connect()
         assert self.victim_zero.write_read_line("hello").last_output == "hello"
         self.victim_zero.disconnect()
+
+    def test__CMD_PREFIX(self):
+        self.victim_zero.connect()
+        self.victim_zero.CMD_PREFIX = "DEV:01:"
+        assert self.victim_zero.write_read_line("hello").last_output == f"{self.victim_zero.CMD_PREFIX}hello"
+        assert self.victim_zero.write_read_line("hello 12").last_output == f"{self.victim_zero.CMD_PREFIX}hello 12"
+
+        self.victim_zero.CMD_PREFIX = ""
+        assert self.victim_zero.write_read_line("hello").last_output == "hello"
 
 
 # =====================================================================================================================
@@ -280,12 +298,11 @@ class Test_BusSerialWGetattr:
     def setup_method(self, method):
         self.VICTIM = type("VICTIM", (BusSerialBase__GetattrDictDirect,), {})
         self.victim_zero = self.VICTIM(self.ports[0])
+        self.victim_zero.connect()
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!
     def test__getattr(self):
-        self.victim_zero.connect()
-
         assert self.victim_zero.hello() == "hello"
         assert self.victim_zero.hello(12) == "hello 12"
         assert self.victim_zero.hello(12, 13) == "hello 12 13"
@@ -294,7 +311,12 @@ class Test_BusSerialWGetattr:
         assert self.victim_zero.hello(12, CH2=13) == "hello 12 CH2=13"
         assert self.victim_zero.hello("?") == "hello ?"
 
-        # assert self.victim_zero.hello(f"000{self.victim_zero.EOL.decode()}111{self.victim_zero.EOL.decode()}222").list_output() == ["hello 000", "111", "222"]
+    def test__CMD_PREFIX(self):
+        self.victim_zero.CMD_PREFIX = "DEV:01:"
+        assert self.victim_zero.hello() == f"{self.victim_zero.CMD_PREFIX}hello"
+        assert self.victim_zero.hello(12) == f"{self.victim_zero.CMD_PREFIX}hello 12"
+        self.victim_zero.CMD_PREFIX = ""
+        assert self.victim_zero.hello() == f"hello"
 
 
 # =====================================================================================================================
