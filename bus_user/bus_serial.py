@@ -97,6 +97,8 @@ class BusSerial_Base:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
+    GETATTR_SEND_STARTSWITH: str = "SEND__"
+
     # AUX -----------------------------------------------------
     history: HistoryIO = None
     __source: Serial = Serial()
@@ -529,7 +531,7 @@ class BusSerial_Base:
 
 # =====================================================================================================================
 class BusSerialBase__GetattrDictDirect(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., Union[str, NoReturn]]:
+    def __getattr__(self, item: str) -> Callable[..., Union[str, NoReturn]]:
         """if no exists attr/meth
 
         USAGE COMMANDS MAP
@@ -555,19 +557,9 @@ class BusSerialBase__GetattrDictDirect(BusSerial_Base):
             dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
             dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
         """
+        if self.GETATTR_SEND_STARTSWITH and item.startswith(self.GETATTR_SEND_STARTSWITH):
+            item = item.replace(self.GETATTR_SEND_STARTSWITH, "")
         return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
-
-
-class BusSerialBase__GetattrCommands(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., Union[str, NoReturn]]:
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        # TODO: FINISH!!!
-        pass
 
 
 # =====================================================================================================================

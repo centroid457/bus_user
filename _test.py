@@ -319,6 +319,9 @@ class Test_BusSerialWGetattr:
         assert self.victim_zero.hello(12, CH2=13) == "hello 12 CH2=13"
         assert self.victim_zero.hello("?") == "hello ?"
 
+    def test__GETATTR_SEND_STARTSWITH(self):
+        assert self.victim_zero.SEND__hello() == "hello"
+
     def test__CMD_PREFIX(self):
         self.victim_zero.CMD_PREFIX = "DEV:01:"
         assert self.victim_zero.hello() == f"{self.victim_zero.CMD_PREFIX}hello"
