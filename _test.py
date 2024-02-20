@@ -265,6 +265,14 @@ class Test_BusSerial:
         assert self.victim_zero.write_read_line("hello").last_output == "hello"
         self.victim_zero.disconnect()
 
+    def test__write_args_kwargs(self):
+        self.victim_zero.connect()
+
+        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+        assert self.victim_zero.write_read_line("hello", args=[1, 2]).last_output == "hello 1 2"
+        assert self.victim_zero.write_read_line("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
+        assert self.victim_zero.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
+
     def test__CMD_PREFIX(self):
         self.victim_zero.connect()
         self.victim_zero.CMD_PREFIX = "DEV:01:"

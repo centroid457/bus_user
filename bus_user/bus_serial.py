@@ -418,11 +418,16 @@ class BusSerial_Base:
 
         return data
 
-    def _write_line(self, data: Union[AnyStr, List[AnyStr]]) -> bool:
+    def _write_line(self, data: Union[AnyStr, List[AnyStr]], args: Optional[List] = None, kwargs: Optional[Dict] = None) -> bool:
         """
         just send data into bus!
         :return: result of sent
+
+        args/kwargs - used only for single line!!!
         """
+        args = args or []
+        kwargs = kwargs or {}
+
         if not data:
             print(f"[WARN]BLANK write_line={data}")
             return False
@@ -438,7 +443,7 @@ class BusSerial_Base:
                 data = data[0]
 
         # SINGLE ---------------------
-        data = self._create_cmd_line(data)
+        data = self._create_cmd_line(data, *args, **kwargs)
         self.history.add_input(self._data_ensure_string(data))
 
         data = self._data_ensure_bytes(data)
@@ -456,7 +461,9 @@ class BusSerial_Base:
     def write_read_line(
             self,
             data: Union[AnyStr, List[AnyStr]],
-            _timeout: Optional[float] = None
+            _timeout: Optional[float] = None,
+            args: Optional[List] = None,
+            kwargs: Optional[Dict] = None,
     ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return history
@@ -471,7 +478,7 @@ class BusSerial_Base:
         else:
             # SINGLE LAST -----------------------
             data_o = ""
-            if self._write_line(data):
+            if self._write_line(data=data, args=args, kwargs=kwargs):
                 data_o = self._read_line(count=0, _timeout=_timeout)
             history.add_io(self._data_ensure_string(data), data_o)
 
@@ -481,13 +488,15 @@ class BusSerial_Base:
     def write_read_line_last(
             self,
             data: Union[AnyStr, List[AnyStr]],
-            _timeout: Optional[float] = None
+            _timeout: Optional[float] = None,
+            args: Optional[List] = None,
+            kwargs: Optional[Dict] = None,
     ) -> Union[str, NoReturn]:
         """
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
         """
-        return self.write_read_line(data=data, _timeout=_timeout).last_output
+        return self.write_read_line(data=data, _timeout=_timeout, args=args, kwargs=kwargs).last_output
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
@@ -520,7 +529,7 @@ class BusSerial_Base:
 
 # =====================================================================================================================
 class BusSerialBase__GetattrDictDirect(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., str]:
+    def __getattr__(self, item) -> Callable[..., Union[str, NoReturn]]:
         """if no exists attr/meth
 
         USAGE COMMANDS MAP
@@ -550,7 +559,14 @@ class BusSerialBase__GetattrDictDirect(BusSerial_Base):
 
 
 class BusSerialBase__GetattrCommands(BusSerial_Base):
-    def __getattr__(self, item) -> Callable[..., str]:
+    def __getattr__(self, item) -> Callable[..., Union[str, NoReturn]]:
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
+        # TODO: FINISH!!!
         pass
 
 
