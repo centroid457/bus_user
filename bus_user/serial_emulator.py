@@ -1,4 +1,4 @@
-from serial_user import BusSerial_Base, BusSerialBase__GetattrDictDirect
+from .serial_user import BusSerial_Base, BusSerialBase__GetattrDictDirect
 
 from typing import *
 from object_info import ObjectInfo

@@ -50,6 +50,7 @@ other protocols mot recommended
         # ["feat2", "block1", "block2"],
 
         "Serial bus usage! with simply using commands",
+        "connect with ADDRESS_APPLY_FIRST_VACANT",
     ]
 
     # HISTORY -----------------------------------------------
@@ -62,7 +63,8 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        ""
+        "connect with ADDRESS_APPLY_FIRST_VACANT",
+
     ]
 
     # FINALIZE -----------------------------------------------
