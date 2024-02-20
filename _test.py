@@ -11,7 +11,7 @@ from bus_user import *
 
 # =====================================================================================================================
 class Test_HistoryIO:
-    VICTIM: Type[HistoryIO] = type("VICTIM", (HistoryIO,), {})
+    VICTIM: Type[HistoryIO] = type("Victim", (HistoryIO,), {})
 
     @classmethod
     def setup_class(cls):
@@ -22,7 +22,7 @@ class Test_HistoryIO:
         pass
 
     def setup_method(self, method):
-        self.VICTIM = type("VICTIM", (HistoryIO,), {})
+        self.VICTIM = type("Victim", (HistoryIO,), {})
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__add_list_asdict(self):
@@ -104,53 +104,53 @@ class Test_HistoryIO:
 
 # =====================================================================================================================
 class Test_BusSerial:
-    VICTIM: Type[BusSerial_Base] = type("VICTIM", (BusSerial_Base,), {})
+    Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
     ports: List[str] = []
-    victim_zero: BusSerial_Base = None
+    victim: BusSerial_Base = None
 
     @classmethod
     def setup_class(cls):
-        cls.ports = cls.VICTIM.detect_available_ports()
+        cls.ports = cls.Victim.detect_available_ports()
         if len(cls.ports) != 1:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
-        # cls.victim_zero = cls.VICTIM(cls.ports[0])
+        # cls.victim = cls.Victim(cls.ports[0])
 
     @classmethod
     def teardown_class(cls):
         pass
 
     def setup_method(self, method):
-        self.VICTIM = type("VICTIM", (BusSerial_Base,), {})
-        self.victim_zero = self.VICTIM(self.ports[0])
+        self.Victim = type("Victim", (BusSerial_Base,), {})
+        self.victim = self.Victim(self.ports[0])
 
     def teardown_method(self, method):
-        if self.victim_zero:
-            self.victim_zero.disconnect()
+        if self.victim:
+            self.victim.disconnect()
 
-        self.victim_zero.CMD_PREFIX = ""
+        self.victim.CMD_PREFIX = ""
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESS_APPLY_FIRST_VACANT(self):
-        assert self.victim_zero.connect()
-        self.victim_zero.disconnect()
+        assert self.victim.connect()
+        self.victim.disconnect()
 
-        self.victim_zero.ADDRESS = None
+        self.victim.ADDRESS = None
 
-        self.victim_zero.ADDRESS_APPLY_FIRST_VACANT = False
-        assert not self.victim_zero.connect(_raise=False)
+        self.victim.ADDRESS_APPLY_FIRST_VACANT = False
+        assert not self.victim.connect(_raise=False)
 
-        self.victim_zero.ADDRESS_APPLY_FIRST_VACANT = True
-        assert self.victim_zero.connect(_raise=False)
+        self.victim.ADDRESS_APPLY_FIRST_VACANT = True
+        assert self.victim.connect(_raise=False)
 
     def test__connect_multy(self):
-        assert self.victim_zero.connect()
-        assert self.victim_zero.connect()
-        assert self.victim_zero.connect()
+        assert self.victim.connect()
+        assert self.victim.connect()
+        assert self.victim.connect()
 
     def test__detect_available_ports(self):
-        ports = self.VICTIM.detect_available_ports()
+        ports = self.Victim.detect_available_ports()
         assert len(ports) > 0
 
     def test__connect_address_existed(self):
@@ -160,186 +160,223 @@ class Test_BusSerial:
         assert BusSerial_Base(address="HELLO").address_check_exists() is False
 
     def test__ensure_bytes(self):
-        assert self.VICTIM._data_ensure_bytes("111") == b"111"
-        assert self.VICTIM._data_ensure_bytes(b"111") == b"111"
+        assert self.Victim._data_ensure_bytes("111") == b"111"
+        assert self.Victim._data_ensure_bytes(b"111") == b"111"
 
     def test__ensure_str(self):
-        assert self.VICTIM._data_ensure_string("111") == "111"
-        assert self.VICTIM._data_ensure_string(b"111") == "111"
+        assert self.Victim._data_ensure_string("111") == "111"
+        assert self.Victim._data_ensure_string(b"111") == "111"
 
     def test__eol(self):
-        self.VICTIM.EOL = b"\n"
-        assert self.VICTIM._bytes_eol__ensure(b"111") == b"111\n"
-        assert self.VICTIM._bytes_eol__ensure(b"111\n") == b"111\n"
-        assert self.VICTIM._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
-        assert self.VICTIM._bytes_eol__ensure(b"111\n\n\n") == b"111\n\n\n"     # todo: fix this
+        self.Victim.EOL = b"\n"
+        assert self.Victim._bytes_eol__ensure(b"111") == b"111\n"
+        assert self.Victim._bytes_eol__ensure(b"111\n") == b"111\n"
+        assert self.Victim._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
+        assert self.Victim._bytes_eol__ensure(b"111\n\n\n") == b"111\n\n\n"     # todo: fix this
 
-        assert self.VICTIM._bytes_eol__clear(b"111") == b"111"
-        assert self.VICTIM._bytes_eol__clear(b"111\n") == b"111"
-        assert self.VICTIM._bytes_eol__clear(b"111\n\n") == b"111"
-        assert self.VICTIM._bytes_eol__clear(b"111\n\n\n") == b"111"
+        assert self.Victim._bytes_eol__clear(b"111") == b"111"
+        assert self.Victim._bytes_eol__clear(b"111\n") == b"111"
+        assert self.Victim._bytes_eol__clear(b"111\n\n") == b"111"
+        assert self.Victim._bytes_eol__clear(b"111\n\n\n") == b"111"
 
     def test__r_w_single(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
         # BLANK
-        assert self.victim_zero._write_line("") is False
-        assert self.victim_zero._read_line() == ""
+        assert self.victim._write_line("") is False
+        assert self.victim._read_line() == ""
 
-        assert self.victim_zero._write_line("hello") is True
-        assert self.victim_zero._read_line() == "hello"
-        assert self.victim_zero._read_line() == ""
+        assert self.victim._write_line("hello") is True
+        assert self.victim._read_line() == "hello"
+        assert self.victim._read_line() == ""
 
-        assert self.victim_zero._read_line() == ""
+        assert self.victim._read_line() == ""
 
     def test__r_w_multy(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
         # RW single ----------------------
         for line in range(3):
-            assert self.victim_zero._write_line(f"hello{line}") is True
+            assert self.victim._write_line(f"hello{line}") is True
 
         for line in range(3):
-            assert self.victim_zero._read_line() == f"hello{line}"
-        assert self.victim_zero._read_line() == ""
+            assert self.victim._read_line() == f"hello{line}"
+        assert self.victim._read_line() == ""
 
         # W list ----------------------
-        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
-            assert self.victim_zero._read_line() == f"hello{line}"
-        assert self.victim_zero._read_line() == ""
+            assert self.victim._read_line() == f"hello{line}"
+        assert self.victim._read_line() == ""
 
         # R list ----------------------
-        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero._read_line(3) == [f"hello{line}" for line in range(3)]
+        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._read_line(3) == [f"hello{line}" for line in range(3)]
 
-        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero._read_line(10) == [f"hello{line}" for line in range(3)]
+        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._read_line(10) == [f"hello{line}" for line in range(3)]
 
     def test__rw(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
-        assert self.victim_zero.write_read_line("hello").last_output == "hello"
-        assert self.victim_zero.write_read_line([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
+        assert self.victim.write_read_line("hello").last_output == "hello"
+        assert self.victim.write_read_line([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
 
         # params -----------------------
-        assert self.victim_zero.write_read_line("hello").as_dict() == {"hello": ["hello", ], }
+        assert self.victim.write_read_line("hello").as_dict() == {"hello": ["hello", ], }
 
-        assert self.victim_zero.write_read_line(["11", "22"]).list_input() == ["11", "22"]
-        assert self.victim_zero.write_read_line(["11", "22"]).as_dict() == {"11": ["11", ], "22": ["22", ], }
+        assert self.victim.write_read_line(["11", "22"]).list_input() == ["11", "22"]
+        assert self.victim.write_read_line(["11", "22"]).as_dict() == {"11": ["11", ], "22": ["22", ], }
 
         history = HistoryIO()
         history.add_io("hello", "hello")
-        assert self.victim_zero.write_read_line("hello").as_dict() == history.as_dict()
+        assert self.victim.write_read_line("hello").as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
         history = HistoryIO()
         history.add_io("11", "11")
         history.add_io("22", "22")
-        assert self.victim_zero.write_read_line(["11", "22"]).as_dict() == history.as_dict()
+        assert self.victim.write_read_line(["11", "22"]).as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
     def test__rw_last(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
-        assert self.victim_zero.write_read_line_last("hello") == "hello"
-        assert self.victim_zero.write_read_line_last(["hello1", "hello2"]) == "hello2"
+        assert self.victim.write_read_line_last("hello") == "hello"
+        assert self.victim.write_read_line_last(["hello1", "hello2"]) == "hello2"
 
     def test__rw_ReadFailPattern(self):
-        self.victim_zero.connect()
+        self.victim.connect()
         try:
-            self.victim_zero.write_read_line("123 FAil 123")
+            self.victim.write_read_line("123 FAil 123")
         except:
             assert True
         else:
             assert False
 
-        self.victim_zero.RAISE_READ_FAIL_PATTERN = False
-        assert self.victim_zero.write_read_line("123 FAil 123").last_output == "123 FAil 123"
+        self.victim.RAISE_READ_FAIL_PATTERN = False
+        assert self.victim.write_read_line("123 FAil 123").last_output == "123 FAil 123"
 
     def test__r_all(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
-        assert self.victim_zero._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim_zero._read_line(count=0) == [f"hello{line}" for line in range(3)]
+        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
     def test__pipeline_open_close(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
-        self.victim_zero.disconnect()
-        self.victim_zero = self.VICTIM(self.ports[0])
-        self.victim_zero.connect()
-        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+        self.victim.disconnect()
+        self.victim = self.Victim(self.ports[0])
+        self.victim.connect()
+        assert self.victim.write_read_line("hello").last_output == "hello"
 
-        self.victim_zero.disconnect()
-        self.victim_zero = self.VICTIM(self.ports[0])
-        self.victim_zero.connect()
-        assert self.victim_zero.write_read_line("hello").last_output == "hello"
-        self.victim_zero.disconnect()
+        self.victim.disconnect()
+        self.victim = self.Victim(self.ports[0])
+        self.victim.connect()
+        assert self.victim.write_read_line("hello").last_output == "hello"
+        self.victim.disconnect()
 
     def test__write_args_kwargs(self):
-        self.victim_zero.connect()
+        self.victim.connect()
 
-        assert self.victim_zero.write_read_line("hello").last_output == "hello"
-        assert self.victim_zero.write_read_line("hello", args=[1, 2]).last_output == "hello 1 2"
-        assert self.victim_zero.write_read_line("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
-        assert self.victim_zero.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
+        assert self.victim.write_read_line("hello").last_output == "hello"
+        assert self.victim.write_read_line("hello", args=[1, 2]).last_output == "hello 1 2"
+        assert self.victim.write_read_line("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
+        assert self.victim.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
 
     def test__CMD_PREFIX(self):
-        self.victim_zero.connect()
-        self.victim_zero.CMD_PREFIX = "DEV:01:"
-        assert self.victim_zero.write_read_line("hello").last_output == f"{self.victim_zero.CMD_PREFIX}hello"
-        assert self.victim_zero.write_read_line("hello 12").last_output == f"{self.victim_zero.CMD_PREFIX}hello 12"
+        self.victim.connect()
+        self.victim.CMD_PREFIX = "DEV:01:"
+        assert self.victim.write_read_line("hello").last_output == f"{self.victim.CMD_PREFIX}hello"
+        assert self.victim.write_read_line("hello 12").last_output == f"{self.victim.CMD_PREFIX}hello 12"
 
-        self.victim_zero.CMD_PREFIX = ""
-        assert self.victim_zero.write_read_line("hello").last_output == "hello"
+        self.victim.CMD_PREFIX = ""
+        assert self.victim.write_read_line("hello").last_output == "hello"
 
 
 # =====================================================================================================================
 class Test_BusSerialWGetattr:
-    VICTIM: Type[BusSerialBase__GetattrDictDirect] = type("VICTIM", (BusSerialBase__GetattrDictDirect,), {})
+    Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
     ports: List[str] = []
-    victim_zero: BusSerialBase__GetattrDictDirect = None
+    victim: BusSerialBase__GetattrDictDirect = None
 
     @classmethod
     def setup_class(cls):
-        cls.ports = cls.VICTIM.detect_available_ports()
+        cls.ports = cls.Victim.detect_available_ports()
         if len(cls.ports) != 1:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
-        # cls.victim_zero = cls.VICTIM(cls.ports[0])
+        # cls.victim = cls.Victim(cls.ports[0])
 
     @classmethod
     def teardown_class(cls):
-        if cls.victim_zero:
-            cls.victim_zero.disconnect()
+        if cls.victim:
+            cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.VICTIM = type("VICTIM", (BusSerialBase__GetattrDictDirect,), {})
-        self.victim_zero = self.VICTIM(self.ports[0])
-        self.victim_zero.connect()
+        self.Victim = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
+        self.victim = self.Victim(self.ports[0])
+        self.victim.connect()
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!
     def test__getattr(self):
-        assert self.victim_zero.hello() == "hello"
-        assert self.victim_zero.hello(12) == "hello 12"
-        assert self.victim_zero.hello(12, 13) == "hello 12 13"
-        assert self.victim_zero.hello("12 13") == "hello 12 13"
-        assert self.victim_zero.hello(CH1=12, CH2=13) == "hello CH1=12 CH2=13"
-        assert self.victim_zero.hello(12, CH2=13) == "hello 12 CH2=13"
-        assert self.victim_zero.hello("?") == "hello ?"
+        assert self.victim.hello() == "hello"
+        assert self.victim.hello(12) == "hello 12"
+        assert self.victim.hello(12, 13) == "hello 12 13"
+        assert self.victim.hello("12 13") == "hello 12 13"
+        assert self.victim.hello(CH1=12, CH2=13) == "hello CH1=12 CH2=13"
+        assert self.victim.hello(12, CH2=13) == "hello 12 CH2=13"
+        assert self.victim.hello("?") == "hello ?"
 
     def test__GETATTR_SEND_STARTSWITH(self):
-        assert self.victim_zero.SEND__hello() == "hello"
+        assert self.victim.SEND__hello() == "hello"
 
     def test__CMD_PREFIX(self):
-        self.victim_zero.CMD_PREFIX = "DEV:01:"
-        assert self.victim_zero.hello() == f"{self.victim_zero.CMD_PREFIX}hello"
-        assert self.victim_zero.hello(12) == f"{self.victim_zero.CMD_PREFIX}hello 12"
-        self.victim_zero.CMD_PREFIX = ""
-        assert self.victim_zero.hello() == f"hello"
+        self.victim.CMD_PREFIX = "DEV:01:"
+        assert self.victim.hello() == f"{self.victim.CMD_PREFIX}hello"
+        assert self.victim.hello(12) == f"{self.victim.CMD_PREFIX}hello 12"
+        self.victim.CMD_PREFIX = ""
+        assert self.victim.hello() == f"hello"
+
+
+# =====================================================================================================================
+class Test_Emulator:
+    Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
+    victim1: BusSerialBase__GetattrDictDirect = None
+    victim2: BusSerialBase__GetattrDictDirect = None
+
+    @classmethod
+    def setup_class(cls):
+        ports = cls.Victim.detect_available_ports()
+        if len(ports) != 2:
+            msg = f"[ERROR] need connect TWO SerialPorts and short Rx+Tx between them"
+            print(msg)
+            raise Exception(msg)
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim1:
+            cls.victim1.disconnect()
+        if cls.victim2:
+            cls.victim2.disconnect()
+
+    def setup_method(self, method):
+        self.Victim = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
+        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+
+        self.victim1 = self.Victim()
+        self.victim1.connect()
+
+        self.victim2 = self.Victim()
+        self.victim2.connect()
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__getattr(self):
+        assert self.victim1.hello() == "hello"
+        assert self.victim1.hello(12) == "hello 12"
 
 
 # =====================================================================================================================
