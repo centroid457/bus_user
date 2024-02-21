@@ -87,8 +87,8 @@ class BusSerial_Base:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    TIMEOUT_READ: float = 0.2
-    TIMEOUT_WRITE: float = 0.5
+    TIMEOUT_READ: float = 0.5       # 0.2 is too short!!!
+    TIMEOUT_WRITE: float = TIMEOUT_READ
     BAUDRATE: int = 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
@@ -125,6 +125,11 @@ class BusSerial_Base:
 
     def __del__(self):
         self.disconnect()
+
+    # MSG =============================================================================================================
+    def msg_log(self, msg: str = None) -> None:
+        msg = f"[{self.__source.port}]{msg}"
+        print(msg)
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
@@ -171,7 +176,7 @@ class BusSerial_Base:
                 self.__source.open()
             except Exception as _exx:
                 if not _silent:
-                    print(f"{_exx!r}")
+                    self.msg_log(f"{_exx!r}")
 
                 if "FileNotFoundError" in str(_exx):
                     msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self.__source}"
@@ -194,7 +199,7 @@ class BusSerial_Base:
         # FINISH --------------------------------------
         if exx:
             if not _silent:
-                print(msg)
+                self.msg_log(msg)
 
             if _raise:
                 raise exx
@@ -203,7 +208,7 @@ class BusSerial_Base:
 
         if not _silent:
             msg = f"[OK] connected {self.__source}"
-            print(msg)
+            self.msg_log(msg)
 
         self.cmd_prefix__set()
         return True
@@ -363,7 +368,7 @@ class BusSerial_Base:
             if re.search(pattern, data, flags=re.IGNORECASE):
                 if _raise:
                     msg = f"[ERROR] match fail [{pattern=}/{data=}]"
-                    print(msg)
+                    self.msg_log(msg)
                     raise Exx_SerialReadFailPattern(msg)
                 else:
                     return True
@@ -458,16 +463,17 @@ class BusSerial_Base:
 
         # RESULT ----------------------
         if data:
-            print(f"[OK]read_line={data}")
+            msg = f"[OK]read_line={data}"
+            self.msg_log(msg)
+
         else:
-            print(f"[WARN]BLANK read_line={data}")
+            msg = f"[WARN]BLANK read_line={data}"
+            self.msg_log(msg)
+
         data = self._bytes_eol__clear(data)
         data = self._data_ensure_string(data)
-        # print(f"[OK]read_line={data}")
         self.history.add_output(data)
-
         self.answer_is_fail(data)
-
         return data
 
     def _write_line(self, data: Union[AnyStr, List[AnyStr]], args: Optional[List] = None, kwargs: Optional[Dict] = None) -> bool:
@@ -481,7 +487,9 @@ class BusSerial_Base:
         kwargs = kwargs or {}
 
         if not data:
-            print(f"[WARN]BLANK write_line={data}")
+            msg = f"[WARN]write_line={data}"
+            self.msg_log(msg)
+
             return False
 
         # LIST -----------------------
@@ -502,12 +510,14 @@ class BusSerial_Base:
         data = self._bytes_eol__ensure(data)
 
         data_length = self.__source.write(data)
-        print(f"[OK]write_line={data}/{data_length=}")
+        msg = f"[OK]write_line={data}/{data_length=}"
+        self.msg_log(msg)
+
         if data_length > 0:
             return True
         else:
             msg = f"[ERROR] data not write"
-            print(msg)
+            self.msg_log(msg)
             return False
 
     def write_read_line(
