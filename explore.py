@@ -9,11 +9,13 @@ class DevEmulator(DevEmulator_CmdTheme):
     ADDRESS_APPLY_FIRST_VACANT = True
     TIMEOUT_READ = 2
 
+
 emu = DevEmulator()
 emu.start()
 
-
-BusSerial_Base
-time.sleep(1)
+victim = BusSerial_Base()
+victim.ADDRESS_APPLY_FIRST_VACANT = True
+victim.connect()
+victim.send__HELL(123)
 
 emu.wait()

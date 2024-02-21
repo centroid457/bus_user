@@ -107,10 +107,11 @@ class BusSerial_Base:
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
-    __source: Serial = Serial()
+    __source: Serial
 
     def __init__(self, address: Optional[str] = None):
         super().__init__()
+        self.__source = Serial()
         self.history = HistoryIO()
 
         # set only address!!!
