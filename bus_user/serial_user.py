@@ -52,7 +52,7 @@ class Exx_SerialRead_NotFullLine(Exception):
     pass
 
 
-class Exx_SerialReadFailPattern(Exception):
+class Exx_SerialRead_FailPattern(Exception):
     """
     if read string which match error pattern
     """
@@ -91,7 +91,7 @@ class BusSerial_Base:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT_READ: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!!
+    _TIMEOUT_READ: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!!
     _TIMEOUT_WRITE: float = _TIMEOUT_READ
     BAUDRATE: int = 115200
 
@@ -379,7 +379,7 @@ class BusSerial_Base:
                 if _raise:
                     msg = f"[ERROR] match fail [{pattern=}/{data=}]"
                     self.msg_log(msg)
-                    raise Exx_SerialReadFailPattern(msg)
+                    raise Exx_SerialRead_FailPattern(msg)
                 else:
                     return True
 
@@ -462,24 +462,31 @@ class BusSerial_Base:
                     break
             return result
 
-        # SINGLE ---------------------
+        # SINGLE ------------------------------------------------------------------
         # FIXME: read by bytes till get full line!-------------------------------
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
         # data = self._source.readline()
 
         data = b""
+        eol_received = False
         while True:
             new_char = self._source.readline(1)
             if not new_char:
                 # print(f"detected finish line")
                 break
             if new_char in self.EOL__UNI_SET:
+                eol_received = True
                 if data:
                     break
                 else:
                     continue
 
             data += new_char
+
+        if data and not eol_received:
+            msg = f"[ERROR]read_line={data}"
+            self.msg_log(msg)
+            exx = Exx_SerialRead_NotFullLine(msg)
 
         # RESULT ----------------------
         if data:

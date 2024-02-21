@@ -64,7 +64,7 @@ other protocols mot recommended
     ]
     NEWS: List[str] = [
         "connect with ADDRESS_APPLY_FIRST_VACANT",
-
+        "_read_line char by char!!! with universal timeout"
     ]
 
     # FINALIZE -----------------------------------------------
