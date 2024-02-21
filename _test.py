@@ -297,9 +297,9 @@ class Test_BusSerial:
 
 # =====================================================================================================================
 class Test_BusSerialWGetattr:
-    Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
+    Victim: Type[BusSerialBase__Getattr] = type("Victim", (BusSerialBase__Getattr,), {})
     ports: List[str] = []
-    victim: BusSerialBase__GetattrDictDirect = None
+    victim: BusSerialBase__Getattr = None
 
     @classmethod
     def setup_class(cls):
@@ -316,7 +316,7 @@ class Test_BusSerialWGetattr:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.Victim = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
+        self.Victim = type("Victim", (BusSerialBase__Getattr,), {})
         self.victim = self.Victim(self.ports[0])
         self.victim.connect()
 
@@ -344,8 +344,8 @@ class Test_BusSerialWGetattr:
 
 # =====================================================================================================================
 class Test_Emulator:
-    Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
-    victim: BusSerialBase__GetattrDictDirect = None
+    Victim: Type[BusSerialBase__Getattr] = type("Victim", (BusSerialBase__Getattr,), {})
+    victim: BusSerialBase__Getattr = None
 
     VictimEmu: Type[DevEmulator_CmdTheme] = type("VictimEmu", (DevEmulator_CmdTheme,), {})
     victim_emu: DevEmulator_CmdTheme = None

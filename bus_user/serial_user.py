@@ -579,7 +579,7 @@ class BusSerial_Base:
 
 
 # =====================================================================================================================
-class BusSerialBase__GetattrDictDirect(BusSerial_Base):
+class BusSerialBase__Getattr(BusSerial_Base):
     def __getattr__(self, item: str) -> Callable[..., Union[str, NoReturn]]:
         """if no exists attr/meth
 

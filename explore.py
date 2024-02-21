@@ -12,6 +12,8 @@ class DevEmulator(DevEmulator_CmdTheme):
 emu = DevEmulator()
 emu.start()
 
+
+BusSerialBase__Getattr
 time.sleep(1)
 
 emu.wait()
