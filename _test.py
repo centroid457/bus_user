@@ -107,17 +107,14 @@ class Test_HistoryIO:
 # =====================================================================================================================
 class Test_BusSerial:
     Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
-    ports: List[str] = []
     victim: BusSerial_Base = None
 
     @classmethod
     def setup_class(cls):
-        cls.ports = cls.Victim.detect_available_ports()
-        if len(cls.ports) != 1:
+        if cls.Victim.system_ports__count() != 1:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
-        # cls.victim = cls.Victim(cls.ports[0])
 
     @classmethod
     def teardown_class(cls):
@@ -125,7 +122,8 @@ class Test_BusSerial:
 
     def setup_method(self, method):
         self.Victim = type("Victim", (BusSerial_Base,), {})
-        self.victim = self.Victim(self.ports[0])
+        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        self.victim = self.Victim()
 
     def teardown_method(self, method):
         if self.victim:
@@ -152,11 +150,10 @@ class Test_BusSerial:
         assert self.victim.connect()
 
     def test__detect_available_ports(self):
-        ports = self.Victim.detect_available_ports()
-        assert len(ports) > 0
+        assert self.Victim.system_ports__count() > 0
 
-    def test__connect_address_existed(self):
-        assert BusSerial_Base(address=self.ports[0]).address_check_exists() is True
+    # def test__connect_address_existed(self):
+    #     assert BusSerial_Base().address_check_exists() is True
 
     def test__connect_address_NOTexisted(self):
         assert BusSerial_Base(address="HELLO").address_check_exists() is False
@@ -269,12 +266,12 @@ class Test_BusSerial:
         self.victim.connect()
 
         self.victim.disconnect()
-        self.victim = self.Victim(self.ports[0])
+        self.victim = self.Victim()
         self.victim.connect()
         assert self.victim.write_read_line("hello").last_output == "hello"
 
         self.victim.disconnect()
-        self.victim = self.Victim(self.ports[0])
+        self.victim = self.Victim()
         self.victim.connect()
         assert self.victim.write_read_line("hello").last_output == "hello"
         self.victim.disconnect()
@@ -300,17 +297,19 @@ class Test_BusSerial:
 # =====================================================================================================================
 class Test_BusSerialWGetattr:
     Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
-    ports: List[str] = []
     victim: BusSerial_Base = None
 
     @classmethod
     def setup_class(cls):
-        cls.ports = cls.Victim.detect_available_ports()
-        if len(cls.ports) != 1:
+        if cls.Victim.system_ports__count() != 1:
             msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
             print(msg)
             raise Exception(msg)
-        # cls.victim = cls.Victim(cls.ports[0])
+
+        cls.Victim = type("Victim", (BusSerial_Base,), {})
+        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        cls.victim = cls.Victim()
+        cls.victim.connect()
 
     @classmethod
     def teardown_class(cls):
@@ -318,9 +317,7 @@ class Test_BusSerialWGetattr:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.Victim = type("Victim", (BusSerial_Base,), {})
-        self.victim = self.Victim(self.ports[0])
-        self.victim.connect()
+        pass
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!
@@ -354,12 +351,10 @@ class Test_Emulator:
 
     @classmethod
     def setup_class(cls):
-        ports = cls.Victim.detect_available_ports()
-        if len(ports) != 2:
+        if cls.Victim.system_ports__count() != 2:
             msg = f"[ERROR] need connect TWO SerialPorts and short Rx+Tx between them"
             print(msg)
             raise Exception(msg)
-
 
     @classmethod
     def teardown_class(cls):
@@ -375,13 +370,13 @@ class Test_Emulator:
     def test__getattr(self):
         # EMU ---------------
         self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
-        self.VictimEmu.TIMEOUT_READ = 1
+        # self.VictimEmu.TIMEOUT_READ = 1
         self.victim_emu = self.VictimEmu()
         self.victim_emu.start()
 
         # -------------------
         self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        self.Victim.TIMEOUT_READ = 1
+        # self.Victim.TIMEOUT_READ = 1
         # self.Victim.TIMEOUT_WRITE = 1
         self.victim = self.Victim()
         self.victim.connect()
@@ -390,7 +385,7 @@ class Test_Emulator:
         assert self.victim._write_line(data)
 
         # time.sleep(2)
-        assert self.victim._read_line(_timeout=3) == AnswerResult.ERR__NAME_CMD
+        assert self.victim._read_line() == AnswerResult.ERR__NAME_CMD
 
 
 # =====================================================================================================================

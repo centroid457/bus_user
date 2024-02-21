@@ -15,7 +15,7 @@ from .history import HistoryIO
 
 
 # =====================================================================================================================
-class Exx_SerialAddressNotConfigured(Exception):
+class Exx_SerialAddress_NotConfigured(Exception):
     """
         raise SerialException("Port must be configured before it can be used.")
     serial.serialutil.SerialException: Port must be configured before it can be used.
@@ -23,28 +23,32 @@ class Exx_SerialAddressNotConfigured(Exception):
     pass
 
 
-class Exx_SerialAddressNotExists(Exception):
+class Exx_SerialAddress_NotExists(Exception):
     """
     SerialException("could not open port 'COM6': FileNotFoundError(2, 'Не удается найти указанный файл.', None, 2)") - всегда несуществующий порт в Windows!!!
     """
     pass
 
 
-class Exx_SerialAddressNoVacant(Exception):
+class Exx_SerialAddress_NoVacant(Exception):
     pass
 
 
-class Exx_SerialAddressAlreadyOpened(Exception):
+class Exx_SerialAddress_AlreadyOpened(Exception):
     """
     SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
     """
     pass
 
 
-class Exx_SerialAddressOtherError(Exception):
+class Exx_SerialAddress_OtherError(Exception):
     """
     SerialException("could not open port 'COM7': OSError(22, 'Указано несуществующее устройство.', None, 433)") - порт есть, но получена ошибка при открытии!!!
     """
+    pass
+
+
+class Exx_SerialRead_NotFullLine(Exception):
     pass
 
 
@@ -156,21 +160,21 @@ class BusSerial_Base:
         address = address or self.ADDRESS
         if not address:
             if self.ADDRESS_APPLY_FIRST_VACANT:
-                ports = self.detect_available_ports()
+                ports = self.system_ports__detect()
                 if not ports:
                     msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
-                    exx = Exx_SerialAddressNotExists(msg)
+                    exx = Exx_SerialAddress_NotExists(msg)
 
                 else:
                     for address in ports:
                         if self.connect(address=address, _raise=False):
                             return True
 
-                    msg = Exx_SerialAddressNoVacant
-                    exx = Exx_SerialAddressNoVacant()
+                    msg = Exx_SerialAddress_NoVacant
+                    exx = Exx_SerialAddress_NoVacant()
             else:
-                msg = Exx_SerialAddressNotConfigured
-                exx = Exx_SerialAddressNotConfigured()
+                msg = Exx_SerialAddress_NotConfigured
+                exx = Exx_SerialAddress_NotConfigured()
         else:
             # WORK ---------------------------------
             self._source.port = address
@@ -182,21 +186,21 @@ class BusSerial_Base:
 
                 if "FileNotFoundError" in str(_exx):
                     msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
-                    exx = Exx_SerialAddressNotExists(repr(_exx))
+                    exx = Exx_SerialAddress_NotExists(repr(_exx))
 
                     # self.detect_available_ports()
 
                 elif "Port must be configured before" in str(_exx):
                     msg = f"[ERROR] PORT NOT CONFIGURED {self._source}"
-                    exx = Exx_SerialAddressNotConfigured(repr(_exx))
+                    exx = Exx_SerialAddress_NotConfigured(repr(_exx))
 
                 elif "PermissionError" in str(_exx):
                     msg = f"[ERROR] PORT ALREADY OPENED {self._source}"
-                    exx = Exx_SerialAddressAlreadyOpened(repr(_exx))
+                    exx = Exx_SerialAddress_AlreadyOpened(repr(_exx))
 
                 else:
                     msg = f"[ERROR] PORT OTHER ERROR {self._source}"
-                    exx = Exx_SerialAddressOtherError(repr(_exx))
+                    exx = Exx_SerialAddress_OtherError(repr(_exx))
 
         # FINISH --------------------------------------
         if exx:
@@ -227,16 +231,16 @@ class BusSerial_Base:
         try:
             self.connect(_raise=True, _silent=True)
             self.disconnect()
-        except Exx_SerialAddressNotExists:
+        except Exx_SerialAddress_NotExists:
             return False
         except:
             return False
         return True
 
     @classmethod
-    def detect_available_ports(cls) -> List[str]:
-        result = cls._detect_available_ports_1__standard_method()
-        for port in cls._detect_available_ports_2__direct_access():
+    def system_ports__detect(cls) -> List[str]:
+        result = cls._system_ports__detect_1__standard_method()
+        for port in cls._system_ports__detect_2__direct_access():
             if port not in result:
                 result.append(port)
 
@@ -250,7 +254,7 @@ class BusSerial_Base:
         return result
 
     @staticmethod
-    def _detect_available_ports_1__standard_method() -> Union[List[str], NoReturn]:
+    def _system_ports__detect_1__standard_method() -> Union[List[str], NoReturn]:
         """
         WINDOWS - USB
             ==========OBJECTINFO.PRINT==========================================================================
@@ -322,7 +326,7 @@ class BusSerial_Base:
         return result
 
     @staticmethod
-    def _detect_available_ports_2__direct_access() -> Union[List[str], NoReturn]:
+    def _system_ports__detect_2__direct_access() -> Union[List[str], NoReturn]:
         """Определяет список портов (НЕОТКРЫТЫХ+ОТКРЫТЫХ!!!) - способом 2 (слепым тестом подключения и анализом исключений)
         Всегда срабатывает!
         """
@@ -347,6 +351,10 @@ class BusSerial_Base:
         if _lock_port:
             _lock_port.close()
         return result
+
+    @classmethod
+    def system_ports__count(cls) -> int:
+        return len(cls.system_ports__detect())
 
     # RW ==============================================================================================================
     pass
@@ -465,10 +473,16 @@ class BusSerial_Base:
         data = b""
         while True:
             new_char = self._source.readline(1)
-            data += new_char
-            if not new_char or new_char in self.EOL__UNI_SET:
+            if not new_char:
                 # print(f"detected finish line")
                 break
+            if new_char in self.EOL__UNI_SET:
+                if data:
+                    break
+                else:
+                    continue
+
+            data += new_char
 
         if _timeout:
             self._source.timeout = self.TIMEOUT_READ

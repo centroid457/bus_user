@@ -109,7 +109,7 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
             print(msg)
             return
         while True:
-            line = self._SERIAL_USER._read_line(_timeout=self.TIMEOUT_READ)
+            line = self._SERIAL_USER._read_line()
             if line:
                 self.execute_line(line)
             else:
