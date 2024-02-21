@@ -181,11 +181,11 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
-        meth_scr = getattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}")
-        if not meth_scr:
+        if not hasattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}"):
             return AnswerResult.ERR__NAME_SCRIPT
 
-        return meth_scr()
+        meth_scr = getattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}")
+        return meth_scr(line_parsed)
 
     # -----------------------------------------------------------------------------------------------------------------
     def script__script1(self, line_parsed: LineParsed) -> str:
