@@ -487,8 +487,9 @@ class BusSerial_Base:
         # RESULT ----------------------
         if data:
             if not eol_received:
-                msg = f"[ERROR]NotFullLine read_line={data}"
+                msg = f"[ERROR]NotFullLine read_line={data}->CLEAR!!!"
                 exx = Exx_SerialRead_NotFullLine(msg)
+                data = b""
             else:
                 msg = f"[OK]read_line={data}"
         else:
