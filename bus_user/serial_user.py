@@ -91,7 +91,7 @@ class BusSerial_Base:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT_READ: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!!
+    _TIMEOUT_READ: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     _TIMEOUT_WRITE: float = _TIMEOUT_READ
     BAUDRATE: int = 115200
 
