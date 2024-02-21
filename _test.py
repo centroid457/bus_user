@@ -1,4 +1,6 @@
 import os
+import time
+
 import pytest
 import pathlib
 import shutil
@@ -168,7 +170,7 @@ class Test_BusSerial:
         assert self.Victim._data_ensure_string(b"111") == "111"
 
     def test__eol(self):
-        self.Victim.EOL = b"\n"
+        self.Victim.EOL__SEND = b"\n"
         assert self.Victim._bytes_eol__ensure(b"111") == b"111\n"
         assert self.Victim._bytes_eol__ensure(b"111\n") == b"111\n"
         assert self.Victim._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
@@ -358,20 +360,6 @@ class Test_Emulator:
             print(msg)
             raise Exception(msg)
 
-        # EMU ---------------
-        cls.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
-        cls.VictimEmu.TIMEOUT_READ = 0.2
-
-        cls.victim_emu = cls.VictimEmu()
-        cls.victim_emu.start()
-
-        # -------------------
-        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        cls.Victim.TIMEOUT_READ = 1
-        cls.Victim.TIMEOUT_WRITE = 1
-
-        cls.victim = cls.Victim()
-        cls.victim.connect()
 
     @classmethod
     def teardown_class(cls):
@@ -385,12 +373,24 @@ class Test_Emulator:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__getattr(self):
-        print(self.victim.send__ECHO(123))
-        print(self.victim._read_line())
-        print(self.victim._read_line())
-        print(self.victim._read_line())
-        print(self.victim._read_line())
-        # assert self.victim.send__ECHO(123) == "ECHO 123"
+        # EMU ---------------
+        self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
+        self.VictimEmu.TIMEOUT_READ = 1
+        self.victim_emu = self.VictimEmu()
+        self.victim_emu.start()
+
+        # -------------------
+        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        self.Victim.TIMEOUT_READ = 1
+        # self.Victim.TIMEOUT_WRITE = 1
+        self.victim = self.Victim()
+        self.victim.connect()
+
+        data = "HELLO 123"
+        assert self.victim._write_line(data)
+
+        # time.sleep(2)
+        assert self.victim._read_line(_timeout=3) == AnswerResult.ERR__NAME_CMD
 
 
 # =====================================================================================================================

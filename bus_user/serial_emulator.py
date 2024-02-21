@@ -1,6 +1,7 @@
 from .serial_user import BusSerial_Base
 
 from typing import *
+import time
 from object_info import ObjectInfo
 from PyQt5.QtCore import QThread
 
@@ -64,24 +65,25 @@ class LineParsed:
 # =====================================================================================================================
 class DevEmulator_Base:
     # SETTINGS ------------------------------------------------
-    SERIAL_CLS: Type[BusSerial_Base] = BusSerial_Base
+    SERIAL_USER_CLS: Type[BusSerial_Base] = BusSerial_Base
 
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
     TIMEOUT_READ: float = 1
+    SLEEP: float = 1
     RAISE_READ_FAIL_PATTERN: bool = False
 
     # AUX -----------------------------------------------------
-    _SERIAL: BusSerial_Base
+    _SERIAL_USER: BusSerial_Base
 
     def __init__(self):
         super().__init__()
-        self._SERIAL = self.SERIAL_CLS()
-        self._SERIAL.ADDRESS = self.ADDRESS
-        self._SERIAL.RAISE_READ_FAIL_PATTERN = self.RAISE_READ_FAIL_PATTERN
-        self._SERIAL.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
-        self._SERIAL.connect()
+        self._SERIAL_USER = self.SERIAL_USER_CLS()
+        self._SERIAL_USER.ADDRESS = self.ADDRESS
+        self._SERIAL_USER.RAISE_READ_FAIL_PATTERN = self.RAISE_READ_FAIL_PATTERN
+        self._SERIAL_USER.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
+        self._SERIAL_USER.connect()
 
 
 # =====================================================================================================================
@@ -102,29 +104,31 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
         super().__init__()
 
     def run(self) -> None:
-        if not self._SERIAL.connect():
+        if not self._SERIAL_USER.connect():
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
         while True:
-            line = self._SERIAL._read_line(_timeout=self.TIMEOUT_READ)
+            line = self._SERIAL_USER._read_line(_timeout=self.TIMEOUT_READ)
             if line:
                 self.execute_line(line)
+            else:
+                time.sleep(self.SLEEP)
 
     def disconnect(self):
-        self._SERIAL.disconnect()
+        self._SERIAL_USER.disconnect()
         self.terminate()
 
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, prefix=self._SERIAL.CMD_PREFIX)
+        line_parsed = LineParsed(line, prefix=self._SERIAL_USER.CMD_PREFIX)
         result = self.cmd__(line_parsed)
 
         # blank line
         if not result:
             return True
 
-        return self._SERIAL._write_line(result)
+        return self._SERIAL_USER._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__(self, line_parsed: LineParsed) -> str:

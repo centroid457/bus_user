@@ -95,7 +95,8 @@ class BusSerial_Base:
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf8"
-    EOL: bytes = b"\n"      # "\r"=ENTER in PUTTY
+    EOL__SEND: bytes = b"\n"      # "\r"=ENTER in PUTTY
+    EOL__UNI_SET: bytes = b"\r\n"
 
     CMD_PREFIX: Optional[str] = None
 
@@ -107,11 +108,11 @@ class BusSerial_Base:
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
-    __source: Serial
+    _source: Serial
 
     def __init__(self, address: Optional[str] = None):
         super().__init__()
-        self.__source = Serial()
+        self._source = Serial()
         self.history = HistoryIO()
 
         # set only address!!!
@@ -119,21 +120,22 @@ class BusSerial_Base:
             self.ADDRESS = address
 
         # apply settings
-        self.__source.baudrate = self.BAUDRATE
-        self.__source.timeout = self.TIMEOUT_READ
-        self.__source.write_timeout = self.TIMEOUT_WRITE
+        # self._source.interCharTimeout = 0.8
+        self._source.baudrate = self.BAUDRATE
+        self._source.timeout = self.TIMEOUT_READ
+        self._source.write_timeout = self.TIMEOUT_WRITE
 
     def __del__(self):
         self.disconnect()
 
     # MSG =============================================================================================================
     def msg_log(self, msg: str = None) -> None:
-        msg = f"[{self.__source.port}]{msg}"
+        msg = f"[{self._source.port}]{msg}"
         print(msg)
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
-        self.__source.close()
+        self._source.close()
 
     def connect(
             self,
@@ -148,7 +150,7 @@ class BusSerial_Base:
         if _raise is None:
             _raise = self.RAISE_CONNECT
 
-        if self.__source.is_open:
+        if self._source.is_open:
             return True
 
         address = address or self.ADDRESS
@@ -171,29 +173,29 @@ class BusSerial_Base:
                 exx = Exx_SerialAddressNotConfigured()
         else:
             # WORK ---------------------------------
-            self.__source.port = address
+            self._source.port = address
             try:
-                self.__source.open()
+                self._source.open()
             except Exception as _exx:
                 if not _silent:
                     self.msg_log(f"{_exx!r}")
 
                 if "FileNotFoundError" in str(_exx):
-                    msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self.__source}"
+                    msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
                     exx = Exx_SerialAddressNotExists(repr(_exx))
 
                     # self.detect_available_ports()
 
                 elif "Port must be configured before" in str(_exx):
-                    msg = f"[ERROR] PORT NOT CONFIGURED {self.__source}"
+                    msg = f"[ERROR] PORT NOT CONFIGURED {self._source}"
                     exx = Exx_SerialAddressNotConfigured(repr(_exx))
 
                 elif "PermissionError" in str(_exx):
-                    msg = f"[ERROR] PORT ALREADY OPENED {self.__source}"
+                    msg = f"[ERROR] PORT ALREADY OPENED {self._source}"
                     exx = Exx_SerialAddressAlreadyOpened(repr(_exx))
 
                 else:
-                    msg = f"[ERROR] PORT OTHER ERROR {self.__source}"
+                    msg = f"[ERROR] PORT OTHER ERROR {self._source}"
                     exx = Exx_SerialAddressOtherError(repr(_exx))
 
         # FINISH --------------------------------------
@@ -207,7 +209,7 @@ class BusSerial_Base:
                 return False
 
         if not _silent:
-            msg = f"[OK] connected {self.__source}"
+            msg = f"[OK] connected {self._source}"
             self.msg_log(msg)
 
         self.cmd_prefix__set()
@@ -375,11 +377,11 @@ class BusSerial_Base:
 
         return False
 
-    # EOL -------------------------------------------------------------------------------------------------------------
+    # EOL__SEND -------------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> bytes:
-        if not data.endswith(cls.EOL):
-            data = data + cls.EOL
+        if not data.endswith(cls.EOL__SEND):
+            data = data + cls.EOL__SEND
         return data
 
     @classmethod
@@ -387,7 +389,7 @@ class BusSerial_Base:
         if not data:
             return data
 
-        eol_chars: bytes = cls.EOL + b'\r\n'
+        eol_chars: bytes = cls.EOL__UNI_SET
         while True:
             data = data.strip()
             if not data:
@@ -398,8 +400,8 @@ class BusSerial_Base:
             else:
                 break
 
-        # while data.endswith(cls.EOL):
-        #     data = data.removesuffix(cls.EOL)
+        # while data.endswith(cls.EOL__SEND):
+        #     data = data.removesuffix(cls.EOL__SEND)
 
         return data
 
@@ -454,12 +456,22 @@ class BusSerial_Base:
 
         # SINGLE ---------------------
         if _timeout:
-            self.__source.timeout = _timeout
+            self._source.timeout = _timeout
 
-        data = self.__source.readline()
+        # FIXME: read by bytes till get full line!-------------------------------
+        # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
+        # data = self._source.readline()
+
+        data = b""
+        while True:
+            new_char = self._source.readline(1)
+            data += new_char
+            if not new_char or new_char in self.EOL__UNI_SET:
+                # print(f"detected finish line")
+                break
 
         if _timeout:
-            self.__source.timeout = self.TIMEOUT_READ
+            self._source.timeout = self.TIMEOUT_READ
 
         # RESULT ----------------------
         if data:
@@ -509,7 +521,7 @@ class BusSerial_Base:
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
 
-        data_length = self.__source.write(data)
+        data_length = self._source.write(data)
         msg = f"[OK]write_line={data}/{data_length=}"
         self.msg_log(msg)
 
