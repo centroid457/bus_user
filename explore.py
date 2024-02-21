@@ -13,7 +13,7 @@ emu = DevEmulator()
 emu.start()
 
 
-BusSerialBase__Getattr
+BusSerial_Base
 time.sleep(1)
 
 emu.wait()

@@ -1,4 +1,4 @@
-from .serial_user import BusSerial_Base, BusSerialBase__Getattr
+from .serial_user import BusSerial_Base
 
 from typing import *
 from object_info import ObjectInfo
@@ -64,7 +64,7 @@ class LineParsed:
 # =====================================================================================================================
 class DevEmulator_Base:
     # SETTINGS ------------------------------------------------
-    SERIAL_CLS: Type[BusSerial_Base] = BusSerialBase__Getattr
+    SERIAL_CLS: Type[BusSerial_Base] = BusSerial_Base
 
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
