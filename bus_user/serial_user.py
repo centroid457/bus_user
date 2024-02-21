@@ -385,7 +385,7 @@ class BusSerial_Base:
 
         return False
 
-    # EOL__SEND -------------------------------------------------------------------------------------------------------------
+    # EOL__SEND -------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> bytes:
         if not data.endswith(cls.EOL__SEND):
@@ -433,10 +433,11 @@ class BusSerial_Base:
     def _read_line(self, count: Optional[int] = None) -> Union[str, List[str], NoReturn]:
         """
         read line from bus buffer,
-        if timedout - return blank line ""
-
         if need read all buffer - set count = 0
         """
+        # FIXME: return Object??? need keep exx for not finished readline!!!
+
+        # ----------------------------
         if count is None:
             count = 1
 
@@ -463,10 +464,10 @@ class BusSerial_Base:
             return result
 
         # SINGLE ------------------------------------------------------------------
-        # FIXME: read by bytes till get full line!-------------------------------
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
         # data = self._source.readline()
 
+        # var2: char by char
         data = b""
         eol_received = False
         while True:
@@ -483,19 +484,17 @@ class BusSerial_Base:
 
             data += new_char
 
-        if data and not eol_received:
-            msg = f"[ERROR]read_line={data}"
-            self.msg_log(msg)
-            exx = Exx_SerialRead_NotFullLine(msg)
-
         # RESULT ----------------------
         if data:
-            msg = f"[OK]read_line={data}"
-            self.msg_log(msg)
-
+            if not eol_received:
+                msg = f"[ERROR]NotFullLine read_line={data}"
+                exx = Exx_SerialRead_NotFullLine(msg)
+            else:
+                msg = f"[OK]read_line={data}"
         else:
             msg = f"[WARN]BLANK read_line={data}"
-            self.msg_log(msg)
+
+        self.msg_log(msg)
 
         data = self._bytes_eol__clear(data)
         data = self._data_ensure_string(data)

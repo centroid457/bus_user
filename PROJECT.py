@@ -63,6 +63,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
+        "add Emulator",
         "connect with ADDRESS_APPLY_FIRST_VACANT",
         "_read_line char by char!!! with universal timeout"
     ]
