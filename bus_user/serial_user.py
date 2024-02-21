@@ -221,6 +221,8 @@ class BusSerial_Base:
             self.disconnect()
         except Exx_SerialAddressNotExists:
             return False
+        except:
+            return False
         return True
 
     @classmethod
@@ -327,7 +329,7 @@ class BusSerial_Base:
         elif sys.platform.startswith('darwin'):
             attempt_list = glob.glob('/dev/tty.*')
         else:
-            raise EnvironmentError('Unsupported platform')
+            raise EnvironmentError('[ERROR]Unsupported platform')
 
         result: List[str] = []
         for name in attempt_list:
