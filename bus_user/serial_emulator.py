@@ -32,7 +32,13 @@ class LineParsed:
         if prefix and line.startswith(prefix):
             line = line.replace(prefix, "")
 
+        if not line:
+            return
+
         line_parts = line.split()
+        if not line_parts:
+            return
+
         self.CMD = line_parts[0]
 
         if len(line_parts) == 1:
@@ -94,12 +100,20 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
     def execute_line(self, line: str) -> bool:
         line_parsed = LineParsed(line, prefix=self.SERIAL.CMD_PREFIX)
         result = self.cmd__(line_parsed)
+
+        # blank line
+        if not result:
+            return True
+
         return self.SERIAL._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__(self, line_parsed: LineParsed) -> str:
         if not hasattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}"):
             return AnswerResult.ERR__NAME_CMD
+
+        if not line_parsed.CMD:
+            return ""
 
         meth_cmd = getattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}")
         return meth_cmd(line_parsed)

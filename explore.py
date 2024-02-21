@@ -6,7 +6,7 @@ from bus_user import *
 
 class DevEmulator(DevEmulator_CmdTheme):
     ADDRESS_APPLY_FIRST_VACANT = True
-    TIMEOUT_READ = 3
+    TIMEOUT_READ = 2
 
 emu = DevEmulator()
 emu.start()
