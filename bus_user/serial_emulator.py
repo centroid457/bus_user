@@ -16,6 +16,9 @@ class AnswerResult:
 
 
 class LineParsed:
+    """
+    ALL RESULTS IN LOWERCASE! EXCEPT ORIGINAL LINE!
+    """
     # PREFIX: str = ""
     LINE: str
     CMD: str
@@ -23,27 +26,33 @@ class LineParsed:
     KWARGS: Dict[str, str]
 
     def __init__(self, line: str, prefix: Optional[str] = None):
+        # INIT ----------------
         self.LINE = line
         self.CMD = ""
         self.ARGS = []
         self.KWARGS = {}
 
+        line = line.lower()
+        # PREFIX ----------------
+        if prefix:
+            prefix.lower()
         prefix = prefix or ""
         if prefix and line.startswith(prefix):
             line = line.replace(prefix, "")
 
+        # BLANK ----------------
         if not line:
             return
-
         line_parts = line.split()
         if not line_parts:
             return
 
+        # CMD ----------------
         self.CMD = line_parts[0]
 
+        # ARGS/KWARGS ----------------
         if len(line_parts) == 1:
             return
-
         for part in line_parts[1:]:
             if "=" not in part:
                 self.ARGS.append(part)
@@ -54,20 +63,23 @@ class LineParsed:
 
 # =====================================================================================================================
 class DevEmulator_Base:
+    # SETTINGS ------------------------------------------------
     SERIAL_CLS: Type[BusSerial_Base] = BusSerialBase__GetattrDictDirect
-    SERIAL: BusSerial_Base
 
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
     TIMEOUT_READ: float = 1
 
+    # AUX -----------------------------------------------------
+    _SERIAL: BusSerial_Base
+
     def __init__(self):
         super().__init__()
-        self.SERIAL = self.SERIAL_CLS()
-        self.SERIAL.ADDRESS = self.ADDRESS
-        self.SERIAL.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
-        self.SERIAL.connect()
+        self._SERIAL = self.SERIAL_CLS()
+        self._SERIAL.ADDRESS = self.ADDRESS
+        self._SERIAL.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
+        self._SERIAL.connect()
 
 
 # =====================================================================================================================
@@ -77,55 +89,56 @@ class DevEmulator_DirectDict(DevEmulator_Base, QThread):
 
 # =====================================================================================================================
 class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
+    # AUX -----------------------------------------------------
     _PARAMS: Dict[str, Any]
 
-    STARTSWITH__CMD: str = "cmd__"
-    STARTSWITH__SCRIPT: str = "script__"
+    _STARTSWITH__CMD: str = "cmd__"
+    _STARTSWITH__SCRIPT: str = "script__"
 
     def __init__(self, params: Optional[Dict[str, Any]] = None):
         self._PARAMS = params or {}
         super().__init__()
 
     def run(self) -> None:
-        if not self.SERIAL.connect():
+        if not self._SERIAL.connect():
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
         while True:
-            line = self.SERIAL._read_line(_timeout=self.TIMEOUT_READ)
+            line = self._SERIAL._read_line(_timeout=self.TIMEOUT_READ)
             if line:
                 self.execute_line(line)
 
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, prefix=self.SERIAL.CMD_PREFIX)
+        line_parsed = LineParsed(line, prefix=self._SERIAL.CMD_PREFIX)
         result = self.cmd__(line_parsed)
 
         # blank line
         if not result:
             return True
 
-        return self.SERIAL._write_line(result)
+        return self._SERIAL._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__(self, line_parsed: LineParsed) -> str:
-        if not hasattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}"):
+        if not hasattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}"):
             return AnswerResult.ERR__NAME_CMD
 
         if not line_parsed.CMD:
             return ""
 
-        meth_cmd = getattr(self, f"{self.STARTSWITH__CMD}{line_parsed.CMD}")
+        meth_cmd = getattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}")
         return meth_cmd(line_parsed)
 
-    def cmd__ECHO(self, line_parsed: LineParsed) -> str:
+    def cmd__echo(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
         # WORK --------------------------------
         return line_parsed.LINE
 
-    def cmd__GET(self, line_parsed: LineParsed) -> str:
+    def cmd__get(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         if len(line_parsed.ARGS) != 1:
             return AnswerResult.ERR__ARGS_VALIDATION
@@ -137,7 +150,7 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
 
         return self._PARAMS.get(param_name) or ""
 
-    def cmd__SET(self, line_parsed: LineParsed) -> str:
+    def cmd__set(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         if len(line_parsed.ARGS) != 2:
             return AnswerResult.ERR__ARGS_VALIDATION
@@ -151,36 +164,36 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
         self._PARAMS[param_name] = param_value
         return AnswerResult.SUCCESS
 
-    def cmd__RUN(self, line_parsed: LineParsed) -> str:
+    def cmd__run(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         if len(line_parsed.ARGS) < 1:
             return AnswerResult.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
-        meth_scr = getattr(self, f"{self.STARTSWITH__SCRIPT}{script_name}")
+        meth_scr = getattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}")
         if not meth_scr:
             return AnswerResult.ERR__NAME_SCRIPT
 
         return meth_scr()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def script__SCRIPT1(self, line_parsed: LineParsed) -> str:
+    def script__script1(self, line_parsed: LineParsed) -> str:
         # do smth
         return AnswerResult.SUCCESS
 
 
 # =====================================================================================================================
 class DevEmulator_ATC(DevEmulator_CmdTheme):
-    def cmd__ON(self) -> str:
+    def cmd__on(self) -> str:
         # do smth
         return AnswerResult.SUCCESS
 
-    def cmd__OFF(self) -> str:
+    def cmd__off(self) -> str:
         # do smth
         return AnswerResult.SUCCESS
 
-    def cmd__RST(self) -> str:
+    def cmd__rst(self) -> str:
         # do smth
         return AnswerResult.SUCCESS
 
