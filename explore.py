@@ -15,7 +15,7 @@ emu = DevEmulator()
 emu.start()
 
 victim = BusSerial_Base()
-victim.TIMEOUT_READ = 1
+victim._TIMEOUT_READ = 1
 victim.ADDRESS_APPLY_FIRST_VACANT = True
 victim.connect()
 

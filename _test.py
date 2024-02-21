@@ -370,14 +370,11 @@ class Test_Emulator:
     def test__getattr(self):
         # EMU ---------------
         self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
-        # self.VictimEmu.TIMEOUT_READ = 1
         self.victim_emu = self.VictimEmu()
         self.victim_emu.start()
 
         # -------------------
         self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        # self.Victim.TIMEOUT_READ = 1
-        # self.Victim.TIMEOUT_WRITE = 1
         self.victim = self.Victim()
         self.victim.connect()
 

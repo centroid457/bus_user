@@ -91,15 +91,15 @@ class BusSerial_Base:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    TIMEOUT_READ: float = 0.5       # 0.2 is too short!!!
-    TIMEOUT_WRITE: float = TIMEOUT_READ
+    _TIMEOUT_READ: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!!
+    _TIMEOUT_WRITE: float = _TIMEOUT_READ
     BAUDRATE: int = 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf8"
-    EOL__SEND: bytes = b"\n"      # "\r"=ENTER in PUTTY
+    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is betterin read Putty!
     EOL__UNI_SET: bytes = b"\r\n"
 
     CMD_PREFIX: Optional[str] = None
@@ -126,8 +126,8 @@ class BusSerial_Base:
         # apply settings
         # self._source.interCharTimeout = 0.8
         self._source.baudrate = self.BAUDRATE
-        self._source.timeout = self.TIMEOUT_READ
-        self._source.write_timeout = self.TIMEOUT_WRITE
+        self._source.timeout = self._TIMEOUT_READ
+        self._source.write_timeout = self._TIMEOUT_WRITE
 
     def __del__(self):
         self.disconnect()
@@ -430,7 +430,7 @@ class BusSerial_Base:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
-    def _read_line(self, count: Optional[int] = None, _timeout: Optional[float] = None) -> Union[str, List[str], NoReturn]:
+    def _read_line(self, count: Optional[int] = None) -> Union[str, List[str], NoReturn]:
         """
         read line from bus buffer,
         if timedout - return blank line ""
@@ -444,7 +444,7 @@ class BusSerial_Base:
         if count > 1:
             result: List[str] = []
             for i in range(count):
-                line = self._read_line(_timeout=_timeout)
+                line = self._read_line()
                 if line:
                     result.append(line)
                 else:
@@ -455,7 +455,7 @@ class BusSerial_Base:
         if count == 0:
             result: List[str] = []
             while True:
-                line = self._read_line(_timeout=_timeout)
+                line = self._read_line()
                 if line:
                     result.append(line)
                 else:
@@ -463,9 +463,6 @@ class BusSerial_Base:
             return result
 
         # SINGLE ---------------------
-        if _timeout:
-            self._source.timeout = _timeout
-
         # FIXME: read by bytes till get full line!-------------------------------
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
         # data = self._source.readline()
@@ -483,9 +480,6 @@ class BusSerial_Base:
                     continue
 
             data += new_char
-
-        if _timeout:
-            self._source.timeout = self.TIMEOUT_READ
 
         # RESULT ----------------------
         if data:
@@ -549,7 +543,6 @@ class BusSerial_Base:
     def write_read_line(
             self,
             data: Union[AnyStr, List[AnyStr]],
-            _timeout: Optional[float] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
     ) -> Union[HistoryIO, NoReturn]:
@@ -561,13 +554,13 @@ class BusSerial_Base:
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
             for data_i in data:
-                history_i = self.write_read_line(data_i, _timeout=_timeout)
+                history_i = self.write_read_line(data_i)
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
             data_o = ""
             if self._write_line(data=data, args=args, kwargs=kwargs):
-                data_o = self._read_line(count=0, _timeout=_timeout)
+                data_o = self._read_line(count=0)
             history.add_io(self._data_ensure_string(data), data_o)
 
         # RESULT ----------------------------
@@ -576,7 +569,6 @@ class BusSerial_Base:
     def write_read_line_last(
             self,
             data: Union[AnyStr, List[AnyStr]],
-            _timeout: Optional[float] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
     ) -> Union[str, NoReturn]:
@@ -584,7 +576,7 @@ class BusSerial_Base:
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
         """
-        return self.write_read_line(data=data, _timeout=_timeout, args=args, kwargs=kwargs).last_output
+        return self.write_read_line(data=data, args=args, kwargs=kwargs).last_output
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
