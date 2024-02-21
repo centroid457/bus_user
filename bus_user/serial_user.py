@@ -30,7 +30,7 @@ class Exx_SerialAddress_NotExists(Exception):
     pass
 
 
-class Exx_SerialAddress_NoVacant(Exception):
+class Exx_SerialAddresses_NoVacant(Exception):
     pass
 
 
@@ -170,8 +170,8 @@ class BusSerial_Base:
                         if self.connect(address=address, _raise=False):
                             return True
 
-                    msg = Exx_SerialAddress_NoVacant
-                    exx = Exx_SerialAddress_NoVacant()
+                    msg = Exx_SerialAddresses_NoVacant
+                    exx = Exx_SerialAddresses_NoVacant()
             else:
                 msg = Exx_SerialAddress_NotConfigured
                 exx = Exx_SerialAddress_NotConfigured()
