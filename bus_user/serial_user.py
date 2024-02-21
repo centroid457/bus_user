@@ -95,7 +95,7 @@ class BusSerial_Base:
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf8"
-    EOL: bytes = b"\r"      # "\r"=ENTER in PUTTY
+    EOL: bytes = b"\n"      # "\r"=ENTER in PUTTY
 
     CMD_PREFIX: Optional[str] = None
 
@@ -383,7 +383,7 @@ class BusSerial_Base:
 
         eol_chars: bytes = cls.EOL + b'\r\n'
         while True:
-            data.strip()
+            data = data.strip()
             if not data:
                 break
 

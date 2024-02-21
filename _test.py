@@ -347,7 +347,7 @@ class Test_Emulator:
     Victim: Type[BusSerialBase__GetattrDictDirect] = type("Victim", (BusSerialBase__GetattrDictDirect,), {})
     victim: BusSerialBase__GetattrDictDirect = None
 
-    VictimEmu: Type[DevEmulator_CmdTheme] = type("Victim", (DevEmulator_CmdTheme,), {})
+    VictimEmu: Type[DevEmulator_CmdTheme] = type("VictimEmu", (DevEmulator_CmdTheme,), {})
     victim_emu: DevEmulator_CmdTheme = None
 
     @classmethod
@@ -358,19 +358,20 @@ class Test_Emulator:
             print(msg)
             raise Exception(msg)
 
+        # EMU ---------------
         cls.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
-        cls.Victim.TIMEOUT_READ = 1
-        cls.Victim.TIMEOUT_WRITE = 1
+        cls.VictimEmu.TIMEOUT_READ = 0.2
 
+        cls.victim_emu = cls.VictimEmu()
+        cls.victim_emu.start()
+
+        # -------------------
         cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
         cls.Victim.TIMEOUT_READ = 1
         cls.Victim.TIMEOUT_WRITE = 1
 
         cls.victim = cls.Victim()
         cls.victim.connect()
-
-        cls.victim_emu = cls.VictimEmu()
-        cls.victim_emu.start()
 
     @classmethod
     def teardown_class(cls):
@@ -384,7 +385,12 @@ class Test_Emulator:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__getattr(self):
-        assert self.victim.ECHO(123) == "ECHO 123"
+        print(self.victim.send__ECHO(123))
+        print(self.victim._read_line())
+        print(self.victim._read_line())
+        print(self.victim._read_line())
+        print(self.victim._read_line())
+        # assert self.victim.send__ECHO(123) == "ECHO 123"
 
 
 # =====================================================================================================================

@@ -70,6 +70,7 @@ class DevEmulator_Base:
     ADDRESS: str = None
 
     TIMEOUT_READ: float = 1
+    RAISE_READ_FAIL_PATTERN: bool = False
 
     # AUX -----------------------------------------------------
     _SERIAL: BusSerial_Base
@@ -78,6 +79,7 @@ class DevEmulator_Base:
         super().__init__()
         self._SERIAL = self.SERIAL_CLS()
         self._SERIAL.ADDRESS = self.ADDRESS
+        self._SERIAL.RAISE_READ_FAIL_PATTERN = self.RAISE_READ_FAIL_PATTERN
         self._SERIAL.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
         self._SERIAL.connect()
 
@@ -108,6 +110,10 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
             line = self._SERIAL._read_line(_timeout=self.TIMEOUT_READ)
             if line:
                 self.execute_line(line)
+
+    def disconnect(self):
+        self._SERIAL.disconnect()
+        self.terminate()
 
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:

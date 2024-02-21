@@ -2,6 +2,7 @@
 # useful to start smth without pytest and not to run in main script!
 
 from bus_user import *
+import time
 
 
 class DevEmulator(DevEmulator_CmdTheme):
@@ -10,4 +11,7 @@ class DevEmulator(DevEmulator_CmdTheme):
 
 emu = DevEmulator()
 emu.start()
+
+time.sleep(1)
+
 emu.wait()
