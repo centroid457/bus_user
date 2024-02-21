@@ -103,7 +103,7 @@ class BusSerial_Base:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
-    GETATTR_SEND_STARTSWITH: str = "send__"
+    _GETATTR_SEND_STARTSWITH: str = "send__"
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -378,8 +378,23 @@ class BusSerial_Base:
 
     @classmethod
     def _bytes_eol__clear(cls, data: bytes) -> bytes:
-        while data.endswith(cls.EOL):
-            data = data.removesuffix(cls.EOL)
+        if not data:
+            return data
+
+        eol_chars: bytes = cls.EOL + b'\r\n'
+        while True:
+            data.strip()
+            if not data:
+                break
+
+            if data[-1] in eol_chars:
+                data = data[:-1]
+            else:
+                break
+
+        # while data.endswith(cls.EOL):
+        #     data = data.removesuffix(cls.EOL)
+
         return data
 
     # BYTES/STR -------------------------------------------------------------------------------------------------------
@@ -591,8 +606,8 @@ class BusSerialBase__GetattrDictDirect(BusSerial_Base):
             dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
             dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
         """
-        if self.GETATTR_SEND_STARTSWITH and item.startswith(self.GETATTR_SEND_STARTSWITH):
-            item = item.replace(self.GETATTR_SEND_STARTSWITH, "")
+        if self._GETATTR_SEND_STARTSWITH and item.startswith(self._GETATTR_SEND_STARTSWITH):
+            item = item.replace(self._GETATTR_SEND_STARTSWITH, "")
         return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
 
 
