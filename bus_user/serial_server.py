@@ -9,7 +9,7 @@ from PyQt5.QtCore import QThread
 # =====================================================================================================================
 class AnswerResult:
     SUCCESS: str = "OK"
-    ERR__NAME_CMD: str = "ERR__NAME_CMD"
+    ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
     ERR__NAME_PARAM: str = "ERR__NAME_PARAM"
     ERR__VALUE: str = "ERR__VALUE"
@@ -60,6 +60,9 @@ class LineParsed:
             else:
                 part__key_value = part.split("=")
                 self.KWARGS.update(dict([part__key_value, ]))
+
+    def ARGS_count(self) -> int:
+        return len(self.ARGS)
 
 
 # =====================================================================================================================
@@ -113,7 +116,7 @@ class SerialServer(QThread):
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
         line_parsed = LineParsed(line, prefix=self._SERIAL_USER.CMD_PREFIX)
-        result = self.cmd__(line_parsed)
+        result = self._cmd__(line_parsed)
 
         # blank line
         if not result:
@@ -122,16 +125,30 @@ class SerialServer(QThread):
         return self._SERIAL_USER._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
-    def cmd__(self, line_parsed: LineParsed) -> str:
-        if not hasattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}"):
-            return AnswerResult.ERR__NAME_CMD
-
+    def _cmd__(self, line_parsed: LineParsed) -> str:
         if not line_parsed.CMD:
             return ""
+
+        if not hasattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}"):
+            return self._cmd__param_as_cmd(line_parsed)
 
         meth_cmd = getattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}")
         return meth_cmd(line_parsed)
 
+    def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> str:
+        if not line_parsed.CMD:
+            return ""
+
+        if line_parsed.CMD not in self._PARAMS:
+            return AnswerResult.ERR__NAME_CMD_OR_PARAM
+
+        if line_parsed.ARGS_count() == 0:
+            return self._PARAMS[line_parsed.CMD]
+
+        if line_parsed.ARGS_count() == 1:
+            return self._PARAMS[line_parsed.CMD]
+
+    # -----------------------------------------------------------------------------------------------------------------
     def cmd__echo(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
@@ -141,7 +158,7 @@ class SerialServer(QThread):
 
     def cmd__get(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
-        if len(line_parsed.ARGS) != 1:
+        if line_parsed.ARGS_count() != 1:
             return AnswerResult.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
@@ -153,7 +170,7 @@ class SerialServer(QThread):
 
     def cmd__set(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
-        if len(line_parsed.ARGS) != 2:
+        if line_parsed.ARGS_count() != 2:
             return AnswerResult.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
@@ -167,7 +184,7 @@ class SerialServer(QThread):
 
     def cmd__run(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
-        if len(line_parsed.ARGS) < 1:
+        if line_parsed.ARGS_count() < 1:
             return AnswerResult.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
@@ -185,7 +202,7 @@ class SerialServer(QThread):
 
 
 # =====================================================================================================================
-class DevEmulator_ATC(SerialServer):
+class SerialServer_ATC(SerialServer):
     def cmd__on(self) -> str:
         # do smth
         return AnswerResult.SUCCESS

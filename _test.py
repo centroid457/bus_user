@@ -382,7 +382,7 @@ class Test_Emulator:
         assert self.victim._write_line(data)
 
         # time.sleep(2)
-        assert self.victim._read_line() == AnswerResult.ERR__NAME_CMD
+        assert self.victim._read_line() == AnswerResult.ERR__NAME_CMD_OR_PARAM
 
 
 # =====================================================================================================================
