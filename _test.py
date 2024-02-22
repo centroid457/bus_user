@@ -105,7 +105,7 @@ class Test_HistoryIO:
 
 
 # =====================================================================================================================
-class Test_BusSerial:
+class Test_SerialClient:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
@@ -116,20 +116,21 @@ class Test_BusSerial:
             print(msg)
             raise Exception(msg)
 
+        cls.Victim = type("Victim", (SerialClient,), {})
+        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        cls.victim = cls.Victim()
+        cls.victim.connect()
+
     @classmethod
     def teardown_class(cls):
-        pass
+        if cls.victim:
+            cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.Victim = type("Victim", (SerialClient,), {})
-        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        self.victim = self.Victim()
+        self.victim.connect()
 
     def teardown_method(self, method):
-        if self.victim:
-            self.victim.disconnect()
-
-        self.victim.CMD_PREFIX = ""
+        pass
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESS_APPLY_FIRST_VACANT(self):
@@ -148,6 +149,18 @@ class Test_BusSerial:
         assert self.victim.connect()
         assert self.victim.connect()
         assert self.victim.connect()
+
+    def test__pipeline_open_close(self):
+        self.victim.disconnect()
+        self.victim = self.Victim()
+        self.victim.connect()
+        assert self.victim.write_read_line("hello").last_output == "hello"
+
+        self.victim.disconnect()
+        self.victim = self.Victim()
+        self.victim.connect()
+        assert self.victim.write_read_line("hello").last_output == "hello"
+        self.victim.disconnect()
 
     def test__detect_available_ports(self):
         assert self.Victim.system_ports__count() > 0
@@ -179,9 +192,6 @@ class Test_BusSerial:
         assert self.Victim._bytes_eol__clear(b"111\n\n\n") == b"111"
 
     def test__r_w_single(self):
-        self.victim.connect()
-
-        # BLANK
         assert self.victim._write_line("") is False
         assert self.victim._read_line() == ""
 
@@ -192,8 +202,6 @@ class Test_BusSerial:
         assert self.victim._read_line() == ""
 
     def test__r_w_multy(self):
-        self.victim.connect()
-
         # RW single ----------------------
         for line in range(3):
             assert self.victim._write_line(f"hello{line}") is True
@@ -216,8 +224,6 @@ class Test_BusSerial:
         assert self.victim._read_line(10) == [f"hello{line}" for line in range(3)]
 
     def test__rw(self):
-        self.victim.connect()
-
         assert self.victim.write_read_line("hello").last_output == "hello"
         assert self.victim.write_read_line([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
 
@@ -239,13 +245,10 @@ class Test_BusSerial:
         assert history.check_equal_io() is True
 
     def test__rw_last(self):
-        self.victim.connect()
-
         assert self.victim.write_read_line_last("hello") == "hello"
         assert self.victim.write_read_line_last(["hello1", "hello2"]) == "hello2"
 
     def test__rw_ReadFailPattern(self):
-        self.victim.connect()
         try:
             self.victim.write_read_line("123 FAil 123")
         except:
@@ -257,67 +260,22 @@ class Test_BusSerial:
         assert self.victim.write_read_line("123 FAil 123").last_output == "123 FAil 123"
 
     def test__r_all(self):
-        self.victim.connect()
-
         assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
         assert self.victim._read_line(count=0) == [f"hello{line}" for line in range(3)]
 
-    def test__pipeline_open_close(self):
-        self.victim.connect()
-
-        self.victim.disconnect()
-        self.victim = self.Victim()
-        self.victim.connect()
-        assert self.victim.write_read_line("hello").last_output == "hello"
-
-        self.victim.disconnect()
-        self.victim = self.Victim()
-        self.victim.connect()
-        assert self.victim.write_read_line("hello").last_output == "hello"
-        self.victim.disconnect()
-
     def test__write_args_kwargs(self):
-        self.victim.connect()
-
         assert self.victim.write_read_line("hello").last_output == "hello"
         assert self.victim.write_read_line("hello", args=[1, 2]).last_output == "hello 1 2"
         assert self.victim.write_read_line("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
         assert self.victim.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
 
     def test__CMD_PREFIX(self):
-        self.victim.connect()
         self.victim.CMD_PREFIX = "DEV:01:"
         assert self.victim.write_read_line("hello").last_output == f"{self.victim.CMD_PREFIX}hello"
         assert self.victim.write_read_line("hello 12").last_output == f"{self.victim.CMD_PREFIX}hello 12"
 
         self.victim.CMD_PREFIX = ""
         assert self.victim.write_read_line("hello").last_output == "hello"
-
-
-# =====================================================================================================================
-class Test_BusSerialWGetattr:
-    Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
-    victim: SerialClient = None
-
-    @classmethod
-    def setup_class(cls):
-        if cls.Victim.system_ports__count() != 1:
-            msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
-            print(msg)
-            raise Exception(msg)
-
-        cls.Victim = type("Victim", (SerialClient,), {})
-        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        cls.victim = cls.Victim()
-        cls.victim.connect()
-
-    @classmethod
-    def teardown_class(cls):
-        if cls.victim:
-            cls.victim.disconnect()
-
-    def setup_method(self, method):
-        pass
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!
@@ -330,10 +288,10 @@ class Test_BusSerialWGetattr:
         assert self.victim.hello(12, CH2=13) == "hello 12 CH2=13"
         assert self.victim.hello("?") == "hello ?"
 
-    def test__GETATTR_SEND_STARTSWITH(self):
+    def test__getattr__SEND_STARTSWITH(self):
         assert self.victim.send__hello() == "hello"
 
-    def test__CMD_PREFIX(self):
+    def test__getattr_CMD_PREFIX(self):
         self.victim.CMD_PREFIX = "DEV:01:"
         assert self.victim.hello() == f"{self.victim.CMD_PREFIX}hello"
         assert self.victim.hello(12) == f"{self.victim.CMD_PREFIX}hello 12"
@@ -342,7 +300,7 @@ class Test_BusSerialWGetattr:
 
 
 # =====================================================================================================================
-class Test_Emulator:
+class Test_SerialServer:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 

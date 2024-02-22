@@ -87,6 +87,7 @@ class TypeWrReturn(Enum):
 
 # =====================================================================================================================
 class SerialClient:
+    # TODO: use thread!???
     # SETTINGS ------------------------------------------------
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
