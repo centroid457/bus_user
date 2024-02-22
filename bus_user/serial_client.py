@@ -92,15 +92,16 @@ class SerialClient:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT_READ: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
-    _TIMEOUT_WRITE: float = _TIMEOUT_READ
+    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_LAST: int = 0.2
+    _TIMEOUT__WRITE: float = _TIMEOUT__READ_FIRST
     BAUDRATE: int = 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = True
     ENCODING: str = "utf8"
-    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is betterin read Putty!
+    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
     EOL__UNI_SET: bytes = b"\r\n"
 
     CMD_PREFIX: Optional[str] = None
@@ -127,8 +128,8 @@ class SerialClient:
         # apply settings
         # self._source.interCharTimeout = 0.8
         self._source.baudrate = self.BAUDRATE
-        self._source.timeout = self._TIMEOUT_READ
-        self._source.write_timeout = self._TIMEOUT_WRITE
+        self._source.timeout = self._TIMEOUT__READ_FIRST
+        self._source.write_timeout = self._TIMEOUT__WRITE
 
     def __del__(self):
         self.disconnect()

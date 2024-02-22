@@ -15,7 +15,6 @@ emu.start()
 
 
 # victim = SerialClient()
-# victim._TIMEOUT_READ = 1
 # victim.ADDRESS_APPLY_FIRST_VACANT = True
 # victim.connect()
 #

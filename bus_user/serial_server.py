@@ -73,12 +73,8 @@ class SerialServer(QThread):
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    TIMEOUT_READ: float = 1
-    SLEEP: float = 1
-    RAISE_READ_FAIL_PATTERN: bool = False
-
     # AUX -----------------------------------------------------
-    _SERIAL_USER: SerialClient
+    _SERIAL_CLIENT: SerialClient
 
     _STARTSWITH__CMD: str = "cmd__"
     _STARTSWITH__SCRIPT: str = "script__"
@@ -91,38 +87,40 @@ class SerialServer(QThread):
 
         self._PARAMS = params or {}
 
-        self._SERIAL_USER = self.SERIAL_USER_CLS()
-        self._SERIAL_USER.ADDRESS = self.ADDRESS
-        self._SERIAL_USER.RAISE_READ_FAIL_PATTERN = self.RAISE_READ_FAIL_PATTERN
-        self._SERIAL_USER.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
-        self._SERIAL_USER.connect()
+        self._SERIAL_CLIENT = self.SERIAL_USER_CLS()
+        self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
+        self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = 0
+        self._SERIAL_CLIENT._TIMEOUT__READ_LAST = 0
+        if self.ADDRESS is not None:
+            self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
+        if self.ADDRESS_APPLY_FIRST_VACANT is not None:
+            self._SERIAL_CLIENT.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
+        self._SERIAL_CLIENT.connect()
 
     def run(self) -> None:
-        if not self._SERIAL_USER.connect():
+        if not self._SERIAL_CLIENT.connect():
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
         while True:
-            line = self._SERIAL_USER._read_line()
+            line = self._SERIAL_CLIENT._read_line()
             if line:
                 self.execute_line(line)
-            else:
-                time.sleep(self.SLEEP)
 
     def disconnect(self):
-        self._SERIAL_USER.disconnect()
+        self._SERIAL_CLIENT.disconnect()
         self.terminate()
 
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, prefix=self._SERIAL_USER.CMD_PREFIX)
+        line_parsed = LineParsed(line, prefix=self._SERIAL_CLIENT.CMD_PREFIX)
         result = self._cmd__(line_parsed)
 
         # blank line
         if not result:
             return True
 
-        return self._SERIAL_USER._write_line(result)
+        return self._SERIAL_CLIENT._write_line(result)
 
     # -----------------------------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> str:
