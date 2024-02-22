@@ -96,7 +96,7 @@ class SerialClient:
     # need NONE NOT 0!!! if wait always!!
     _TIMEOUT__READ_LAST: int = 0.2
     _TIMEOUT__WRITE: float = 0.5
-    BAUDRATE: int = 115200
+    BAUDRATE: int = 9600        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True

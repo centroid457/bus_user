@@ -102,6 +102,9 @@ class SerialServer(QThread):
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
+
+        self.execute_line("hello")
+
         while True:
             line = self._SERIAL_CLIENT._read_line()
             if line:
@@ -147,6 +150,13 @@ class SerialServer(QThread):
             return self._PARAMS[line_parsed.CMD]
 
     # -----------------------------------------------------------------------------------------------------------------
+    def cmd__hello(self, line_parsed: LineParsed) -> str:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return "HELLO MSG"
+
     def cmd__echo(self, line_parsed: LineParsed) -> str:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
