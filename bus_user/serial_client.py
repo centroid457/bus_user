@@ -114,11 +114,11 @@ class SerialClient:
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
-    _source: Serial
+    _SERIAL: Serial
 
     def __init__(self, address: Optional[str] = None):
         super().__init__()
-        self._source = Serial()
+        self._SERIAL = Serial()
         self.history = HistoryIO()
 
         # set only address!!!
@@ -126,22 +126,22 @@ class SerialClient:
             self.ADDRESS = address
 
         # apply settings
-        # self._source.interCharTimeout = 0.8
-        self._source.baudrate = self.BAUDRATE
-        self._source.timeout = self._TIMEOUT__READ_FIRST
-        self._source.write_timeout = self._TIMEOUT__WRITE
+        # self._SERIAL.interCharTimeout = 0.8
+        self._SERIAL.baudrate = self.BAUDRATE
+        self._SERIAL.timeout = self._TIMEOUT__READ_FIRST
+        self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
     def __del__(self):
         self.disconnect()
 
     # MSG =============================================================================================================
     def msg_log(self, msg: str = None) -> None:
-        msg = f"[{self._source.port}]{msg}"
+        msg = f"[{self._SERIAL.port}]{msg}"
         print(msg)
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
-        self._source.close()
+        self._SERIAL.close()
 
     def connect(
             self,
@@ -156,7 +156,7 @@ class SerialClient:
         if _raise is None:
             _raise = self.RAISE_CONNECT
 
-        if self._source.is_open:
+        if self._SERIAL.is_open:
             return True
 
         address = address or self.ADDRESS
@@ -179,29 +179,29 @@ class SerialClient:
                 exx = Exx_SerialAddress_NotConfigured()
         else:
             # WORK ---------------------------------
-            self._source.port = address
+            self._SERIAL.port = address
             try:
-                self._source.open()
+                self._SERIAL.open()
             except Exception as _exx:
                 if not _silent:
                     self.msg_log(f"{_exx!r}")
 
                 if "FileNotFoundError" in str(_exx):
-                    msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._source}"
+                    msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._SERIAL}"
                     exx = Exx_SerialAddress_NotExists(repr(_exx))
 
                     # self.detect_available_ports()
 
                 elif "Port must be configured before" in str(_exx):
-                    msg = f"[ERROR] PORT NOT CONFIGURED {self._source}"
+                    msg = f"[ERROR] PORT NOT CONFIGURED {self._SERIAL}"
                     exx = Exx_SerialAddress_NotConfigured(repr(_exx))
 
                 elif "PermissionError" in str(_exx):
-                    msg = f"[ERROR] PORT ALREADY OPENED {self._source}"
+                    msg = f"[ERROR] PORT ALREADY OPENED {self._SERIAL}"
                     exx = Exx_SerialAddress_AlreadyOpened(repr(_exx))
 
                 else:
-                    msg = f"[ERROR] PORT OTHER ERROR {self._source}"
+                    msg = f"[ERROR] PORT OTHER ERROR {self._SERIAL}"
                     exx = Exx_SerialAddress_OtherError(repr(_exx))
 
         # FINISH --------------------------------------
@@ -215,10 +215,11 @@ class SerialClient:
                 return False
 
         if not _silent:
-            msg = f"[OK] connected {self._source}"
+            msg = f"[OK] connected {self._SERIAL}"
             self.msg_log(msg)
 
         self.cmd_prefix__set()
+        # ObjectInfo(self._SERIAL).print()
         return True
 
     def cmd_prefix__set(self) -> None:
@@ -467,13 +468,13 @@ class SerialClient:
 
         # SINGLE ------------------------------------------------------------------
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
-        # data = self._source.readline()
+        # data = self._SERIAL.readline()
 
         # var2: char by char
         data = b""
         eol_received = False
         while True:
-            new_char = self._source.readline(1)
+            new_char = self._SERIAL.readline(1)
             if not new_char:
                 # print(f"detected finish line")
                 break
@@ -496,6 +497,8 @@ class SerialClient:
                 msg = f"[OK]read_line={data}"
         else:
             msg = f"[WARN]BLANK read_line={data}"
+            # no log!
+            return ""
 
         self.msg_log(msg)
 
@@ -538,7 +541,7 @@ class SerialClient:
         data = self._data_ensure_bytes(data)
         data = self._bytes_eol__ensure(data)
 
-        data_length = self._source.write(data)
+        data_length = self._SERIAL.write(data)
         msg = f"[OK]write_line={data}/{data_length=}"
         self.msg_log(msg)
 

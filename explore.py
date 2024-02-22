@@ -18,7 +18,7 @@ emu.start()
 # victim.ADDRESS_APPLY_FIRST_VACANT = True
 # victim.connect()
 #
-# # ObjectInfo(victim._source).print()
+# # ObjectInfo(victim._SERIAL).print()
 # # exit()
 #
 # victim.send__HELL(123)
