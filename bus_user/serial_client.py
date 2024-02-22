@@ -99,7 +99,7 @@ class SerialClient:
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
-    RAISE_READ_FAIL_PATTERN: bool = True
+    RAISE_READ_FAIL_PATTERN: bool = False
     ENCODING: str = "utf8"
     EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
     EOL__UNI_SET: bytes = b"\r\n"
@@ -110,7 +110,7 @@ class SerialClient:
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
-    _GETATTR_SEND_STARTSWITH: str = "send__"
+    _GETATTR_STARTSWITH__SEND: str = "send__"
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -642,8 +642,8 @@ class SerialClient:
             dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
             dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
         """
-        if self._GETATTR_SEND_STARTSWITH and item.startswith(self._GETATTR_SEND_STARTSWITH):
-            item = item.replace(self._GETATTR_SEND_STARTSWITH, "")
+        if self._GETATTR_STARTSWITH__SEND and item.startswith(self._GETATTR_STARTSWITH__SEND):
+            item = item.replace(self._GETATTR_STARTSWITH__SEND, "")
         return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
 
 

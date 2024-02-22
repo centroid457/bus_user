@@ -76,8 +76,8 @@ class SerialServer(QThread):
     # AUX -----------------------------------------------------
     _SERIAL_CLIENT: SerialClient
 
-    _STARTSWITH__CMD: str = "cmd__"
-    _STARTSWITH__SCRIPT: str = "script__"
+    _GETATTR_STARTSWITH__CMD: str = "cmd__"
+    _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
     # LOAD -----------------------------------------------------
     _PARAMS: Dict[str, Any]
@@ -127,10 +127,10 @@ class SerialServer(QThread):
         if not line_parsed.CMD:
             return ""
 
-        if not hasattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}"):
+        if not hasattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"):
             return self._cmd__param_as_cmd(line_parsed)
 
-        meth_cmd = getattr(self, f"{self._STARTSWITH__CMD}{line_parsed.CMD}")
+        meth_cmd = getattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}")
         return meth_cmd(line_parsed)
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> str:
@@ -187,10 +187,10 @@ class SerialServer(QThread):
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
-        if not hasattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}"):
+        if not hasattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}"):
             return AnswerResult.ERR__NAME_SCRIPT
 
-        meth_scr = getattr(self, f"{self._STARTSWITH__SCRIPT}{script_name}")
+        meth_scr = getattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}")
         return meth_scr(line_parsed)
 
     # -----------------------------------------------------------------------------------------------------------------
