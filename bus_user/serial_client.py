@@ -86,7 +86,7 @@ class TypeWrReturn(Enum):
 
 
 # =====================================================================================================================
-class BusSerial_Base:
+class SerialClient:
     # SETTINGS ------------------------------------------------
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
@@ -345,7 +345,7 @@ class BusSerial_Base:
 
         result: List[str] = []
         for name in attempt_list:
-            if BusSerial_Base(address=name).address_check_exists():
+            if SerialClient(address=name).address_check_exists():
                 result.append(name)
 
         if _lock_port:
@@ -622,7 +622,7 @@ class BusSerial_Base:
 
         1. SHOW (optional) COMMANDS EXPLICITLY by annotations without values!
         -----------------------------------------------------------------
-            class MySerialDevice(BusSerial_Base):
+            class MySerialDevice(SerialClient):
                 IDN: Callable[[Any], TYPE__RW_ANSWER]
                 ADDR: Callable[[Any], TYPE__RW_ANSWER]
                 DUMP: Callable[[Any], TYPE__RW_ANSWER]
@@ -648,8 +648,8 @@ class BusSerial_Base:
 # =====================================================================================================================
 if __name__ == "__main__":
     # see/use tests
-    # ports = BusSerial_Base.detect_available_ports()
-    # obj = BusSerial_Base(address=ports[0])
+    # ports = SerialClient.detect_available_ports()
+    # obj = SerialClient(address=ports[0])
     # obj.connect()
     pass
 

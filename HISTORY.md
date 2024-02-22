@@ -2,7 +2,7 @@
 
 ********************************************************************************
 ## TODO
-1. add all other port settings into BusSerial_Base  
+1. add all other port settings into SerialClient  
 2. test work with several lines EOL  
 
 ********************************************************************************
@@ -31,6 +31,6 @@
 
 0.0.1 (2023-12-12)
 -------------------
-- first BusSerial_Base with commands mapping
+- first SerialClient with commands mapping
 
 ********************************************************************************

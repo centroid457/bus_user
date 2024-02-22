@@ -106,8 +106,8 @@ class Test_HistoryIO:
 
 # =====================================================================================================================
 class Test_BusSerial:
-    Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
-    victim: BusSerial_Base = None
+    Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
+    victim: SerialClient = None
 
     @classmethod
     def setup_class(cls):
@@ -121,7 +121,7 @@ class Test_BusSerial:
         pass
 
     def setup_method(self, method):
-        self.Victim = type("Victim", (BusSerial_Base,), {})
+        self.Victim = type("Victim", (SerialClient,), {})
         self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
         self.victim = self.Victim()
 
@@ -153,10 +153,10 @@ class Test_BusSerial:
         assert self.Victim.system_ports__count() > 0
 
     # def test__connect_address_existed(self):
-    #     assert BusSerial_Base().address_check_exists() is True
+    #     assert SerialClient().address_check_exists() is True
 
     def test__connect_address_NOTexisted(self):
-        assert BusSerial_Base(address="HELLO").address_check_exists() is False
+        assert SerialClient(address="HELLO").address_check_exists() is False
 
     def test__ensure_bytes(self):
         assert self.Victim._data_ensure_bytes("111") == b"111"
@@ -296,8 +296,8 @@ class Test_BusSerial:
 
 # =====================================================================================================================
 class Test_BusSerialWGetattr:
-    Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
-    victim: BusSerial_Base = None
+    Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
+    victim: SerialClient = None
 
     @classmethod
     def setup_class(cls):
@@ -306,7 +306,7 @@ class Test_BusSerialWGetattr:
             print(msg)
             raise Exception(msg)
 
-        cls.Victim = type("Victim", (BusSerial_Base,), {})
+        cls.Victim = type("Victim", (SerialClient,), {})
         cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
         cls.victim = cls.Victim()
         cls.victim.connect()
@@ -343,11 +343,11 @@ class Test_BusSerialWGetattr:
 
 # =====================================================================================================================
 class Test_Emulator:
-    Victim: Type[BusSerial_Base] = type("Victim", (BusSerial_Base,), {})
-    victim: BusSerial_Base = None
+    Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
+    victim: SerialClient = None
 
-    VictimEmu: Type[DevEmulator_CmdTheme] = type("VictimEmu", (DevEmulator_CmdTheme,), {})
-    victim_emu: DevEmulator_CmdTheme = None
+    VictimEmu: Type[SerialServer] = type("VictimEmu", (SerialServer,), {})
+    victim_emu: SerialServer = None
 
     @classmethod
     def setup_class(cls):

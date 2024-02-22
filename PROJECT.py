@@ -56,7 +56,7 @@ other protocols mot recommended
     # HISTORY -----------------------------------------------
     VERSION: Tuple[int, int, int] = (0, 0, 5)
     TODO: List[str] = [
-        "add all other port settings into BusSerial_Base",
+        "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND"
     ]
     FIXME: List[str] = [

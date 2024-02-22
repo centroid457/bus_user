@@ -6,7 +6,7 @@ import time
 from object_info import ObjectInfo
 
 
-class DevEmulator(DevEmulator_CmdTheme):
+class DevEmulator(SerialServer):
     ADDRESS_APPLY_FIRST_VACANT = True
     # TIMEOUT_READ = 2
 
@@ -14,7 +14,7 @@ emu = DevEmulator()
 emu.start()
 
 
-# victim = BusSerial_Base()
+# victim = SerialClient()
 # victim._TIMEOUT_READ = 1
 # victim.ADDRESS_APPLY_FIRST_VACANT = True
 # victim.connect()

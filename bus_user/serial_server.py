@@ -1,4 +1,4 @@
-from .serial_user import BusSerial_Base
+from .serial_client import SerialClient
 
 from typing import *
 import time
@@ -63,9 +63,9 @@ class LineParsed:
 
 
 # =====================================================================================================================
-class DevEmulator_Base:
+class SerialServer(QThread):
     # SETTINGS ------------------------------------------------
-    SERIAL_USER_CLS: Type[BusSerial_Base] = BusSerial_Base
+    SERIAL_USER_CLS: Type[SerialClient] = SerialClient
 
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
@@ -75,33 +75,24 @@ class DevEmulator_Base:
     RAISE_READ_FAIL_PATTERN: bool = False
 
     # AUX -----------------------------------------------------
-    _SERIAL_USER: BusSerial_Base
+    _SERIAL_USER: SerialClient
 
-    def __init__(self):
+    _STARTSWITH__CMD: str = "cmd__"
+    _STARTSWITH__SCRIPT: str = "script__"
+
+    # LOAD -----------------------------------------------------
+    _PARAMS: Dict[str, Any]
+
+    def __init__(self, params: Optional[Dict[str, Any]] = None):
         super().__init__()
+
+        self._PARAMS = params or {}
+
         self._SERIAL_USER = self.SERIAL_USER_CLS()
         self._SERIAL_USER.ADDRESS = self.ADDRESS
         self._SERIAL_USER.RAISE_READ_FAIL_PATTERN = self.RAISE_READ_FAIL_PATTERN
         self._SERIAL_USER.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
         self._SERIAL_USER.connect()
-
-
-# =====================================================================================================================
-class DevEmulator_DirectDict(DevEmulator_Base, QThread):
-    pass
-
-
-# =====================================================================================================================
-class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
-    # AUX -----------------------------------------------------
-    _PARAMS: Dict[str, Any]
-
-    _STARTSWITH__CMD: str = "cmd__"
-    _STARTSWITH__SCRIPT: str = "script__"
-
-    def __init__(self, params: Optional[Dict[str, Any]] = None):
-        self._PARAMS = params or {}
-        super().__init__()
 
     def run(self) -> None:
         if not self._SERIAL_USER.connect():
@@ -194,7 +185,7 @@ class DevEmulator_CmdTheme(DevEmulator_Base, QThread):
 
 
 # =====================================================================================================================
-class DevEmulator_ATC(DevEmulator_CmdTheme):
+class DevEmulator_ATC(SerialServer):
     def cmd__on(self) -> str:
         # do smth
         return AnswerResult.SUCCESS

@@ -8,7 +8,7 @@ from bus_user import *
 
 # SHOW (optional) COMMANDS EXPLICITLY by annotations without values!
 # ------------------------------------------------------------------
-class MySerialDevice(BusSerial_Base):
+class MySerialDevice(SerialClient):
     IDN: Callable[[Any], TYPE__RW_ANSWER]
     ADDR: Callable[[Any], TYPE__RW_ANSWER]
     DUMP: Callable[[Any], TYPE__RW_ANSWER]
