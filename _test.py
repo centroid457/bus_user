@@ -249,6 +249,7 @@ class Test_SerialClient:
         assert self.victim.write_read_line_last(["hello1", "hello2"]) == "hello2"
 
     def test__rw_ReadFailPattern(self):
+        self.victim.RAISE_READ_FAIL_PATTERN = True
         try:
             self.victim.write_read_line("123 FAil 123")
         except:
