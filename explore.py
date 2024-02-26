@@ -8,11 +8,10 @@ from object_info import ObjectInfo
 
 class DevEmulator(SerialServer):
     ADDRESS_APPLY_FIRST_VACANT = True
-    # TIMEOUT_READ = 2
+
 
 emu = DevEmulator()
 emu.start()
-
 
 # victim = SerialClient()
 # victim.ADDRESS_APPLY_FIRST_VACANT = True
