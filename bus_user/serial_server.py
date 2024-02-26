@@ -78,9 +78,8 @@ class SerialServer(QThread):
     ADDRESS: str = None
 
     HELLO_MSG: TYPE__CMD_RESULT = [
-        "HELLO LINE 1",
-        "hello line 2",
-        "hello line 3",
+        "SerialServer HELLO LINE 1",
+        "SerialServer hello line 2",
     ]
 
     # AUX -----------------------------------------------------
@@ -116,7 +115,7 @@ class SerialServer(QThread):
         self.execute_line("hello")
 
         while True:
-            line = self._SERIAL_CLIENT._read_line()
+            line = self._SERIAL_CLIENT.read_line()
             if line:
                 self.execute_line(line)
 

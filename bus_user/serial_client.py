@@ -436,7 +436,7 @@ class SerialClient:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
-    def _read_line(self, count: Optional[int] = None) -> Union[str, List[str], NoReturn]:
+    def read_line(self, count: Optional[int] = None) -> Union[str, List[str], NoReturn]:
         """
         read line from bus buffer,
         if need read all buffer - set count = 0
@@ -451,7 +451,7 @@ class SerialClient:
         if count > 1:
             result: List[str] = []
             for i in range(count):
-                line = self._read_line()
+                line = self.read_line()
                 if line:
                     result.append(line)
                 else:
@@ -462,7 +462,7 @@ class SerialClient:
         if count == 0:
             result: List[str] = []
             while True:
-                line = self._read_line()
+                line = self.read_line()
                 if line:
                     result.append(line)
                 else:
@@ -579,7 +579,7 @@ class SerialClient:
             # SINGLE LAST -----------------------
             data_o = ""
             if self._write_line(data=data, args=args, kwargs=kwargs):
-                data_o = self._read_line(count=0)
+                data_o = self.read_line(count=0)
             history.add_io(self._data_ensure_string(data), data_o)
 
         # RESULT ----------------------------
