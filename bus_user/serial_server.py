@@ -115,7 +115,7 @@ class SerialServer(QThread):
         self.execute_line("hello")
 
         while True:
-            line = self._SERIAL_CLIENT.read_line()
+            line = self._SERIAL_CLIENT.read_lines()
             if line:
                 self.execute_line(line)
 
@@ -132,7 +132,8 @@ class SerialServer(QThread):
         if not cmd_result:
             return True
 
-        return self._SERIAL_CLIENT._write_line(cmd_result)
+        write_result = self._SERIAL_CLIENT._write_line(cmd_result)
+        return write_result
 
     # -----------------------------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:

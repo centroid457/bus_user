@@ -193,13 +193,13 @@ class Test_SerialClient:
 
     def test__r_w_single(self):
         assert self.victim._write_line("") is False
-        assert self.victim.read_line() == ""
+        assert self.victim.read_lines() == []
 
         assert self.victim._write_line("hello") is True
-        assert self.victim.read_line() == "hello"
-        assert self.victim.read_line() == ""
+        assert self.victim.read_lines() == ["hello", ]
+        assert self.victim.read_lines() == []
 
-        assert self.victim.read_line() == ""
+        assert self.victim.read_lines() == []
 
     def test__r_w_multy(self):
         # RW single ----------------------
@@ -208,20 +208,20 @@ class Test_SerialClient:
 
         for line in range(3):
             assert self.victim.read_line() == f"hello{line}"
-        assert self.victim.read_line() == ""
+        assert self.victim.read_lines() == []
 
         # W list ----------------------
         assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
             assert self.victim.read_line() == f"hello{line}"
-        assert self.victim.read_line() == ""
+        assert self.victim.read_lines() == []
 
         # R list ----------------------
         assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim.read_line(3) == [f"hello{line}" for line in range(3)]
+        assert self.victim.read_lines() == [f"hello{line}" for line in range(3)]
 
         assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim.read_line(10) == [f"hello{line}" for line in range(3)]
+        assert self.victim.read_lines() == [f"hello{line}" for line in range(3)]
 
     def test__rw(self):
         assert self.victim.write_read_line("hello").last_output == "hello"
@@ -262,7 +262,7 @@ class Test_SerialClient:
 
     def test__r_all(self):
         assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
-        assert self.victim.read_line(count=0) == [f"hello{line}" for line in range(3)]
+        assert self.victim.read_lines() == [f"hello{line}" for line in range(3)]
 
     def test__write_args_kwargs(self):
         assert self.victim.write_read_line("hello").last_output == "hello"
@@ -327,21 +327,21 @@ class Test_SerialServer:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        # EMU ---------------
-        self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
-        self.victim_emu = self.VictimEmu()
-        self.victim_emu.start()
-
         # -------------------
         self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
         self.victim = self.Victim()
         self.victim.connect()
 
-        data = "123"
-        assert self.victim._write_line(data)
+        # EMU ---------------
+        self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
+        self.victim_emu = self.VictimEmu()
+        self.victim_emu.start()
 
-        # time.sleep(2)
-        assert self.victim.read_line() == AnswerResultStd.ERR__NAME_CMD_OR_PARAM
+        time.sleep(1)
+        assert self.victim.read_lines() == self.victim_emu.HELLO_MSG
+
+        # assert self.victim.write_read_line_last("123") == AnswerResultStd.ERR__NAME_CMD_OR_PARAM
+        # assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
 
 
 # =====================================================================================================================

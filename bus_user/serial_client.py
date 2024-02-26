@@ -92,11 +92,11 @@ class SerialClient:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_FIRST: float = 0.7       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
-    _TIMEOUT__READ_LAST: int = 0.2
+    _TIMEOUT__READ_LAST: int = 0.5
     _TIMEOUT__WRITE: float = 0.5
-    BAUDRATE: int = 9600        # 115200
+    BAUDRATE: int = 115200        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
@@ -436,40 +436,21 @@ class SerialClient:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
-    def read_line(self, count: Optional[int] = None) -> Union[str, List[str], NoReturn]:
+    def read_lines(self) -> Union[List[str], NoReturn]:
+        result: List[str] = []
+        while True:
+            line = self.read_line()
+            if line:
+                result.append(line)
+            else:
+                break
+        return result
+
+    def read_line(self) -> Union[str, NoReturn]:
         """
         read line from bus buffer,
-        if need read all buffer - set count = 0
         """
         # FIXME: return Object??? need keep exx for not finished readline!!!
-
-        # ----------------------------
-        if count is None:
-            count = 1
-
-        # LIST -----------------------
-        if count > 1:
-            result: List[str] = []
-            for i in range(count):
-                line = self.read_line()
-                if line:
-                    result.append(line)
-                else:
-                    break
-            return result
-
-        # ALL -----------------------
-        if count == 0:
-            result: List[str] = []
-            while True:
-                line = self.read_line()
-                if line:
-                    result.append(line)
-                else:
-                    break
-            return result
-
-        # SINGLE ------------------------------------------------------------------
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
         # data = self._SERIAL.readline()
 
@@ -579,7 +560,7 @@ class SerialClient:
             # SINGLE LAST -----------------------
             data_o = ""
             if self._write_line(data=data, args=args, kwargs=kwargs):
-                data_o = self.read_line(count=0)
+                data_o = self.read_lines()
             history.add_io(self._data_ensure_string(data), data_o)
 
         # RESULT ----------------------------
