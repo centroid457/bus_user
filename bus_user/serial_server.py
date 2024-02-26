@@ -77,6 +77,12 @@ class SerialServer(QThread):
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
+    HELLO_MSG: TYPE__CMD_RESULT = [
+        "HELLO LINE 1",
+        "hello line 2",
+        "hello line 3",
+    ]
+
     # AUX -----------------------------------------------------
     _SERIAL_CLIENT: SerialClient
 
@@ -157,7 +163,7 @@ class SerialServer(QThread):
         pass
 
         # WORK --------------------------------
-        return "HELLO MSG"
+        return self.HELLO_MSG
 
     def cmd__echo(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
