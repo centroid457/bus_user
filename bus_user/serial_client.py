@@ -92,9 +92,9 @@ class SerialClient:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_FIRST: float = 0.9       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
-    _TIMEOUT__READ_LAST: int = 0.5
+    _TIMEOUT__READ_LAST: int = 0.9
     _TIMEOUT__WRITE: float = 0.5
     BAUDRATE: int = 9600        # 115200
 
@@ -235,7 +235,7 @@ class SerialClient:
 
     def _clear_buffer_read(self) -> None:
         try:
-            self.read_lines(_timeout=0.2)
+            self.read_lines(_timeout=0.3)
         except:
             pass
 
@@ -407,23 +407,12 @@ class SerialClient:
 
     @classmethod
     def _bytes_eol__clear(cls, data: bytes) -> bytes:
-        if not data:
-            return data
-
-        eol_chars: bytes = cls.EOL__UNI_SET
         while True:
-            data = data.strip()
-            if not data:
+            data_new = data.strip()
+            data_new = data_new.strip(cls.EOL__UNI_SET)
+            if not data or data == data_new:
                 break
-
-            if data[-1] in eol_chars:
-                data = data[:-1]
-            else:
-                break
-
-        # while data.endswith(cls.EOL__SEND):
-        #     data = data.removesuffix(cls.EOL__SEND)
-
+            data = data_new
         return data
 
     # BYTES/STR -------------------------------------------------------------------------------------------------------
@@ -479,8 +468,8 @@ class SerialClient:
                     continue
 
             data += new_char
-            if data:
-                self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_LAST or None
+            # if data:
+            #     self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_LAST or None
 
         # RESULT ----------------------
         if data:

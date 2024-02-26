@@ -18,7 +18,7 @@ class AnswerResultStd:
     ERR__NAME_PARAM: str = "ERR__NAME_PARAM"
     ERR__VALUE: str = "ERR__VALUE"
     ERR__ARGS_VALIDATION: str = "ERR__ARGS_VALIDATION"
-    ERR__ENCODING: str = "ERR__ENCODING"
+    ERR__ENCODING_OR_DEVICE: str = "ERR__ENCODING_OR_DEVICE"
 
 
 class LineParsed:
@@ -79,7 +79,6 @@ class SerialServer(QThread):
     ADDRESS: str = None
 
     HELLO_MSG: TYPE__CMD_RESULT = [
-        # "",
         "SerialServer HELLO LINE 1",
         "SerialServer hello line 2",
     ]
@@ -100,8 +99,8 @@ class SerialServer(QThread):
 
         self._SERIAL_CLIENT = self.SERIAL_USER_CLS()
         self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
-        self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = 0
-        self._SERIAL_CLIENT._TIMEOUT__READ_LAST = 0
+        self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
+        self._SERIAL_CLIENT._TIMEOUT__READ_LAST = None
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if self.ADDRESS_APPLY_FIRST_VACANT is not None:
@@ -122,7 +121,7 @@ class SerialServer(QThread):
             try:
                 line = self._SERIAL_CLIENT.read_line()
             except:
-                self._SERIAL_CLIENT._write_line(AnswerResultStd.ERR__ENCODING)
+                self._SERIAL_CLIENT._write_line(AnswerResultStd.ERR__ENCODING_OR_DEVICE)
 
             if line:
                 self.execute_line(line)

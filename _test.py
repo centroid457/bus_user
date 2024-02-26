@@ -327,18 +327,20 @@ class Test_SerialServer:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        # -------------------
-        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
-        self.victim = self.Victim()
-        self.victim.connect()
+        # TODO: use good COM-ports!!! my Profilic is not work correctly!!! but CH341A seems work fine!!!
+        # some bytes may be lost or added extra!!!
 
         # EMU ---------------
         self.VictimEmu.ADDRESS_APPLY_FIRST_VACANT = True
         self.victim_emu = self.VictimEmu()
         self.victim_emu.start()
+        # -------------------
+        self.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        self.victim = self.Victim()
+        self.victim.connect()
 
         time.sleep(1)
-        self.victim.read_lines()
+        self.victim._clear_buffer_read()
         assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
 
         # assert self.victim.write_read_line_last("123") == AnswerResultStd.ERR__NAME_CMD_OR_PARAM
