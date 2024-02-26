@@ -7,7 +7,11 @@ from PyQt5.QtCore import QThread
 
 
 # =====================================================================================================================
-class AnswerResult:
+TYPE__CMD_RESULT = Union[str, List[str]]
+
+
+# =====================================================================================================================
+class AnswerResultStd:
     SUCCESS: str = "OK"
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
@@ -18,7 +22,7 @@ class AnswerResult:
 
 class LineParsed:
     """
-    ALL RESULTS IN LOWERCASE! EXCEPT ORIGINAL LINE!
+    ALL RESULTS IN LOWERCASE! (EXCEPT ORIGINAL LINE!)
     """
     # PREFIX: str = ""
     LINE: str
@@ -79,7 +83,7 @@ class SerialServer(QThread):
     _GETATTR_STARTSWITH__CMD: str = "cmd__"
     _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
-    # LOAD -----------------------------------------------------
+    # INIT -----------------------------------------------------
     _PARAMS: Dict[str, Any]
 
     def __init__(self, params: Optional[Dict[str, Any]] = None):
@@ -117,111 +121,110 @@ class SerialServer(QThread):
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
         line_parsed = LineParsed(line, prefix=self._SERIAL_CLIENT.CMD_PREFIX)
-        result = self._cmd__(line_parsed)
+        cmd_result = self._cmd__(line_parsed)
 
         # blank line
-        if not result:
+        if not cmd_result:
             return True
 
-        return self._SERIAL_CLIENT._write_line(result)
+        return self._SERIAL_CLIENT._write_line(cmd_result)
 
     # -----------------------------------------------------------------------------------------------------------------
-    def _cmd__(self, line_parsed: LineParsed) -> str:
+    def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         if not line_parsed.CMD:
             return ""
 
-        if not hasattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"):
+        meth_cmd_name = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
+
+        if not hasattr(self, meth_cmd_name):
             return self._cmd__param_as_cmd(line_parsed)
 
-        meth_cmd = getattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}")
+        meth_cmd = getattr(self, meth_cmd_name)
         return meth_cmd(line_parsed)
 
-    def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> str:
+    def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         if not line_parsed.CMD:
             return ""
 
         if line_parsed.CMD not in self._PARAMS:
-            return AnswerResult.ERR__NAME_CMD_OR_PARAM
+            return AnswerResultStd.ERR__NAME_CMD_OR_PARAM
 
-        if line_parsed.ARGS_count() == 0:
-            return self._PARAMS[line_parsed.CMD]
-
-        if line_parsed.ARGS_count() == 1:
-            return self._PARAMS[line_parsed.CMD]
+        return self._PARAMS[line_parsed.CMD]
 
     # -----------------------------------------------------------------------------------------------------------------
-    def cmd__hello(self, line_parsed: LineParsed) -> str:
+    def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
         # WORK --------------------------------
         return "HELLO MSG"
 
-    def cmd__echo(self, line_parsed: LineParsed) -> str:
+    def cmd__echo(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
         # WORK --------------------------------
         return line_parsed.LINE
 
-    def cmd__get(self, line_parsed: LineParsed) -> str:
+    def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() != 1:
-            return AnswerResult.ERR__ARGS_VALIDATION
+            return AnswerResultStd.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
         if param_name not in self._PARAMS:
-            return AnswerResult.ERR__NAME_PARAM
+            return AnswerResultStd.ERR__NAME_PARAM
 
         return self._PARAMS.get(param_name) or ""
 
-    def cmd__set(self, line_parsed: LineParsed) -> str:
+    def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() != 2:
-            return AnswerResult.ERR__ARGS_VALIDATION
+            return AnswerResultStd.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
         param_value = line_parsed.ARGS[1]
         if param_name not in self._PARAMS:
-            return AnswerResult.ERR__NAME_PARAM
+            return AnswerResultStd.ERR__NAME_PARAM
 
         self._PARAMS[param_name] = param_value
-        return AnswerResult.SUCCESS
+        return AnswerResultStd.SUCCESS
 
-    def cmd__run(self, line_parsed: LineParsed) -> str:
+    def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() < 1:
-            return AnswerResult.ERR__ARGS_VALIDATION
+            return AnswerResultStd.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
-        if not hasattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}"):
-            return AnswerResult.ERR__NAME_SCRIPT
+        meth_script_name = f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}"
+        if not hasattr(self, meth_script_name):
+            return AnswerResultStd.ERR__NAME_SCRIPT
 
-        meth_scr = getattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}")
+        meth_scr = getattr(self, meth_script_name)
         return meth_scr(line_parsed)
 
     # -----------------------------------------------------------------------------------------------------------------
-    def script__script1(self, line_parsed: LineParsed) -> str:
+    def script__script1(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResult.SUCCESS
+        return AnswerResultStd.SUCCESS
 
 
 # =====================================================================================================================
 class SerialServer_ATC(SerialServer):
-    def cmd__on(self) -> str:
+    def cmd__on(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResult.SUCCESS
+        return AnswerResultStd.SUCCESS
 
-    def cmd__off(self) -> str:
+    def cmd__off(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResult.SUCCESS
+        return AnswerResultStd.SUCCESS
 
-    def cmd__rst(self) -> str:
+    def cmd__rst(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResult.SUCCESS
+        return AnswerResultStd.SUCCESS
 
 
 # =====================================================================================================================

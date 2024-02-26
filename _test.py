@@ -341,7 +341,7 @@ class Test_SerialServer:
         assert self.victim._write_line(data)
 
         # time.sleep(2)
-        assert self.victim._read_line() == AnswerResult.ERR__NAME_CMD_OR_PARAM
+        assert self.victim._read_line() == AnswerResultStd.ERR__NAME_CMD_OR_PARAM
 
 
 # =====================================================================================================================
