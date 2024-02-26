@@ -13,6 +13,7 @@ class DevEmulator(SerialServer):
 emu = DevEmulator()
 emu.start()
 
+
 # victim = SerialClient()
 # victim.ADDRESS_APPLY_FIRST_VACANT = True
 # victim.connect()
