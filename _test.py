@@ -338,10 +338,10 @@ class Test_SerialServer:
         self.victim_emu.start()
 
         time.sleep(1)
-        assert self.victim.read_lines() == self.victim_emu.HELLO_MSG
+        self.victim.read_lines()
+        assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
 
         # assert self.victim.write_read_line_last("123") == AnswerResultStd.ERR__NAME_CMD_OR_PARAM
-        # assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
 
 
 # =====================================================================================================================

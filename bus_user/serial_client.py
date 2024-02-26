@@ -92,11 +92,11 @@ class SerialClient:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT__READ_FIRST: float = 0.7       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
     _TIMEOUT__READ_LAST: int = 0.5
     _TIMEOUT__WRITE: float = 0.5
-    BAUDRATE: int = 115200        # 115200
+    BAUDRATE: int = 9600        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
@@ -223,6 +223,7 @@ class SerialClient:
         self.cmd_prefix__set()
         # ObjectInfo(self._SERIAL, log_iter=True).print()
         # exit()
+        self._clear_buffer_read()
         return True
 
     def cmd_prefix__set(self) -> None:
@@ -231,6 +232,12 @@ class SerialClient:
         """
         # self.CMD_PREFIX = ""
         return
+
+    def _clear_buffer_read(self) -> None:
+        try:
+            self.read_lines(_timeout=0.2)
+        except:
+            pass
 
     # DETECT PORTS ====================================================================================================
     def address_check_exists(self) -> bool:
@@ -436,17 +443,17 @@ class SerialClient:
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
-    def read_lines(self) -> Union[List[str], NoReturn]:
+    def read_lines(self, _timeout: Optional[float] = None) -> Union[List[str], NoReturn]:
         result: List[str] = []
         while True:
-            line = self.read_line()
+            line = self.read_line(_timeout)
             if line:
                 result.append(line)
             else:
                 break
         return result
 
-    def read_line(self) -> Union[str, NoReturn]:
+    def read_line(self, _timeout: Optional[float] = None) -> Union[str, NoReturn]:
         """
         read line from bus buffer,
         """
@@ -458,7 +465,7 @@ class SerialClient:
         data = b""
         eol_received = False
 
-        self._SERIAL.timeout = self._TIMEOUT__READ_FIRST or None
+        self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_FIRST or None
         while True:
             new_char = self._SERIAL.readline(1)
             if not new_char:
@@ -473,7 +480,7 @@ class SerialClient:
 
             data += new_char
             if data:
-                self._SERIAL.timeout = self._TIMEOUT__READ_LAST or None
+                self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_LAST or None
 
         # RESULT ----------------------
         if data:
@@ -506,11 +513,7 @@ class SerialClient:
         args = args or []
         kwargs = kwargs or {}
 
-        if not data:
-            msg = f"[WARN]write_line={data}"
-            self.msg_log(msg)
-
-            return False
+        data = data or ""
 
         # LIST -----------------------
         if isinstance(data, (list, tuple, )):
