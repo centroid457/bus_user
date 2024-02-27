@@ -379,7 +379,7 @@ class Test_LineParsed:
         pass
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__1(self):
+    def test__lowercase(self):
         victim = self.Victim("")
         assert victim.LINE == ""
         assert victim.PREFIX == ""
@@ -401,7 +401,7 @@ class Test_LineParsed:
         assert victim.ARGS == []
         assert victim.KWARGS == {}
 
-        # ARGS/KWARGS ---------------------------
+    def test__args_kwargs(self):
         victim = self.Victim("HELLO CH")
         assert victim.LINE == "HELLO CH"
         assert victim.PREFIX == ""
@@ -430,7 +430,7 @@ class Test_LineParsed:
         assert victim.ARGS == ["ch1", "ch4"]
         assert victim.KWARGS == {"ch2": "2", "ch3": "3"}
 
-        # PREFIX ---------------------------
+    def test__prefix(self):
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
         assert victim.LINE == "HELLO CH 1"
         assert victim.PREFIX == "hello"
