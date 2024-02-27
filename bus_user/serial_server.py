@@ -87,6 +87,8 @@ class LineParsed:
 
 # =====================================================================================================================
 class SerialServer_Base(QThread):
+    # TODO: not realized access rules for PARAMS - may be not need in this case of class/situation!!!
+
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
 
@@ -253,6 +255,10 @@ class SerialServer_Base(QThread):
         return self.PARAMS.get(param_name) or ""
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        """
+        for ARGS - available only one param!
+        for KWARGS - available MULTY params! fail protected!
+        """
         # ERR__ARGS_VALIDATION -----------------
         # see internal
 
@@ -267,9 +273,10 @@ class SerialServer_Base(QThread):
             return self.ANSWER.SUCCESS
 
         elif line_parsed.KWARGS_count() > 0:
-            for param_name, param_value in line_parsed.KWARGS.items():
-                if param_name not in self.PARAMS:
+            for name in line_parsed.KWARGS:
+                if name not in self.PARAMS:
                     return self.ANSWER.ERR__NAME_PARAM
+            for param_name, param_value in line_parsed.KWARGS.items():
                 self.PARAMS[param_name] = param_value
             return self.ANSWER.SUCCESS
 
