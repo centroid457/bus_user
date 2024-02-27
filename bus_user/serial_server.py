@@ -73,7 +73,7 @@ class LineParsed:
 # =====================================================================================================================
 class SerialServer(QThread):
     # SETTINGS ------------------------------------------------
-    SERIAL_USER_CLS: Type[SerialClient] = SerialClient
+    SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
 
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
@@ -85,21 +85,21 @@ class SerialServer(QThread):
         "SerialServer hello line 2",
     ]
 
+    PARAMS: Dict[str, Any] = None
+
     # AUX -----------------------------------------------------
     _SERIAL_CLIENT: SerialClient
 
     _GETATTR_STARTSWITH__CMD: str = "cmd__"
     _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
-    # INIT -----------------------------------------------------
-    _PARAMS: Dict[str, Any]
-
     def __init__(self, params: Optional[Dict[str, Any]] = None):
+        # FIXME: deprecate param params???
         super().__init__()
 
-        self._PARAMS = params or {}
+        self.PARAMS = params or self.PARAMS or {}
 
-        self._SERIAL_CLIENT = self.SERIAL_USER_CLS()
+        self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()
         self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
         self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
         # self._SERIAL_CLIENT._TIMEOUT__READ_LAST = None
@@ -107,7 +107,6 @@ class SerialServer(QThread):
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if self.ADDRESS_APPLY_FIRST_VACANT is not None:
             self._SERIAL_CLIENT.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
-        self._SERIAL_CLIENT.connect()
 
     def run(self) -> None:
         if not self._SERIAL_CLIENT.connect():
@@ -115,7 +114,7 @@ class SerialServer(QThread):
             print(msg)
             return
 
-        self._SERIAL_CLIENT._write_line("")     # send blank
+        # self._SERIAL_CLIENT._write_line("")     # send blank=NO NEED!!!
         self.execute_line("hello")
 
         while True:
@@ -161,10 +160,10 @@ class SerialServer(QThread):
         if not line_parsed.CMD:
             return ""
 
-        if line_parsed.CMD not in self._PARAMS:
+        if line_parsed.CMD not in self.PARAMS:
             return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
-        return self._PARAMS[line_parsed.CMD]
+        return self.PARAMS[line_parsed.CMD]
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -188,10 +187,10 @@ class SerialServer(QThread):
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
-        if param_name not in self._PARAMS:
+        if param_name not in self.PARAMS:
             return self.ANSWER.ERR__NAME_PARAM
 
-        return self._PARAMS.get(param_name) or ""
+        return self.PARAMS.get(param_name) or ""
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
@@ -201,10 +200,10 @@ class SerialServer(QThread):
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
         param_value = line_parsed.ARGS[1]
-        if param_name not in self._PARAMS:
+        if param_name not in self.PARAMS:
             return self.ANSWER.ERR__NAME_PARAM
 
-        self._PARAMS[param_name] = param_value
+        self.PARAMS[param_name] = param_value
         return self.ANSWER.SUCCESS
 
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -229,6 +228,9 @@ class SerialServer(QThread):
 
 # =====================================================================================================================
 class SerialServer_ATC(SerialServer):
+    PARAMS = {
+        "NAME": "ATC"
+    }
     def cmd__on(self) -> TYPE__CMD_RESULT:
         # do smth
         return self.ANSWER.SUCCESS
