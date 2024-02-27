@@ -14,7 +14,7 @@ TYPE__CMD_RESULT = Union[str, List[str]]
 class AnswerVariants:
     SUCCESS: str = "OK"
     FAIL: str = "FAIL"
-    UNSUP: str = "UNSUP"
+    UNSUPPORTED: str = "UNSUPPORTED"
 
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
@@ -28,26 +28,29 @@ class LineParsed:
     """
     ALL RESULTS IN LOWERCASE! (EXCEPT ORIGINAL LINE!)
     """
-    # PREFIX: str = ""
-    LINE: str
+    PREFIX: str
+    LINE: str       # ORIGINAL LINE!
     CMD: str
     ARGS: List[str]
-    KWARGS: Dict[str, str]      # not used now
+    KWARGS: Dict[str, str]      # not used by now
 
     def __init__(self, line: str, prefix: Optional[str] = None):
+        line = str(line)
+
         # INIT ----------------
         self.LINE = line
+        self.PREFIX = ""
         self.CMD = ""
         self.ARGS = []
         self.KWARGS = {}
 
         line = line.lower()
+
         # PREFIX ----------------
-        if prefix:
-            prefix.lower()
         prefix = prefix or ""
+        prefix.lower()
         if prefix and line.startswith(prefix):
-            line = line.replace(prefix, "")
+            line = line.replace(prefix, "", 1)
 
         # BLANK ----------------
         if not line:
@@ -234,7 +237,8 @@ class SerialServer_ATC(SerialServer):
     PARAMS = {
         "NAME": "ATC",
         "ADDR": "01",
-        "NAME_ADDR": "01",
+        # "NAME_ADDR": "01",  use as CMD!!!
+
 
     }
     def cmd__on(self) -> TYPE__CMD_RESULT:

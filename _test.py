@@ -26,6 +26,9 @@ class Test_HistoryIO:
     def setup_method(self, method):
         self.VICTIM = type("Victim", (HistoryIO,), {})
 
+    def teardown_method(self, method):
+        pass
+
     # -----------------------------------------------------------------------------------------------------------------
     def test__add_list_asdict(self):
         victim: HistoryIO = self.VICTIM()
@@ -301,7 +304,7 @@ class Test_SerialClient:
 
 
 # =====================================================================================================================
-class Test_SerialServer:
+class Test_SerialServer_WithDevices:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
@@ -325,6 +328,9 @@ class Test_SerialServer:
     def setup_method(self, method):
         pass
 
+    def teardown_method(self, method):
+        pass
+
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
         # TODO: use good COM-ports!!! my Profilic is not work correctly!!! but CH341A seems work fine!!!
@@ -342,8 +348,60 @@ class Test_SerialServer:
         time.sleep(1)
         self.victim._clear_buffer_read()
         assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
-
         # assert self.victim.write_read_line_last("123") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+
+# =====================================================================================================================
+pass    # SerialServer_WithoutDevices
+pass    # SerialServer_WithoutDevices
+pass    # SerialServer_WithoutDevices
+pass    # SerialServer_WithoutDevices
+pass    # SerialServer_WithoutDevices
+
+
+# =====================================================================================================================
+class Test_LineParsed:
+    Victim: Type[LineParsed] = type("Victim", (LineParsed,), {})
+    victim: LineParsed = None
+
+    @classmethod
+    def setup_class(cls):
+        pass
+
+    @classmethod
+    def teardown_class(cls):
+        pass
+
+    def setup_method(self, method):
+        self.Victim = type("Victim", (LineParsed,), {})
+
+    def teardown_method(self, method):
+        pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__lowercase(self):
+        victim = self.Victim("")
+        assert victim.LINE == ""
+        assert victim.CMD == ""
+        assert victim.PREFIX == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {}
+
+        victim = self.Victim("hello")
+        assert victim.LINE == "hello"
+        assert victim.CMD == "hello"
+        assert victim.PREFIX == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {}
+
+        victim = self.Victim("HELLO")
+        assert victim.LINE == "HELLO"
+        assert victim.CMD == "hello"
+        assert victim.PREFIX == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {}
+
+
 
 
 # =====================================================================================================================
