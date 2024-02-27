@@ -343,7 +343,7 @@ class Test_SerialServer:
         self.victim._clear_buffer_read()
         assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
 
-        # assert self.victim.write_read_line_last("123") == AnswerKit.ERR__NAME_CMD_OR_PARAM
+        # assert self.victim.write_read_line_last("123") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 
 
 # =====================================================================================================================

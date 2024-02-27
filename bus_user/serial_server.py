@@ -11,8 +11,11 @@ TYPE__CMD_RESULT = Union[str, List[str]]
 
 
 # =====================================================================================================================
-class AnswerKit:
+class AnswerVariants:
     SUCCESS: str = "OK"
+    FAIL: str = "FAIL"
+    UNSUP: str = "UNSUP"
+
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
     ERR__NAME_PARAM: str = "ERR__NAME_PARAM"
@@ -78,7 +81,7 @@ class SerialServer(QThread):
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    ANSWER: Type[AnswerKit] = AnswerKit
+    ANSWER: Type[AnswerVariants] = AnswerVariants
 
     HELLO_MSG: TYPE__CMD_RESULT = [
         "SerialServer HELLO LINE 1",
@@ -229,7 +232,10 @@ class SerialServer(QThread):
 # =====================================================================================================================
 class SerialServer_ATC(SerialServer):
     PARAMS = {
-        "NAME": "ATC"
+        "NAME": "ATC",
+        "ADDR": "01",
+        "NAME_ADDR": "01",
+
     }
     def cmd__on(self) -> TYPE__CMD_RESULT:
         # do smth
