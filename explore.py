@@ -6,7 +6,7 @@ import time
 from object_info import ObjectInfo
 
 
-class DevEmulator(SerialServer):
+class DevEmulator(SerialServer_Base):
     ADDRESS_APPLY_FIRST_VACANT = True
 
 

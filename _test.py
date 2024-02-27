@@ -308,8 +308,8 @@ class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
-    VictimEmu: Type[SerialServer] = type("VictimEmu", (SerialServer,), {})
-    victim_emu: SerialServer = None
+    VictimEmu: Type[SerialServer_Base] = type("VictimEmu", (SerialServer_Base,), {})
+    victim_emu: SerialServer_Base = None
 
     @classmethod
     def setup_class(cls):
