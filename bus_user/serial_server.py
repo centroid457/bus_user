@@ -118,11 +118,11 @@ class SerialServer_Base(QThread):
         params_dump = []
         for name, value in self.PARAMS.items():
             if isinstance(value, dict):
-                params_dump.append(f"{name}={{")
+                params_dump.append(f"  |{name}={{")
                 for name_, value_ in value.items():
                     params_dump.append(f"    |{name_}={value_}")
             else:
-                params_dump.append(f"{name}={value}")
+                params_dump.append(f"  |{name}={value}")
 
         # WORK --------------------------------
         result = [
@@ -130,9 +130,11 @@ class SerialServer_Base(QThread):
             "[PARAMS]:",
             *params_dump,
             "[CMDS]:",
-            *[name for name in self._LIST__CMDS],
+            *[f"  |{name}" for name in self._LIST__CMDS],
             "[SCRIPTS]:",
-            *[name for name in self._LIST__SCRIPTS],
+            *[f"  |{name}" for name in self._LIST__SCRIPTS],
+            "[ANSWER_VARIANTS]:",
+            *[f"  |{name}" for name in dir(self.ANSWER) if not name.startswith("__")],
         ]
         return result
 
@@ -171,7 +173,7 @@ class SerialServer_Base(QThread):
             print(msg)
             return
 
-        # self._SERIAL_CLIENT._write_line("")     # send blank=NO NEED!!!
+        self._SERIAL_CLIENT._write_line("="*50)     # send blank=NO NEED!!!
         self.execute_line("hello")
 
         while True:
@@ -263,14 +265,15 @@ class SerialServer_Base(QThread):
         # see internal
 
         # WORK --------------------------------
-        if line_parsed.ARGS_count() == 2:
-            param_name = line_parsed.ARGS[0]
-            param_value = line_parsed.ARGS[1]
-            if param_name not in self.PARAMS:
-                return self.ANSWER.ERR__NAME_PARAM
+        if line_parsed.KWARGS_count() > 0:
+            if line_parsed.ARGS_count() == 2:
+                param_name = line_parsed.ARGS[0]
+                param_value = line_parsed.ARGS[1]
+                if param_name not in self.PARAMS:
+                    return self.ANSWER.ERR__NAME_PARAM
 
-            self.PARAMS[param_name] = param_value
-            return self.ANSWER.SUCCESS
+                self.PARAMS[param_name] = param_value
+                return self.ANSWER.SUCCESS
 
         elif line_parsed.KWARGS_count() > 0:
             for name in line_parsed.KWARGS:
@@ -302,6 +305,10 @@ class SerialServer_Base_Example(SerialServer_Base):
     PARAMS = {
         "NAME": "ATC",
         "ADDR": "01",
+        "TEMP": {
+            "1": 111,
+            "2": 222,
+        },
         # "NAME_ADDR": "01",  use as CMD!!!
 
     }
