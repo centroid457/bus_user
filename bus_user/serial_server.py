@@ -33,7 +33,7 @@ class LineParsed:
     PREFIX: str
     CMD: str
     ARGS: List[str]
-    KWARGS: Dict[str, str]      # not used by now
+    KWARGS: Dict[str, str]
 
     # AUX ---------------------
     _PREFIX_EXPECTED: str
@@ -253,18 +253,28 @@ class SerialServer_Base(QThread):
         return self.PARAMS.get(param_name) or ""
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # ERR__ARGS_VALIDATION --------------------------------
-        if line_parsed.ARGS_count() != 2:
-            return self.ANSWER.ERR__ARGS_VALIDATION
+        # ERR__ARGS_VALIDATION -----------------
+        # see internal
 
         # WORK --------------------------------
-        param_name = line_parsed.ARGS[0]
-        param_value = line_parsed.ARGS[1]
-        if param_name not in self.PARAMS:
-            return self.ANSWER.ERR__NAME_PARAM
+        if line_parsed.ARGS_count() == 2:
+            param_name = line_parsed.ARGS[0]
+            param_value = line_parsed.ARGS[1]
+            if param_name not in self.PARAMS:
+                return self.ANSWER.ERR__NAME_PARAM
 
-        self.PARAMS[param_name] = param_value
-        return self.ANSWER.SUCCESS
+            self.PARAMS[param_name] = param_value
+            return self.ANSWER.SUCCESS
+
+        elif line_parsed.KWARGS_count() > 0:
+            for param_name, param_value in line_parsed.KWARGS.items():
+                if param_name not in self.PARAMS:
+                    return self.ANSWER.ERR__NAME_PARAM
+                self.PARAMS[param_name] = param_value
+            return self.ANSWER.SUCCESS
+
+        else:
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
