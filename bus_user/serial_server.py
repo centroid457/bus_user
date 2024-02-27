@@ -11,7 +11,7 @@ TYPE__CMD_RESULT = Union[str, List[str]]
 
 
 # =====================================================================================================================
-class AnswerResultStd:
+class AnswerKit:
     SUCCESS: str = "OK"
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
@@ -29,7 +29,7 @@ class LineParsed:
     LINE: str
     CMD: str
     ARGS: List[str]
-    KWARGS: Dict[str, str]
+    KWARGS: Dict[str, str]      # not used now
 
     def __init__(self, line: str, prefix: Optional[str] = None):
         # INIT ----------------
@@ -78,6 +78,8 @@ class SerialServer(QThread):
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
+    ANSWER: Type[AnswerKit] = AnswerKit
+
     HELLO_MSG: TYPE__CMD_RESULT = [
         "SerialServer HELLO LINE 1",
         "SerialServer hello line 2",
@@ -121,7 +123,7 @@ class SerialServer(QThread):
             try:
                 line = self._SERIAL_CLIENT.read_line()
             except:
-                self._SERIAL_CLIENT._write_line(AnswerResultStd.ERR__ENCODING_OR_DEVICE)
+                self._SERIAL_CLIENT._write_line(self.ANSWER.ERR__ENCODING_OR_DEVICE)
 
             if line:
                 self.execute_line(line)
@@ -160,7 +162,7 @@ class SerialServer(QThread):
             return ""
 
         if line_parsed.CMD not in self._PARAMS:
-            return AnswerResultStd.ERR__NAME_CMD_OR_PARAM
+            return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
         return self._PARAMS[line_parsed.CMD]
 
@@ -182,39 +184,39 @@ class SerialServer(QThread):
     def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() != 1:
-            return AnswerResultStd.ERR__ARGS_VALIDATION
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
         if param_name not in self._PARAMS:
-            return AnswerResultStd.ERR__NAME_PARAM
+            return self.ANSWER.ERR__NAME_PARAM
 
         return self._PARAMS.get(param_name) or ""
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() != 2:
-            return AnswerResultStd.ERR__ARGS_VALIDATION
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
         param_value = line_parsed.ARGS[1]
         if param_name not in self._PARAMS:
-            return AnswerResultStd.ERR__NAME_PARAM
+            return self.ANSWER.ERR__NAME_PARAM
 
         self._PARAMS[param_name] = param_value
-        return AnswerResultStd.SUCCESS
+        return self.ANSWER.SUCCESS
 
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() < 1:
-            return AnswerResultStd.ERR__ARGS_VALIDATION
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
         meth_script_name = f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}"
         if not hasattr(self, meth_script_name):
-            return AnswerResultStd.ERR__NAME_SCRIPT
+            return self.ANSWER.ERR__NAME_SCRIPT
 
         meth_scr = getattr(self, meth_script_name)
         return meth_scr(line_parsed)
@@ -222,22 +224,22 @@ class SerialServer(QThread):
     # -----------------------------------------------------------------------------------------------------------------
     def script__script1(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResultStd.SUCCESS
+        return self.ANSWER.SUCCESS
 
 
 # =====================================================================================================================
 class SerialServer_ATC(SerialServer):
     def cmd__on(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResultStd.SUCCESS
+        return self.ANSWER.SUCCESS
 
     def cmd__off(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResultStd.SUCCESS
+        return self.ANSWER.SUCCESS
 
     def cmd__rst(self) -> TYPE__CMD_RESULT:
         # do smth
-        return AnswerResultStd.SUCCESS
+        return self.ANSWER.SUCCESS
 
 
 # =====================================================================================================================
