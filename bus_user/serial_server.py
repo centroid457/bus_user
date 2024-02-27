@@ -108,8 +108,31 @@ class SerialServer_Base(QThread):
     _GETATTR_STARTSWITH__CMD: str = "cmd__"
     _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
-    _NAMES__CMD: List[str]
-    _NAMES__SCRIPT: List[str]
+    _LIST__CMDS: List[str]
+    _LIST__SCRIPTS: List[str]
+
+    @property
+    def _LIST__HELP(self) -> List[str]:
+        params_dump = []
+        for name, value in self.PARAMS.items():
+            if isinstance(value, dict):
+                params_dump.append(f"{name}={{")
+                for name_, value_ in value.items():
+                    params_dump.append(f"    |{name_}={value_}")
+            else:
+                params_dump.append(f"{name}={value}")
+
+        # WORK --------------------------------
+        result = [
+            *self.HELLO_MSG,
+            "[PARAMS]:",
+            *params_dump,
+            "[CMDS]:",
+            *[name for name in self._LIST__CMDS],
+            "[SCRIPTS]:",
+            *[name for name in self._LIST__SCRIPTS],
+        ]
+        return result
 
     # -----------------------------------------------------------------------------------------------------------------
     def __init__(self, params: Optional[Dict[str, Any]] = None):
@@ -117,7 +140,7 @@ class SerialServer_Base(QThread):
         super().__init__()
 
         self.PARAMS = params or self.PARAMS or {}
-        self._names__init_lists()
+        self._init_lists()
 
         self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()
         self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
@@ -128,16 +151,16 @@ class SerialServer_Base(QThread):
         if self.ADDRESS_APPLY_FIRST_VACANT is not None:
             self._SERIAL_CLIENT.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
 
-    def _names__init_lists(self) -> None:
-        self._NAMES__CMD = []
-        self._NAMES__SCRIPT = []
+    def _init_lists(self) -> None:
+        self._LIST__CMDS = []
+        self._LIST__SCRIPTS = []
 
         for name in dir(self):
             name = name.lower()
             if name.startswith(self._GETATTR_STARTSWITH__CMD):
-                self._NAMES__CMD.append(name.replace(self._GETATTR_STARTSWITH__CMD, "", 1))
+                self._LIST__CMDS.append(name.replace(self._GETATTR_STARTSWITH__CMD, "", 1))
             if name.startswith(self._GETATTR_STARTSWITH__SCRIPT):
-                self._NAMES__SCRIPT.append(name.replace(self._GETATTR_STARTSWITH__SCRIPT, "", 1))
+                self._LIST__SCRIPTS.append(name.replace(self._GETATTR_STARTSWITH__SCRIPT, "", 1))
 
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
@@ -180,7 +203,7 @@ class SerialServer_Base(QThread):
         if not line_parsed.CMD:
             return ""
 
-        if line_parsed.CMD not in self._NAMES__CMD:
+        if line_parsed.CMD not in self._LIST__CMDS:
             return self._cmd__param_as_cmd(line_parsed)
 
         meth_cmd = getattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}")
@@ -196,38 +219,19 @@ class SerialServer_Base(QThread):
         return self.PARAMS[line_parsed.CMD]
 
     # -----------------------------------------------------------------------------------------------------------------
-    def cmd__help(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # ERR__ARGS_VALIDATION --------------------------------
-        pass
-
-        # WORK --------------------------------
-        params_dump = []
-        for name, value in self.PARAMS.items():
-            if isinstance(value, dict):
-                params_dump.append(f"{name}={{")
-                for name_, value_ in value.items():
-                    params_dump.append(f"    |{name_}={value_}")
-            else:
-                params_dump.append(f"{name}={value}")
-
-        # WORK --------------------------------
-        result = [
-            *self.HELLO_MSG,
-            "[PARAMS]:",
-            *params_dump,
-            "[CMDS]:",
-            *[name for name in self._NAMES__CMD],
-            "[SCRIPTS]:",
-            *[name for name in self._NAMES__SCRIPT],
-        ]
-        return result
-
     def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
         # WORK --------------------------------
         return self.HELLO_MSG
+
+    def cmd__help(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return self._LIST__HELP
 
     def cmd__echo(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
@@ -269,7 +273,7 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         script_name = line_parsed.ARGS[0]
-        if script_name not in self._NAMES__SCRIPT:
+        if script_name not in self._LIST__SCRIPTS:
             return self.ANSWER.ERR__NAME_SCRIPT
 
         meth_scr = getattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}")
