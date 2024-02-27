@@ -95,7 +95,7 @@ class SerialClient:
     _TIMEOUT__READ_FIRST: float = 0.9       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
     # _TIMEOUT__READ_LAST: float = 0.9
-    _TIMEOUT__WRITE: float = 0.5
+    # _TIMEOUT__WRITE: float = 0.5
     BAUDRATE: int = 9600        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
@@ -131,7 +131,7 @@ class SerialClient:
         self._SERIAL.baudrate = self.BAUDRATE
         self._SERIAL.timeout = None
         # self._SERIAL.timeout = self._TIMEOUT__READ_FIRST
-        self._SERIAL.write_timeout = self._TIMEOUT__WRITE
+        # self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
     def __del__(self):
         self.disconnect()
