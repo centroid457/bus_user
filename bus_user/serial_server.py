@@ -81,6 +81,9 @@ class LineParsed:
     def ARGS_count(self) -> int:
         return len(self.ARGS)
 
+    def KWARGS_count(self) -> int:
+        return len(self.KWARGS)
+
 
 # =====================================================================================================================
 class SerialServer(QThread):

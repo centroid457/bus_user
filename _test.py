@@ -304,7 +304,7 @@ class Test_SerialClient:
 
 
 # =====================================================================================================================
-class Test_SerialServer_WithDevices:
+class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
@@ -386,6 +386,8 @@ class Test_LineParsed:
         assert victim.CMD == ""
         assert victim.ARGS == []
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 0
 
         victim = self.Victim("hello")
         assert victim.LINE == "hello"
@@ -393,6 +395,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == []
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO")
         assert victim.LINE == "HELLO"
@@ -400,6 +404,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == []
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 0
 
     def test__args_kwargs(self):
         victim = self.Victim("HELLO CH")
@@ -408,6 +414,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", ]
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 1
+        assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1")
         assert victim.LINE == "HELLO CH 1"
@@ -415,6 +423,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", "1", ]
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 2
+        assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH=1")
         assert victim.LINE == "HELLO CH=1"
@@ -422,6 +432,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == []
         assert victim.KWARGS == {"ch": "1"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 1
 
         victim = self.Victim("HELLO CH1 CH2=2    ch3=3  ch4")
         assert victim.LINE == "HELLO CH1 CH2=2    ch3=3  ch4"
@@ -429,6 +441,8 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch1", "ch4"]
         assert victim.KWARGS == {"ch2": "2", "ch3": "3"}
+        assert victim.ARGS_count() == 2
+        assert victim.KWARGS_count() == 2
 
     def test__prefix(self):
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
@@ -437,6 +451,8 @@ class Test_LineParsed:
         assert victim.CMD == "ch"
         assert victim.ARGS == ["1", ]
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 1
+        assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO123")
         assert victim.LINE == "HELLO CH 1"
@@ -444,6 +460,53 @@ class Test_LineParsed:
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", "1", ]
         assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 2
+        assert victim.KWARGS_count() == 0
+
+    @pytest.mark.skip
+    def test__line_as_object(self):
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        # victim = self.Victim("HELLO CH")
+        # assert victim.LINE == "HELLO CH"
+        # assert victim.PREFIX == ""
+        # assert victim.CMD == "hello"
+        # assert victim.ARGS == ["ch", ]
+        # assert victim.KWARGS == {}
+        # assert victim.ARGS_count() == 1
+
+
+# =====================================================================================================================
+class Test_SerialServer_NoConnection:
+    Victim: Type[LineParsed] = type("Victim", (LineParsed,), {})
+    victim: LineParsed = None
+
+    @classmethod
+    def setup_class(cls):
+        pass
+
+    @classmethod
+    def teardown_class(cls):
+        pass
+
+    def setup_method(self, method):
+        self.Victim = type("Victim", (LineParsed,), {})
+
+    def teardown_method(self, method):
+        pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__lowercase(self):
+        pass
+        # victim = self.Victim("")
+        # assert victim.LINE == ""
+        # assert victim.PREFIX == ""
+        # assert victim.CMD == ""
+        # assert victim.ARGS == []
+        # assert victim.KWARGS == {}
 
 
 # =====================================================================================================================
