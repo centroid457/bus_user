@@ -109,7 +109,7 @@ class SerialServer(QThread):
     _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
     def __init__(self, params: Optional[Dict[str, Any]] = None):
-        # FIXME: deprecate param params???
+        # FIXME: deprecate param params??? used for tests
         super().__init__()
 
         self.PARAMS = params or self.PARAMS or {}
@@ -247,7 +247,6 @@ class SerialServer_ATC(SerialServer):
         "NAME": "ATC",
         "ADDR": "01",
         # "NAME_ADDR": "01",  use as CMD!!!
-
 
     }
     def cmd__on(self) -> TYPE__CMD_RESULT:

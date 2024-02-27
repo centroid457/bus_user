@@ -499,7 +499,7 @@ class Test_SerialServer_NoConnection:
         pass
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__lowercase(self):
+    def test__1(self):
         pass
         # victim = self.Victim("")
         # assert victim.LINE == ""
