@@ -28,13 +28,17 @@ class LineParsed:
     """
     ALL RESULTS IN LOWERCASE! (EXCEPT ORIGINAL LINE!)
     """
-    PREFIX: str
+    # REAL STATE --------------
     LINE: str       # ORIGINAL LINE!
+    PREFIX: str
     CMD: str
     ARGS: List[str]
     KWARGS: Dict[str, str]      # not used by now
 
-    def __init__(self, line: str, prefix: Optional[str] = None):
+    # AUX ---------------------
+    _PREFIX_EXPECTED: str
+
+    def __init__(self, line: str, _prefix_expected: Optional[str] = None):
         line = str(line)
 
         # INIT ----------------
@@ -44,22 +48,24 @@ class LineParsed:
         self.ARGS = []
         self.KWARGS = {}
 
-        line = line.lower()
+        line_lower = line.lower()
 
         # PREFIX ----------------
-        prefix = prefix or ""
-        prefix.lower()
-        if prefix and line.startswith(prefix):
-            line = line.replace(prefix, "", 1)
+        _prefix_expected = _prefix_expected or ""
+        _prefix_expected = _prefix_expected.lower()
+        self._PREFIX_EXPECTED = _prefix_expected
+        if _prefix_expected and line_lower.startswith(_prefix_expected):
+            self.PREFIX = _prefix_expected
+            line_lower = line_lower.replace(_prefix_expected, "", 1)
 
-        # BLANK ----------------
-        if not line:
+        # BLANK ----------------------
+        if not line_lower:
             return
-        line_parts = line.split()
+        line_parts = line_lower.split()
         if not line_parts:
             return
 
-        # CMD ----------------
+        # CMD ------------------------
         self.CMD = line_parts[0]
 
         # ARGS/KWARGS ----------------
@@ -139,7 +145,7 @@ class SerialServer(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, prefix=self._SERIAL_CLIENT.CMD_PREFIX)
+        line_parsed = LineParsed(line, _prefix=self._SERIAL_CLIENT.CMD_PREFIX)
         cmd_result = self._cmd__(line_parsed)
 
         # blank line

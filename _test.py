@@ -379,29 +379,71 @@ class Test_LineParsed:
         pass
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__lowercase(self):
+    def test__1(self):
         victim = self.Victim("")
         assert victim.LINE == ""
-        assert victim.CMD == ""
         assert victim.PREFIX == ""
+        assert victim.CMD == ""
         assert victim.ARGS == []
         assert victim.KWARGS == {}
 
         victim = self.Victim("hello")
         assert victim.LINE == "hello"
-        assert victim.CMD == "hello"
         assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
         assert victim.ARGS == []
         assert victim.KWARGS == {}
 
         victim = self.Victim("HELLO")
         assert victim.LINE == "HELLO"
-        assert victim.CMD == "hello"
         assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
         assert victim.ARGS == []
         assert victim.KWARGS == {}
 
+        # ARGS/KWARGS ---------------------------
+        victim = self.Victim("HELLO CH")
+        assert victim.LINE == "HELLO CH"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == ["ch", ]
+        assert victim.KWARGS == {}
 
+        victim = self.Victim("HELLO CH 1")
+        assert victim.LINE == "HELLO CH 1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == ["ch", "1", ]
+        assert victim.KWARGS == {}
+
+        victim = self.Victim("HELLO CH=1")
+        assert victim.LINE == "HELLO CH=1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1"}
+
+        victim = self.Victim("HELLO CH1 CH2=2    ch3=3  ch4")
+        assert victim.LINE == "HELLO CH1 CH2=2    ch3=3  ch4"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == ["ch1", "ch4"]
+        assert victim.KWARGS == {"ch2": "2", "ch3": "3"}
+
+        # PREFIX ---------------------------
+        victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
+        assert victim.LINE == "HELLO CH 1"
+        assert victim.PREFIX == "hello"
+        assert victim.CMD == "ch"
+        assert victim.ARGS == ["1", ]
+        assert victim.KWARGS == {}
+
+        victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO123")
+        assert victim.LINE == "HELLO CH 1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == ["ch", "1", ]
+        assert victim.KWARGS == {}
 
 
 # =====================================================================================================================
