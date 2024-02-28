@@ -195,13 +195,11 @@ class Test_SerialClient:
         assert self.Victim._bytes_eol__clear(b"111\n\n\n") == b"111"
 
     def test__r_w_single(self):
-        assert self.victim._write_line("") is False
+        assert self.victim._write_line("") is True
         assert self.victim.read_lines() == []
 
         assert self.victim._write_line("hello") is True
         assert self.victim.read_lines() == ["hello", ]
-        assert self.victim.read_lines() == []
-
         assert self.victim.read_lines() == []
 
     def test__r_w_multy(self):

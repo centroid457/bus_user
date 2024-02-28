@@ -92,10 +92,9 @@ class SerialClient:
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    _TIMEOUT__READ_FIRST: float = 0.9       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
     # _TIMEOUT__READ_LAST: float = 0.9
-    # _TIMEOUT__WRITE: float = 0.5
     BAUDRATE: int = 9600        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]

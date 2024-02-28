@@ -158,7 +158,6 @@ class SerialServer_Base(QThread):
         self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()
         self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
         self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
-        # self._SERIAL_CLIENT._TIMEOUT__READ_LAST = None
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if self.ADDRESS_APPLY_FIRST_VACANT is not None:
