@@ -22,12 +22,12 @@ class AnswerVariants:
 
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
-    ERR__NAME_PARAM: str = "ERR__NAME_PARAM"
     ERR__VALUE: str = "ERR__VALUE"
     ERR__ARGS_VALIDATION: str = "ERR__ARGS_VALIDATION"
 
     ERR__ENCODING_OR_DEVICE: str = "ERR__ENCODING_OR_DEVICE"
     ERR__SYNTAX: str = "ERR__SYNTAX"
+    ERR__PARAM_CALLING: str = "ERR__PARAM_CALLING"
 
 
 class LineParsed:
@@ -182,8 +182,8 @@ class SerialServer_Base(QThread):
             print(msg)
             return
 
-        self._SERIAL_CLIENT._write_line("")     # send blank=NO NEED!!!
-        self._SERIAL_CLIENT._write_line("="*50)     # send blank=NO NEED!!!
+        self._SERIAL_CLIENT._write_line("")
+        self._SERIAL_CLIENT._write_line("="*50)
         self.execute_line("hello")
 
         while True:
@@ -260,8 +260,13 @@ class SerialServer_Base(QThread):
         for param_name in line_parsed.ARGS:
             param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, result)
             if param_name_original is None:
-                return self.ANSWER.ERR__NAME_PARAM
+                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
             result = result[param_name_original]
+            if callable(result):
+                try:
+                    result = result()
+                except:
+                    return self.ANSWER.ERR__PARAM_CALLING
 
         if result == self.PARAMS:
             return self.ANSWER.ERR__ARGS_VALIDATION
@@ -283,7 +288,7 @@ class SerialServer_Base(QThread):
 
             param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
             if not param_name_original:
-                return self.ANSWER.ERR__NAME_PARAM
+                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
             self.PARAMS[param_name_original] = param_value
             return self.ANSWER.SUCCESS
@@ -293,7 +298,7 @@ class SerialServer_Base(QThread):
             for param_name in line_parsed.KWARGS:
                 param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
                 if not param_name_original:
-                    return self.ANSWER.ERR__NAME_PARAM
+                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
             # set --------------
             for param_name, param_value in line_parsed.KWARGS.items():
@@ -324,6 +329,8 @@ class SerialServer_Example(SerialServer_Base):
     PARAMS = {
         "NAME": "ATC",
         "ADDR": "01",
+        "TIME": time.time,
+        "EXX": time.strftime,
         "TEMP": {
             1: 111,
             "2": 222,
