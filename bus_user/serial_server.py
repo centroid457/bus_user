@@ -6,6 +6,9 @@ from object_info import ObjectInfo
 from PyQt5.QtCore import QThread
 
 
+import funcs_aux
+
+
 # =====================================================================================================================
 TYPE__CMD_RESULT = Union[str, List[str]]
 
@@ -21,7 +24,9 @@ class AnswerVariants:
     ERR__NAME_PARAM: str = "ERR__NAME_PARAM"
     ERR__VALUE: str = "ERR__VALUE"
     ERR__ARGS_VALIDATION: str = "ERR__ARGS_VALIDATION"
+
     ERR__ENCODING_OR_DEVICE: str = "ERR__ENCODING_OR_DEVICE"
+    ERR__SYNTAX: str = "ERR__SYNTAX"
 
 
 class LineParsed:
@@ -65,18 +70,18 @@ class LineParsed:
         if not line_parts:
             return
 
-        # CMD ------------------------
-        self.CMD = line_parts[0]
-
         # ARGS/KWARGS ----------------
-        if len(line_parts) == 1:
-            return
-        for part in line_parts[1:]:
+        for part in line_parts:
             if "=" not in part:
                 self.ARGS.append(part)
             else:
                 part__key_value = part.split("=")
                 self.KWARGS.update(dict([part__key_value, ]))
+
+        # CMD ------------------------
+        if self.ARGS:
+            self.CMD = self.ARGS[0]
+            self.ARGS = self.ARGS[1:]
 
     def ARGS_count(self) -> int:
         return len(self.ARGS)
@@ -208,20 +213,22 @@ class SerialServer_Base(QThread):
         if not line_parsed.CMD:
             return ""
 
-        if line_parsed.CMD not in self._LIST__CMDS:
+        meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
+        meth_name__original = funcs_aux.collection__get_original_item__case_type_insensitive(meth_name__expected, dir(self))
+        if not meth_name__original:
             return self._cmd__param_as_cmd(line_parsed)
 
-        meth_cmd = getattr(self, f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}")
+        meth_cmd = getattr(self, meth_name__original)
         return meth_cmd(line_parsed)
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        if not line_parsed.CMD:
-            return ""
-
-        if line_parsed.CMD not in self.PARAMS:
+        # WORK --------------------------------
+        param_name = line_parsed.CMD
+        param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
+        if param_name_original is None:
             return self.ANSWER.ERR__NAME_CMD_OR_PARAM
-
-        return self.PARAMS[line_parsed.CMD]
+        else:
+            return self.PARAMS[param_name_original]
 
     # -----------------------------------------------------------------------------------------------------------------
     def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -247,19 +254,24 @@ class SerialServer_Base(QThread):
 
     def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
-        if line_parsed.ARGS_count() != 1:
+        if line_parsed.ARGS_count() == 0:
             return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
-
-        # TODO: create dict worked as caseindepandent! NEW MODULE!!!
-
-        for name, value in self.PARAMS.items():
-            if name.lower() == param_name.lower():
-                return str(value)
-
-        return self.ANSWER.ERR__NAME_PARAM
+        param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
+        if param_name_original is None:
+            return self.ANSWER.ERR__NAME_PARAM
+        else:
+            result = self.PARAMS[param_name_original]
+            # FIXME:
+            # FIXME:
+            # FIXME:
+            # FIXME:
+            # FIXME:
+            # FIXME:
+            # FIXME:
+            return result
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         """

@@ -444,6 +444,16 @@ class Test_LineParsed:
         assert victim.ARGS_count() == 2
         assert victim.KWARGS_count() == 2
 
+    def test__kwargs_only(self):
+        victim = self.Victim("CH=1")
+        assert victim.LINE == "CH=1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 1
+
     def test__prefix(self):
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
         assert victim.LINE == "HELLO CH 1"
