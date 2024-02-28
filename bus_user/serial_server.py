@@ -102,7 +102,7 @@ class SerialServer_Base(QThread):
         "SerialServer_Base hello line 2",
     ]
 
-    PARAMS: Dict[str, Union[Any, Dict[Any, Any]]] = None
+    PARAMS: Dict[str, Union[Any, Dict[Union[str, int], Any]]]
 
     # AUX -----------------------------------------------------
     _SERIAL_CLIENT: SerialClient
@@ -173,6 +173,7 @@ class SerialServer_Base(QThread):
             print(msg)
             return
 
+        self._SERIAL_CLIENT._write_line("")     # send blank=NO NEED!!!
         self._SERIAL_CLIENT._write_line("="*50)     # send blank=NO NEED!!!
         self.execute_line("hello")
 
@@ -251,10 +252,14 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         param_name = line_parsed.ARGS[0]
-        if param_name not in self.PARAMS:
-            return self.ANSWER.ERR__NAME_PARAM
 
-        return self.PARAMS.get(param_name) or ""
+        # TODO: create dict worked as caseindepandent! NEW MODULE!!!
+
+        for name, value in self.PARAMS.items():
+            if name.lower() == param_name.lower():
+                return str(value)
+
+        return self.ANSWER.ERR__NAME_PARAM
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         """

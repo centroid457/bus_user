@@ -464,6 +464,21 @@ class Test_LineParsed:
         assert victim.KWARGS_count() == 0
 
     @pytest.mark.skip
+    def test__params_as_noString(self):
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        pass    # TODO: add
+        # victim = self.Victim("HELLO CH")
+        # assert victim.LINE == "HELLO CH"
+        # assert victim.PREFIX == ""
+        # assert victim.CMD == "hello"
+        # assert victim.ARGS == ["ch", ]
+        # assert victim.KWARGS == {}
+        # assert victim.ARGS_count() == 1
+
+    @pytest.mark.skip
     def test__line_as_object(self):
         pass    # TODO: add
         pass    # TODO: add
