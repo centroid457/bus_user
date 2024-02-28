@@ -94,7 +94,7 @@ class LineParsed:
 
 # =====================================================================================================================
 class SerialServer_Base(QThread):
-    # TODO: not realized access rules for PARAMS - may be not need in this case of class/situation!!!
+    # TODO: not realized ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
 
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
