@@ -1,9 +1,10 @@
-# RELEASE history
+# RELEASE HISTORY
 
 ********************************************************************************
 ## TODO
 1. add all other port settings into SerialClient  
-2. test work with several lines EOL  
+2. test work with several lines EOL__SEND  
+3. tests for SerialServer  
 
 ********************************************************************************
 ## FIXME
@@ -11,6 +12,10 @@
 
 ********************************************************************************
 ## NEWS
+
+0.1.0 (2024/02/28 15:59:21)
+------------------------------
+- add SerialServer (need tests)  
 
 0.0.5 (2024/01/31 11:45:56)
 ------------------------------

@@ -16,7 +16,8 @@ class PROJECT:
     # PROJECT ----------------------------------------------
     NAME_IMPORT: str = "bus_user"
     KEYWORDS: List[str] = [
-        "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
+        "serial", "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
+        "i2c"
     ]
     CLASSIFIERS_TOPICS_ADD: List[str] = [
         # "Topic :: Communications",
@@ -25,7 +26,7 @@ class PROJECT:
 
     # README -----------------------------------------------
     # add DOUBLE SPACE at the end of all lines! for correct representation in MD-viewers
-    DESCRIPTION_SHORT: str = "work with equipment over buses like Serial/i2c/..."
+    DESCRIPTION_SHORT: str = "work with equipment over buses like Serial/i2c/... as client and server"
     DESCRIPTION_LONG: str = """
     ### !. MOST APPROPRIATE COMMAND PROTOCOL
 other protocols mot recommended
@@ -49,23 +50,25 @@ other protocols mot recommended
         # "feat1",
         # ["feat2", "block1", "block2"],
 
-        "Serial bus usage! with simply using commands",
-        "connect with ADDRESS_APPLY_FIRST_VACANT",
+        ["Serial",
+            "Client+Server",
+            "connect with ADDRESS_APPLY_FIRST_VACANT",
+         ]
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 0, 5)
+    VERSION: Tuple[int, int, int] = (0, 1, 0)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
-        "test work with several lines EOL__SEND"
+        "test work with several lines EOL__SEND",
+
+        "tests for SerialServer"
     ]
     FIXME: List[str] = [
         "..."
     ]
     NEWS: List[str] = [
-        "add Emulator",
-        "connect with ADDRESS_APPLY_FIRST_VACANT",
-        "_read_line char by char!!! with universal timeout"
+        "add SerialServer (need tests)",
     ]
 
     # FINALIZE -----------------------------------------------
