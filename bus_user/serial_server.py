@@ -2,6 +2,7 @@ from .serial_client import SerialClient
 
 from typing import *
 import time
+import re
 from object_info import ObjectInfo
 from PyQt5.QtCore import QThread
 
@@ -66,6 +67,7 @@ class LineParsed:
         # BLANK ----------------------
         if not line_lower:
             return
+        line_lower = re.sub(r"\s*=\s*", "=", line_lower)
         line_parts = line_lower.split()
         if not line_parts:
             return
@@ -322,8 +324,8 @@ class SerialServer_Base_Example(SerialServer_Base):
         "NAME": "ATC",
         "ADDR": "01",
         "TEMP": {
-            "1": 111,
-            "2": 222,
+            1: 111,
+            2: 222,
         },
         # "NAME_ADDR": "01",  use as CMD!!!
     }
