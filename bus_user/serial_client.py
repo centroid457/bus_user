@@ -581,8 +581,10 @@ class SerialClient:
         return history
 
     # CMD =============================================================================================================
-    def _create_cmd_line(self, cmd: str, *args, **kwargs) -> str:
+    def _create_cmd_line(self, cmd: Any, *args, **kwargs) -> str:
         result = ""
+
+        cmd = str(cmd)
 
         if self.CMD_PREFIX and not cmd.startswith(self.CMD_PREFIX):
             result += f"{self.CMD_PREFIX}"

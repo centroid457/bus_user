@@ -205,9 +205,9 @@ class SerialServer_Base(QThread):
         line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.CMD_PREFIX)
         cmd_result = self._cmd__(line_parsed)
 
-        # blank line
-        if not cmd_result:
-            return True
+        # blank line - SEND!!! because value may be BLANK!!!!
+        # if not cmd_result:
+        #     return True
 
         write_result = self._SERIAL_CLIENT._write_line(cmd_result)
         return write_result
@@ -251,7 +251,7 @@ class SerialServer_Base(QThread):
         # WORK --------------------------------
         return line_parsed.LINE
 
-    def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+    def cmd__get(self, line_parsed: LineParsed) -> Any:
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
@@ -271,7 +271,7 @@ class SerialServer_Base(QThread):
         if result == self.PARAMS:
             return self.ANSWER.ERR__ARGS_VALIDATION
         else:
-            return result
+            return str(result)
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         """
@@ -329,8 +329,13 @@ class SerialServer_Example(SerialServer_Base):
     PARAMS = {
         "NAME": "ATC",
         "ADDR": "01",
+
+        "BLANC": "",
+        "NONE": None,
+
         "TIME": time.time,
         "EXX": time.strftime,
+
         "TEMP": {
             1: 111,
             "2": 222,
