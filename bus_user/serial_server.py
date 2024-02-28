@@ -94,7 +94,8 @@ class LineParsed:
 
 # =====================================================================================================================
 class SerialServer_Base(QThread):
-    # TODO: not realized ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
+    # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
+    # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
 
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
@@ -102,14 +103,13 @@ class SerialServer_Base(QThread):
     ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
     ADDRESS: str = None
 
-    ANSWER: Type[AnswerVariants] = AnswerVariants
-
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO LINE 1",
         "SerialServer_Base hello line 2",
     ]
 
     PARAMS: Dict[str, Union[Any, Dict[Union[str, int], Any]]]
+    ANSWER: Type[AnswerVariants] = AnswerVariants
 
     # AUX -----------------------------------------------------
     _SERIAL_CLIENT: SerialClient
