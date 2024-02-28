@@ -251,12 +251,20 @@ class SerialServer_Base(QThread):
         return line_parsed.LINE
 
     def cmd__get(self, line_parsed: LineParsed) -> Any:
+        """
+        use only single name!!!
+        """
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
         # WORK --------------------------------
         result = self.PARAMS
-        for param_name in line_parsed.ARGS:
+
+        ARGS = []
+        for arg in line_parsed.ARGS:
+            ARGS.extend(arg.split("/"))
+
+        for param_name in ARGS:
             param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, result)
             if param_name_original is None:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
@@ -267,6 +275,7 @@ class SerialServer_Base(QThread):
                 except:
                     return self.ANSWER.ERR__PARAM_CALLING
 
+        # RESULT ----------------------------
         if result == self.PARAMS:
             return self.ANSWER.ERR__ARGS_VALIDATION
         else:
@@ -335,7 +344,7 @@ class SerialServer_Example(SerialServer_Base):
         "TIME": time.time,
         "EXX": time.strftime,
 
-        "TEMP": {
+        "DICT": {
             1: 111,
             "2": 222,
             3: {
@@ -343,7 +352,6 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
-        # "NAME_ADDR": "01",  use as CMD!!!
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
