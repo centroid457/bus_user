@@ -214,7 +214,7 @@ class SerialServer_Base(QThread):
     # -----------------------------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
-        meth_name__original = funcs_aux.collection__get_original_item__case_type_insensitive(meth_name__expected, dir(self))
+        meth_name__original = funcs_aux.collection__get_original_item__case_insensitive(meth_name__expected, dir(self))
         if meth_name__original:
             meth_cmd = getattr(self, meth_name__original)
         else:
@@ -268,7 +268,7 @@ class SerialServer_Base(QThread):
         for param_name in ARGS:
             if isinstance(result, dict):
                 # DICT -------------------------------
-                param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, result)
+                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, result)
                 if param_name_original is None:
                     return self.ANSWER.ERR__NAME_CMD_OR_PARAM
                 result = result[param_name_original]
@@ -310,7 +310,7 @@ class SerialServer_Base(QThread):
             param_name = line_parsed.ARGS[0]
             param_value = line_parsed.ARGS[1]
 
-            param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
+            param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
             if not param_name_original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
@@ -320,13 +320,13 @@ class SerialServer_Base(QThread):
         elif line_parsed.KWARGS_count() > 0:
             # check exists all --------------
             for param_name in line_parsed.KWARGS:
-                param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
+                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
                 if not param_name_original:
                     return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
             # set --------------
             for param_name, param_value in line_parsed.KWARGS.items():
-                param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, self.PARAMS)
+                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
                 self.PARAMS[param_name_original] = param_value
             return self.ANSWER.SUCCESS
 
@@ -340,7 +340,7 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         meth_name__expected = f"{self._GETATTR_STARTSWITH__SCRIPT}{line_parsed.ARGS[0]}"
-        meth_name__original = funcs_aux.collection__get_original_item__case_type_insensitive(meth_name__expected, dir(self))
+        meth_name__original = funcs_aux.collection__get_original_item__case_insensitive(meth_name__expected, dir(self))
         if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
 
