@@ -215,10 +215,11 @@ class SerialServer_Base(QThread):
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.collection__get_original_item__case_type_insensitive(meth_name__expected, dir(self))
-        if not meth_name__original:
-            return self._cmd__param_as_cmd(line_parsed)
+        if meth_name__original:
+            meth_cmd = getattr(self, meth_name__original)
+        else:
+            meth_cmd = self._cmd__param_as_cmd
 
-        meth_cmd = getattr(self, meth_name__original)
         return meth_cmd(line_parsed)
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
