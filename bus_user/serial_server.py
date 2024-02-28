@@ -67,7 +67,7 @@ class LineParsed:
         # BLANK ----------------------
         if not line_lower:
             return
-        line_lower = re.sub(r"\s*=\s*", "=", line_lower)
+        line_lower = re.sub(r"\s*=+\s*", "=", line_lower)
         line_parts = line_lower.split()
         if not line_parts:
             return

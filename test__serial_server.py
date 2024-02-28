@@ -96,6 +96,34 @@ class Test_LineParsed:
         assert victim.ARGS_count() == 2
         assert victim.KWARGS_count() == 2
 
+    def test__kwargs_spaces(self):
+        victim = self.Victim("CH =  1")
+        assert victim.LINE == "CH =  1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 1
+
+        victim = self.Victim("hello CH =  1")
+        assert victim.LINE == "hello CH =  1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 1
+
+        victim = self.Victim("hello CH ===  1")
+        assert victim.LINE == "hello CH ===  1"
+        assert victim.PREFIX == ""
+        assert victim.CMD == "hello"
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 1
+
     def test__kwargs_only(self):
         victim = self.Victim("CH=1")
         assert victim.LINE == "CH=1"
