@@ -265,10 +265,25 @@ class SerialServer_Base(QThread):
             ARGS.extend(arg.split("/"))
 
         for param_name in ARGS:
-            param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, result)
-            if param_name_original is None:
+            if isinstance(result, dict):
+                # DICT -------------------------------
+                param_name_original = funcs_aux.collection__get_original_item__case_type_insensitive(param_name, result)
+                if param_name_original is None:
+                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+                result = result[param_name_original]
+
+            elif isinstance(result, (list, tuple)):
+                # LIST -------------------------------
+                try:
+                    param_index = int(param_name)
+                    result = result[param_index]
+                except:
+                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+
+            else:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
-            result = result[param_name_original]
+
+            # CALLABLE VALUE -------------------------------
             if callable(result):
                 try:
                     result = result()
@@ -344,6 +359,7 @@ class SerialServer_Example(SerialServer_Base):
         "TIME": time.time,
         "EXX": time.strftime,
 
+        "LIST": [0, 1, 2],
         "DICT": {
             1: 111,
             "2": 222,
