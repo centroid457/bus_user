@@ -128,8 +128,7 @@ class SerialClient:
         # apply settings
         # self._SERIAL.interCharTimeout = 0.8
         self._SERIAL.baudrate = self.BAUDRATE
-        self._SERIAL.timeout = None
-        # self._SERIAL.timeout = self._TIMEOUT__READ_FIRST
+        self._SERIAL.timeout = self._TIMEOUT__READ_FIRST
         # self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
     def __del__(self):
