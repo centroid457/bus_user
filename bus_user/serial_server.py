@@ -131,7 +131,6 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         result = [
-            "",
             "-"*50,
             *self.HELLO_MSG,
             "[PARAMS]:",
@@ -142,6 +141,7 @@ class SerialServer_Base(QThread):
             *[f"  |{name}" for name in self._LIST__SCRIPTS],
             "[ANSWER_VARIANTS]:",
             *[f"  |{name}" for name in dir(self.ANSWER) if not name.startswith("__")],
+            "-" * 50,
         ]
         return result
 
@@ -328,15 +328,15 @@ class SerialServer_Base_Example(SerialServer_Base):
         # "NAME_ADDR": "01",  use as CMD!!!
     }
 
-    def cmd__on(self) -> TYPE__CMD_RESULT:
+    def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
         return self.ANSWER.SUCCESS
 
-    def cmd__off(self) -> TYPE__CMD_RESULT:
+    def cmd__off(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
         return self.ANSWER.SUCCESS
 
-    def cmd__rst(self) -> TYPE__CMD_RESULT:
+    def cmd__rst(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
         return self.ANSWER.SUCCESS
 
