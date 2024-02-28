@@ -306,26 +306,31 @@ class SerialServer_Base(QThread):
 
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
-        if line_parsed.ARGS_count() < 1:
+        if line_parsed.ARGS_count() == 0:
             return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
-        script_name = line_parsed.ARGS[0]
-        if script_name not in self._LIST__SCRIPTS:
+        meth_name__expected = f"{self._GETATTR_STARTSWITH__SCRIPT}{line_parsed.ARGS[0]}"
+        meth_name__original = funcs_aux.collection__get_original_item__case_type_insensitive(meth_name__expected, dir(self))
+        if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
 
-        meth_scr = getattr(self, f"{self._GETATTR_STARTSWITH__SCRIPT}{script_name}")
-        return meth_scr(line_parsed)
+        meth_cmd = getattr(self, meth_name__original)
+        return meth_cmd(line_parsed)
 
 
 # =====================================================================================================================
-class SerialServer_Base_Example(SerialServer_Base):
+class SerialServer_Example(SerialServer_Base):
     PARAMS = {
         "NAME": "ATC",
         "ADDR": "01",
         "TEMP": {
             1: 111,
-            2: 222,
+            "2": 222,
+            3: {
+                1: 31,
+                2: 32,
+            },
         },
         # "NAME_ADDR": "01",  use as CMD!!!
     }
