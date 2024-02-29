@@ -211,7 +211,7 @@ class SerialServer_Base(QThread):
         write_result = self._SERIAL_CLIENT._write_line(cmd_result)
         return write_result
 
-    # -----------------------------------------------------------------------------------------------------------------
+    # CMD - ENTRY POINT -----------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
@@ -229,28 +229,7 @@ class SerialServer_Base(QThread):
         elif line_parsed.KWARGS:
             return self.cmd__set(line_parsed)
 
-    # -----------------------------------------------------------------------------------------------------------------
-    def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # ERR__ARGS_VALIDATION --------------------------------
-        pass
-
-        # WORK --------------------------------
-        return self.HELLO_MSG
-
-    def cmd__help(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # ERR__ARGS_VALIDATION --------------------------------
-        pass
-
-        # WORK --------------------------------
-        return self._LIST__HELP
-
-    def cmd__echo(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # ERR__ARGS_VALIDATION --------------------------------
-        pass
-
-        # WORK --------------------------------
-        return line_parsed.LINE
-
+    # CMD - PARAMS ----------------------------------------------------------------------------------------------------
     def cmd__get(self, line_parsed: LineParsed) -> Any:
         """
         use only single name!!!
@@ -323,6 +302,29 @@ class SerialServer_Base(QThread):
             else:
                 return self.ANSWER.FAIL
 
+    # CMDS - STD ------------------------------------------------------------------------------------------------------
+    def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return self.HELLO_MSG
+
+    def cmd__help(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return self._LIST__HELP
+
+    def cmd__echo(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # ERR__ARGS_VALIDATION --------------------------------
+        pass
+
+        # WORK --------------------------------
+        return line_parsed.LINE
+
+    # CMDS - SCRIPTS --------------------------------------------------------------------------------------------------
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() == 0:
