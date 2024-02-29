@@ -230,7 +230,7 @@ class SerialServer_Base(QThread):
             return self.cmd__set(line_parsed)
 
     # CMD - PARAMS ----------------------------------------------------------------------------------------------------
-    def cmd__get(self, line_parsed: LineParsed) -> Any:
+    def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         """
         use only single name!!!
         """
@@ -249,15 +249,15 @@ class SerialServer_Base(QThread):
 
         param_value = param_value.VALUE
 
-        # CALLABLE VALUE -------------------------------
+        # CALLABLE -------------------------------
         if callable(param_value):
             try:
                 param_value = param_value()
             except:
                 return self.ANSWER.ERR__PARAM_CALLING
 
+        # NOTE - DONT return direct value! only str! cause of LIST would be assumed as list of lines! not the single line as single value!!!
         param_value = str(param_value)
-
         return param_value
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
