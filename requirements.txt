@@ -1,10 +1,12 @@
 # ==========================
 # VERSION = (0, 0, 1)   # just add version
+# VERSION = (0, 0, 2)   # add funcs-aux
 
 # COMMON ===================
 pytest
 requirements-checker
 object-info
+funcs-aux
 
 # ========================================
 # SPECIAL FOR THIS PROJECT ---------------
