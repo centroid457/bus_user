@@ -214,9 +214,9 @@ class SerialServer_Base(QThread):
     # -----------------------------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
-        meth_name__original = funcs_aux.collection__get_original_item__case_insensitive(meth_name__expected, dir(self))
+        meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         if meth_name__original:
-            meth_cmd = getattr(self, meth_name__original)
+            meth_cmd = getattr(self, meth_name__original.VALUE)
         else:
             meth_cmd = self._cmd__param_as_cmd
 
@@ -258,44 +258,28 @@ class SerialServer_Base(QThread):
         # ERR__ARGS_VALIDATION --------------------------------
         pass
 
-        # WORK --------------------------------
-        result = self.PARAMS
-
+        # PREPARE --------------------------------
         ARGS = []
         for arg in line_parsed.ARGS:
             ARGS.extend(arg.split("/"))
 
-        for param_name in ARGS:
-            if isinstance(result, dict):
-                # DICT -------------------------------
-                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, result)
-                if param_name_original is None:
-                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
-                result = result[param_name_original]
+        # WORK --------------------------------
+        param_value = funcs_aux.Iterables().value_by_path__get(ARGS, self.PARAMS)
+        if not param_value:
+            return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
-            elif isinstance(result, (list, tuple)):
-                # LIST -------------------------------
-                try:
-                    param_index = int(param_name)
-                    result = result[param_index]
-                except:
-                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+        param_value = param_value.VALUE
 
-            else:
-                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+        # CALLABLE VALUE -------------------------------
+        if callable(param_value):
+            try:
+                param_value = param_value()
+            except:
+                return self.ANSWER.ERR__PARAM_CALLING
 
-            # CALLABLE VALUE -------------------------------
-            if callable(result):
-                try:
-                    result = result()
-                except:
-                    return self.ANSWER.ERR__PARAM_CALLING
+        param_value = str(param_value)
 
-        # RESULT ----------------------------
-        if result == self.PARAMS:
-            return self.ANSWER.ERR__ARGS_VALIDATION
-        else:
-            return str(result)
+        return param_value
 
     def cmd__set(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         """
@@ -305,33 +289,39 @@ class SerialServer_Base(QThread):
         # ERR__ARGS_VALIDATION -----------------
         # see internal
 
-        # WORK --------------------------------
-        if line_parsed.ARGS_count() == 2:
-            param_name = line_parsed.ARGS[0]
-            param_value = line_parsed.ARGS[1]
+        # PREPARE --------------------------------
+        KWARGS = {**line_parsed.KWARGS}
+        if line_parsed.ARGS_count() == 0:
+            pass
+        elif line_parsed.ARGS_count() == 2:
+            path_i = line_parsed.ARGS[0]
+            path_i__value = line_parsed.ARGS[1]
 
-            param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
-            if not param_name_original:
-                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
-
-            self.PARAMS[param_name_original] = param_value
-            return self.ANSWER.SUCCESS
-
-        elif line_parsed.KWARGS_count() > 0:
-            # check exists all --------------
-            for param_name in line_parsed.KWARGS:
-                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
-                if not param_name_original:
-                    return self.ANSWER.ERR__NAME_CMD_OR_PARAM
-
-            # set --------------
-            for param_name, param_value in line_parsed.KWARGS.items():
-                param_name_original = funcs_aux.collection__get_original_item__case_insensitive(param_name, self.PARAMS)
-                self.PARAMS[param_name_original] = param_value
-            return self.ANSWER.SUCCESS
-
+            KWARGS.update({path_i: path_i__value})
         else:
             return self.ANSWER.ERR__ARGS_VALIDATION
+
+        # WORK --------------------------------
+        if not KWARGS:
+            return self.ANSWER.ERR__ARGS_VALIDATION
+
+        # check exists all --------------
+        for path_i in KWARGS:
+            path_i__original = funcs_aux.Iterables().path__get_original(path_i, self.PARAMS)
+            if not path_i__original:
+                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+
+        # set --------------
+        for path_i, path_i__value in KWARGS.items():
+            try:
+                result = funcs_aux.Iterables().value_by_path__set(path_i, path_i__value, self.PARAMS)
+            except:
+                return self.ANSWER.FAIL
+
+            if result:
+                return self.ANSWER.SUCCESS
+            else:
+                return self.ANSWER.FAIL
 
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
@@ -340,11 +330,11 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         meth_name__expected = f"{self._GETATTR_STARTSWITH__SCRIPT}{line_parsed.ARGS[0]}"
-        meth_name__original = funcs_aux.collection__get_original_item__case_insensitive(meth_name__expected, dir(self))
+        meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
 
-        meth_cmd = getattr(self, meth_name__original)
+        meth_cmd = getattr(self, meth_name__original.VALUE)
         return meth_cmd(line_parsed)
 
 
@@ -356,11 +346,13 @@ class SerialServer_Example(SerialServer_Base):
 
         "BLANC": "",
         "NONE": None,
+        "ZERO": 0,      # FIXME:
 
-        "TIME": time.time,
+        "CALL": time.time,
         "EXX": time.strftime,
 
         "LIST": [0, 1, 2],
+        "_SET": {0, 1, 2},
         "DICT": {
             1: 111,
             "2": 222,
