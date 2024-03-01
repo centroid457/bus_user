@@ -225,9 +225,23 @@ class SerialServer_Base(QThread):
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         if line_parsed.CMD:
             line_parsed.ARGS = [line_parsed.CMD, *line_parsed.ARGS]
+            line_parsed.CMD = ""
+
+        # CLEAR ARGS -------------------------------
+        if line_parsed.ARGS_count() == 2:
+            path_i = line_parsed.ARGS[0]
+            path_i__value = line_parsed.ARGS[1]
+
+            line_parsed.ARGS = []
+            line_parsed.KWARGS = {path_i: path_i__value, **line_parsed.KWARGS}
+
+        # FINISH -----------------------------------
+        if line_parsed.ARGS_count() == 1 and not line_parsed.KWARGS:
             return self.cmd__get(line_parsed)
         elif line_parsed.KWARGS:
             return self.cmd__set(line_parsed)
+        else:
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
     # CMD - PARAMS ----------------------------------------------------------------------------------------------------
     def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -270,7 +284,7 @@ class SerialServer_Base(QThread):
 
         # PREPARE --------------------------------
         KWARGS = {**line_parsed.KWARGS}
-        if line_parsed.ARGS_count() == 0:
+        if not line_parsed.ARGS:
             pass
         elif line_parsed.ARGS_count() == 2:
             path_i = line_parsed.ARGS[0]
@@ -290,12 +304,10 @@ class SerialServer_Base(QThread):
             if not path_i__original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
-        # set --------------
+        # SET --------------
         for path_i, path_i__value in KWARGS.items():
-            try:
-                result = funcs_aux.Iterables().value_by_path__set(path_i, path_i__value, self.PARAMS)
-            except:
-                return self.ANSWER.FAIL
+            path_i__value = funcs_aux.Strings().try_convert_to__elementary(path_i__value)
+            result = funcs_aux.Iterables().value_by_path__set(path_i, path_i__value, self.PARAMS)
 
             if result:
                 return self.ANSWER.SUCCESS
