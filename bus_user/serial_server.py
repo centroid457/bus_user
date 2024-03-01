@@ -360,7 +360,7 @@ class SerialServer_Example(SerialServer_Base):
 
         "BLANC": "",
         "NONE": None,
-        "ZERO": 0,      # FIXME:
+        "ZERO": 0,
 
         "CALL": time.time,
         "EXX": time.strftime,
