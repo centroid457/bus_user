@@ -195,8 +195,8 @@ class Test__SerialServer_NoConnection:
         victim = self.Victim()
         assert victim._cmd__(LineParsed("hello123")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 
-        assert victim._cmd__(LineParsed("get attr")) == "attr"
-        assert victim._cmd__(LineParsed("attr")) == "attr"
+        assert victim._cmd__(LineParsed("get str")) == "str"
+        assert victim._cmd__(LineParsed("str")) == "str"
         assert victim._cmd__(LineParsed("blanc")) == ""
         assert victim._cmd__(LineParsed("zero")) == '0'
 
@@ -216,7 +216,7 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("list")) == "[0, 1, 2]"
         assert victim._cmd__(LineParsed("_set")) == "{0, 1, 2}"
         assert victim._cmd__(LineParsed("get _set")) == "{0, 1, 2}"
-        assert victim._cmd__(LineParsed("DICT_SHORT")) == "{1: 11}"
+        assert victim._cmd__(LineParsed("dict_short")) == "{1: 11}"
 
     def test__GET__nested__list(self):
         victim = self.Victim()
@@ -238,10 +238,94 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("list_2 0 0")) == "11"
         assert victim._cmd__(LineParsed("get list_2 0 0")) == "11"
 
-    @pytest.mark.skip
-    def test__SET__single(self):
+    def test__GET__dict(self):
+        # TODO: add BOOL/NONE
         victim = self.Victim()
-        assert victim._cmd__(LineParsed("list")) == "[0, 1, 2]"
+        assert victim._cmd__(LineParsed("dict_short_2")) == "{'HEllo': {1: 11}}"
+        assert victim._cmd__(LineParsed("get dict_short_2")) == "{'HEllo': {1: 11}}"
+
+        assert victim._cmd__(LineParsed("dict_short_2/hello")) == "{1: 11}"
+        assert victim._cmd__(LineParsed("dict_short_2 hello")) == "{1: 11}"
+        assert victim._cmd__(LineParsed("get dict_short_2 hello")) == "{1: 11}"
+        assert victim._cmd__(LineParsed("dict_short_2/hello11111")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+        assert victim._cmd__(LineParsed("dict_short_2/hello/1")) == "11"
+        assert victim._cmd__(LineParsed("get dict_short_2/hello/1")) == "11"
+        assert victim._cmd__(LineParsed("dict_short_2 hello/1")) == "11"
+        assert victim._cmd__(LineParsed("get dict_short_2 hello/1")) == "11"
+        assert victim._cmd__(LineParsed("dict_short_2 hello 1")) == "11"
+        assert victim._cmd__(LineParsed("get dict_short_2 hello 1")) == "11"
+        assert victim._cmd__(LineParsed("dict_short_2/hello/11111")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+        assert victim._cmd__(LineParsed("dict_short_2/hello/1/9/9/9/9/")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+    def test__SET__level_first__type(self):
+        victim = self.Victim()
+        assert victim.PARAMS["VAR"] == ''
+
+        assert victim._cmd__(LineParsed("var=True")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] is True
+
+        assert victim._cmd__(LineParsed("var=false")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] is False
+
+        assert victim._cmd__(LineParsed("var=null")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] is None
+
+        assert victim._cmd__(LineParsed("var=")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == ""
+
+        assert victim._cmd__(LineParsed("var=''")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == "''"                             # TODO: convert to expected!!!
+
+        assert victim._cmd__(LineParsed("var=0")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == 0
+
+        assert victim._cmd__(LineParsed("var=123")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == 123
+
+        assert victim._cmd__(LineParsed("var=1.1")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == 1.1
+        assert victim._cmd__(LineParsed("var=1,1")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] != 1.1
+
+        # ITERABLES --------------------
+        assert victim._cmd__(LineParsed("var=[]")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == []
+
+        # assert victim._cmd__(LineParsed("var=[1, 2]")) == AnswerVariants.SUCCESS  # TODO: CLEAR ALL INTERNAL SPACES!!!
+        assert victim._cmd__(LineParsed("var=[1,2]")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == [1, 2]
+
+    def test__SET__level_first__syntax(self):
+        victim = self.Victim()
+        assert victim.PARAMS["INT"] == 1
+
+        assert victim._cmd__(LineParsed("set int=10")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 10
+
+        assert victim._cmd__(LineParsed("int=11")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 11
+
+        assert victim._cmd__(LineParsed("int    =12")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 12
+
+        assert victim._cmd__(LineParsed("int=     13")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 13
+
+        assert victim._cmd__(LineParsed("   int       =     14   ")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 14
+
+        assert victim._cmd__(LineParsed("   int =======     15   ")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["INT"] == 15
+
+        # several
+        assert victim._cmd__(LineParsed("var 1 int=16")) == AnswerVariants.ERR__ARGS_VALIDATION
+        assert victim.PARAMS["INT"] == 15
+
+        assert victim._cmd__(LineParsed("var=11 int=16")) == AnswerVariants.SUCCESS
+        assert victim.PARAMS["VAR"] == 11
+        assert victim.PARAMS["INT"] == 16           # FIXME: !!!
 
 
 # =====================================================================================================================

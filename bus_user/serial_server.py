@@ -223,9 +223,14 @@ class SerialServer_Base(QThread):
         return meth_cmd(line_parsed)
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # PREPARE -------------------------------
         if line_parsed.CMD:
             line_parsed.ARGS = [line_parsed.CMD, *line_parsed.ARGS]
             line_parsed.CMD = ""
+
+        # VALIDATE -------------------------------
+        if line_parsed.ARGS and line_parsed.KWARGS:
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
         # GET -------------------------------
         if line_parsed.ARGS:
@@ -234,8 +239,6 @@ class SerialServer_Base(QThread):
         # SET -----------------------------------
         if line_parsed.KWARGS:
             return self.cmd__set(line_parsed)
-
-        return self.ANSWER.ERR__ARGS_VALIDATION
 
     # CMD - PARAMS ----------------------------------------------------------------------------------------------------
     def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -274,34 +277,26 @@ class SerialServer_Base(QThread):
         for KWARGS - available MULTY params! fail protected!
         """
         # ERR__ARGS_VALIDATION -----------------
-        # see internal
+        if line_parsed.ARGS and line_parsed.KWARGS:
+            return self.ANSWER.ERR__ARGS_VALIDATION
+        if line_parsed.ARGS and line_parsed.ARGS_count() != 2:
+            return self.ANSWER.ERR__ARGS_VALIDATION
 
         # PREPARE --------------------------------
         KWARGS = {**line_parsed.KWARGS}
-        if not line_parsed.ARGS:
-            pass
-        elif line_parsed.ARGS_count() == 2:
-            path_i = line_parsed.ARGS[0]
-            path_i__value = line_parsed.ARGS[1]
-
-            KWARGS.update({path_i: path_i__value})
-        else:
-            return self.ANSWER.ERR__ARGS_VALIDATION
-
-        # WORK --------------------------------
-        if not KWARGS:
-            return self.ANSWER.ERR__ARGS_VALIDATION
+        if line_parsed.ARGS:
+            KWARGS = {line_parsed.ARGS[0]: line_parsed.ARGS[1]}
 
         # check exists all --------------
-        for path_i in KWARGS:
-            path_i__original = funcs_aux.Iterables().path__get_original(path_i, self.PARAMS)
-            if not path_i__original:
+        for path_name in KWARGS:
+            path_name__original = funcs_aux.Iterables().path__get_original(path_name, self.PARAMS)
+            if not path_name__original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
         # SET --------------
-        for path_i, path_i__value in KWARGS.items():
-            path_i__value = funcs_aux.Strings().try_convert_to__elementary(path_i__value)
-            result = funcs_aux.Iterables().value_by_path__set(path_i, path_i__value, self.PARAMS)
+        for path_name, path_value in KWARGS.items():
+            path_value = funcs_aux.Strings().try_convert_to__elementary(path_value)
+            result = funcs_aux.Iterables().value_by_path__set(path_name, path_value, self.PARAMS)
 
             if result:
                 return self.ANSWER.SUCCESS
@@ -349,7 +344,10 @@ class SerialServer_Base(QThread):
 # =====================================================================================================================
 class SerialServer_Example(SerialServer_Base):
     PARAMS = {
-        "ATTR": "attr",
+        "VAR": "",
+
+        "STR": "str",
+        "STR_QUOTES": "str'",
 
         "BLANC": "",
         "ZERO": 0,
@@ -368,6 +366,7 @@ class SerialServer_Example(SerialServer_Base):
         "LIST_2": [[11]],
         "_SET": {0, 1, 2},
         "DICT_SHORT": {1: 11},
+        "DICT_SHORT_2": {"HEllo": {1: 11}},
         "DICT": {
             1: 111,
             "2": 222,
