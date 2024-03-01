@@ -12,23 +12,21 @@ from bus_user import *
 
 
 # =====================================================================================================================
-class Test_LineParsed:
-    Victim: Type[LineParsed] = type("Victim", (LineParsed,), {})
-    victim: LineParsed = None
-
+class Test__LineParsed:
     @classmethod
     def setup_class(cls):
         pass
+        cls.Victim = type("Victim", (LineParsed,), {})
 
-    @classmethod
-    def teardown_class(cls):
-        pass
-
-    def setup_method(self, method):
-        self.Victim = type("Victim", (LineParsed,), {})
-
-    def teardown_method(self, method):
-        pass
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__lowercase(self):
@@ -155,33 +153,95 @@ class Test_LineParsed:
 
 
 # =====================================================================================================================
-class Test_SerialServer_NoConnection:
-    Victim: Type[LineParsed] = type("Victim", (LineParsed,), {})
-    victim: LineParsed = None
-
-    @classmethod
-    def setup_class(cls):
-        pass
-
-    @classmethod
-    def teardown_class(cls):
-        pass
-
+class Test__SerialServer_NoConnection:
+    # @classmethod
+    # def setup_class(cls):
+    #     pass
+    #
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
     def setup_method(self, method):
-        self.Victim = type("Victim", (LineParsed,), {})
-
-    def teardown_method(self, method):
         pass
-
+        self.Victim = type("Victim", (SerialServer_Example,), {})
+    #
+    # def teardown_method(self, method):
+    #     pass
     # -----------------------------------------------------------------------------------------------------------------
-    def test__1(self):
-        pass
-        # victim = self.Victim("")
-        # assert victim.LINE == ""
-        # assert victim.PREFIX == ""
-        # assert victim.CMD == ""
-        # assert victim.ARGS == []
-        # assert victim.KWARGS == {}
+    def test__LISTS(self):
+        victim = self.Victim()
+        assert set(victim._LIST__CMDS) == {
+            "set", "get",
+            "run",
+            "hello", "help", "echo",
+
+            "on",
+        }
+        assert set(victim._LIST__SCRIPTS) == {
+            "script1",
+        }
+
+    def test__cmd__cmd(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("on")) == AnswerVariants.SUCCESS
+
+    def test__cmd__echo(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("echo 123")) == "echo 123"
+        assert victim._cmd__(LineParsed("echo HELLO")) == "echo HELLO"
+
+    def test__GET__single(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("hello123")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+        assert victim._cmd__(LineParsed("get attr")) == "attr"
+        assert victim._cmd__(LineParsed("attr")) == "attr"
+        assert victim._cmd__(LineParsed("blanc")) == ""
+        assert victim._cmd__(LineParsed("zero")) == '0'
+
+        assert victim._cmd__(LineParsed("int")) == '1'
+        assert victim._cmd__(LineParsed("float")) == '1.1'
+
+        assert victim._cmd__(LineParsed("none")) == "None"
+        assert victim._cmd__(LineParsed("true")) == "True"
+        assert victim._cmd__(LineParsed("false")) == "False"
+
+        try:
+            float(victim._cmd__(LineParsed("call")))
+        except:
+            assert False
+        assert victim._cmd__(LineParsed("exx")) == AnswerVariants.ERR__PARAM_CALLING
+
+        assert victim._cmd__(LineParsed("list")) == "[0, 1, 2]"
+        assert victim._cmd__(LineParsed("_set")) == "{0, 1, 2}"
+        assert victim._cmd__(LineParsed("get _set")) == "{0, 1, 2}"
+        assert victim._cmd__(LineParsed("DICT_SHORT")) == "{1: 11}"
+
+    def test__GET__nested__list(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("list")) == "[0, 1, 2]"
+
+        assert victim._cmd__(LineParsed("list 1")) == "1"
+        assert victim._cmd__(LineParsed("list/1")) == "1"
+
+        assert victim._cmd__(LineParsed("get list 1")) == "1"
+        assert victim._cmd__(LineParsed("get list/1")) == "1"
+
+        assert victim._cmd__(LineParsed("list/10")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+
+        # -----
+        assert victim._cmd__(LineParsed("list_2")) == "[[11]]"
+        assert victim._cmd__(LineParsed("list_2/0")) == "[11]"
+        assert victim._cmd__(LineParsed("list_2/0/0")) == "11"
+
+        assert victim._cmd__(LineParsed("list_2 0 0")) == "11"
+        assert victim._cmd__(LineParsed("get list_2 0 0")) == "11"
+
+    @pytest.mark.skip
+    def test__SET__single(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("list")) == "[0, 1, 2]"
 
 
 # =====================================================================================================================

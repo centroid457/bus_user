@@ -183,7 +183,7 @@ class SerialServer_Base(QThread):
 
         self._SERIAL_CLIENT._write_line("")
         self._SERIAL_CLIENT._write_line("="*50)
-        self.execute_line("hello")
+        self._execute_line("hello")
 
         while True:
             line = None
@@ -193,14 +193,14 @@ class SerialServer_Base(QThread):
                 self._SERIAL_CLIENT._write_line(self.ANSWER.ERR__ENCODING_OR_DEVICE)
 
             if line:
-                self.execute_line(line)
+                self._execute_line(line)
 
     def disconnect(self):
         self._SERIAL_CLIENT.disconnect()
         self.terminate()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def execute_line(self, line: str) -> bool:
+    def _execute_line(self, line: str) -> bool:
         line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.CMD_PREFIX)
         cmd_result = self._cmd__(line_parsed)
 
@@ -227,21 +227,15 @@ class SerialServer_Base(QThread):
             line_parsed.ARGS = [line_parsed.CMD, *line_parsed.ARGS]
             line_parsed.CMD = ""
 
-        # CLEAR ARGS -------------------------------
-        if line_parsed.ARGS_count() == 2:
-            path_i = line_parsed.ARGS[0]
-            path_i__value = line_parsed.ARGS[1]
-
-            line_parsed.ARGS = []
-            line_parsed.KWARGS = {path_i: path_i__value, **line_parsed.KWARGS}
-
-        # FINISH -----------------------------------
-        if line_parsed.ARGS_count() == 1 and not line_parsed.KWARGS:
+        # GET -------------------------------
+        if line_parsed.ARGS:
             return self.cmd__get(line_parsed)
-        elif line_parsed.KWARGS:
+
+        # SET -----------------------------------
+        if line_parsed.KWARGS:
             return self.cmd__set(line_parsed)
-        else:
-            return self.ANSWER.ERR__ARGS_VALIDATION
+
+        return self.ANSWER.ERR__ARGS_VALIDATION
 
     # CMD - PARAMS ----------------------------------------------------------------------------------------------------
     def cmd__get(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -355,18 +349,25 @@ class SerialServer_Base(QThread):
 # =====================================================================================================================
 class SerialServer_Example(SerialServer_Base):
     PARAMS = {
-        "NAME": "ATC",
-        "ADDR": "01",
+        "ATTR": "attr",
 
         "BLANC": "",
-        "NONE": None,
         "ZERO": 0,
+
+        "NONE": None,
+        "TRUE": True,
+        "FALSE": False,
+
+        "INT": 1,
+        "FLOAT": 1.1,
 
         "CALL": time.time,
         "EXX": time.strftime,
 
         "LIST": [0, 1, 2],
+        "LIST_2": [[11]],
         "_SET": {0, 1, 2},
+        "DICT_SHORT": {1: 11},
         "DICT": {
             1: 111,
             "2": 222,
@@ -378,14 +379,6 @@ class SerialServer_Example(SerialServer_Base):
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # do smth
-        return self.ANSWER.SUCCESS
-
-    def cmd__off(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        # do smth
-        return self.ANSWER.SUCCESS
-
-    def cmd__rst(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
         return self.ANSWER.SUCCESS
 
