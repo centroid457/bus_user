@@ -4,7 +4,6 @@
 ## TODO
 1. add all other port settings into SerialClient  
 2. test work with several lines EOL__SEND  
-3. tests for SerialServer  
 
 ********************************************************************************
 ## FIXME
@@ -12,6 +11,12 @@
 
 ********************************************************************************
 ## NEWS
+
+0.1.1 (2024/03/04 11:01:41)
+------------------------------
+- SerialServer:  
+	- add tests NoConnection  
+	- finish path/list in set/get param and all working logic  
 
 0.1.0 (2024/02/28 15:59:21)
 ------------------------------
