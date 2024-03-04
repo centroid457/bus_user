@@ -68,6 +68,8 @@ class ValueFromVariants:
     used to keep separated value and measure unit
     """
     # TODO: move to funcs_aux
+    # TODO: combine with ValueWithUnit - just add ACCEPTABLE(*VARIANTS) and rename UNIT just as SUFFIX!
+
     # SETTINGS -----------------------
     CASE_INSENSITIVE: bool = True
     VARIANTS: List[Any] = None
@@ -504,7 +506,8 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
-        "VIN": ValueWithUnit(9, unit="V"),
+        "UNIT": ValueWithUnit(9, unit="V"),
+        "VARIANT": ValueFromVariants(220, variants=[220, 380]),
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
