@@ -142,7 +142,7 @@ class SerialServer_Base(QThread):
     ADDRESS: str = None
 
     HELLO_MSG: List[str] = [
-        "SerialServer_Base HELLO ORIGINAL 1",
+        "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
     ]
 
