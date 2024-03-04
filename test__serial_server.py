@@ -132,6 +132,15 @@ class Test__LineParsed:
         assert victim.ARGS_count() == 0
         assert victim.KWARGS_count() == 1
 
+        victim = self.Victim("CH=1 ch2=2")
+        assert victim.LINE == "CH=1 ch2=2"
+        assert victim.PREFIX == ""
+        assert victim.CMD == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {"ch": "1", "ch2": "2"}
+        assert victim.ARGS_count() == 0
+        assert victim.KWARGS_count() == 2
+
     def test__prefix(self):
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
         assert victim.LINE == "HELLO CH 1"
@@ -140,6 +149,15 @@ class Test__LineParsed:
         assert victim.ARGS == ["1", ]
         assert victim.KWARGS == {}
         assert victim.ARGS_count() == 1
+        assert victim.KWARGS_count() == 0
+
+        victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO CH 1")
+        assert victim.LINE == "HELLO CH 1"
+        assert victim.PREFIX == "hello ch 1"
+        assert victim.CMD == ""
+        assert victim.ARGS == []
+        assert victim.KWARGS == {}
+        assert victim.ARGS_count() == 0
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO123")
@@ -323,6 +341,8 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("var 1 int=16")) == AnswerVariants.ERR__ARGS_VALIDATION
         assert victim.PARAMS["INT"] == 15
 
+        victim.PARAMS["VAR"] = 1
+        assert victim.PARAMS["VAR"] == 1
         assert victim._cmd__(LineParsed("var=11 int=16")) == AnswerVariants.SUCCESS
         assert victim.PARAMS["VAR"] == 11
         assert victim.PARAMS["INT"] == 16           # FIXME: !!!
