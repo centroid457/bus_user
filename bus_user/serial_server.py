@@ -339,7 +339,7 @@ class SerialServer_Base(QThread):
             value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
             if isinstance(value_old, ValueWithUnit):
                 pass
-            elif callable(funcs_aux.Iterables().value_by_path__get(path_name__original.VALUE, self.PARAMS)):
+            elif callable(value_old):
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
         # SET --------------
