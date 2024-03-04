@@ -59,6 +59,75 @@ class Test__ValueWithUnit:
         assert self.Victim(9, separator=" ") == self.Victim(9, separator="")
         assert self.Victim(9.0) == self.Victim(9)
 
+        assert self.Victim(1) != self.Victim(2)
+
+
+# =====================================================================================================================
+class Test__ValueFromVariants:
+    @classmethod
+    def setup_class(cls):
+        pass
+        cls.Victim = type("Victim", (ValueFromVariants,), {})
+
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__case(self):
+        victim = self.Victim(value="var1", variants=["VAR1", "VAR2"])
+        assert victim.value == "VAR1"
+        assert str(victim) == "VAR1"
+
+        try:
+            victim = self.Victim(value="var1", variants=["VAR1", "VAR2"], case_insensitive=False)
+            assert False
+        except:
+            pass
+
+    def test__variants_validate(self):
+        victim = self.Victim(value="var", variants=["VAR", "var"], case_insensitive=False)
+        assert victim.value == "var"
+
+        try:
+            victim = self.Victim(value="var123", variants=["VAR", "var"], case_insensitive=False)
+            assert False
+        except Exx__ValueNotInVariants:
+            pass
+        except Exception as exx:
+            print(f"{exx!r}")
+            assert False
+
+        try:
+            victim = self.Victim(value="var123", variants=["VAR", "var"], case_insensitive=True)
+            assert False
+        except Exx__VariantsIncompatible:
+            pass
+        except Exception as exx:
+            print(f"{exx!r}")
+            assert False
+
+    def test__types(self):
+        victim = self.Victim(value=None, variants=["NONE", ])
+        assert victim.value == "NONE"
+        assert str(victim) == "NONE"
+
+        victim = self.Victim(value="None", variants=[None, ])
+        assert victim.value is None
+        assert str(victim) == "None"
+
+    def test__cmp(self):
+        assert self.Victim(value=None, variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
+        assert self.Victim(value="NONE", variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
+
+        assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
+
 
 # =====================================================================================================================
 class Test__LineParsed:

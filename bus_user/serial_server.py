@@ -3,6 +3,7 @@ from .serial_client import SerialClient
 from typing import *
 import time
 import re
+from enum import Enum
 from object_info import ObjectInfo
 from PyQt5.QtCore import QThread
 
@@ -14,6 +15,7 @@ import funcs_aux
 TYPE__CMD_RESULT = Union[str, List[str]]
 
 
+# =====================================================================================================================
 class ValueWithUnit:
     """
     used to keep separated value and measure unit
@@ -50,6 +52,77 @@ class ValueWithUnit:
     def __ne__(self, other):
         if isinstance(other, ValueWithUnit):
             return not self == other
+
+
+# =====================================================================================================================
+class Exx__ValueNotInVariants(Exception):
+    pass
+
+
+class Exx__VariantsIncompatible(Exception):
+    pass
+
+
+class ValueFromVariants:
+    """
+    used to keep separated value and measure unit
+    """
+    # TODO: move to funcs_aux
+    # SETTINGS -----------------------
+    CASE_INSENSITIVE: bool = True
+    VARIANTS: List[Any] = None
+
+    # DATA ---------------------------
+    __value: Any   # changeable
+
+    def __init__(self, value: Union[str, Any], variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
+        # settings ---------------
+        if case_insensitive is not None:
+            self.CASE_INSENSITIVE = case_insensitive
+        if variants is not None:
+            self.VARIANTS = variants
+
+        # work ---------------
+        self._variants_validate()
+        self.value = value
+
+    def __str__(self) -> str:
+        return f"{self.value}"
+
+    def __eq__(self, other):
+        if isinstance(other, ValueFromVariants):
+            return self.value == other.value
+
+    def __ne__(self, other):
+        if isinstance(other, ValueFromVariants):
+            return not self == other
+
+    def _variants_validate(self) -> Optional[NoReturn]:
+        if self.CASE_INSENSITIVE:
+            real_len = len(set(map(lambda item: str(item).lower(), self.VARIANTS)))
+        else:
+            real_len = len(set(self.VARIANTS))
+
+        result = real_len == len(self.VARIANTS)
+        if not result:
+            raise Exx__VariantsIncompatible()
+
+    @property
+    def value(self) -> Any:
+        return self.__value
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        for variant in self.VARIANTS:
+            if self.CASE_INSENSITIVE:
+                result = str(variant).lower() == str(value).lower()
+            else:
+                result = str(variant) == str(value)
+            if result:
+                self.__value = variant
+                return
+
+        raise Exx__ValueNotInVariants()
 
 
 # =====================================================================================================================
@@ -338,6 +411,7 @@ class SerialServer_Base(QThread):
 
             value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
             if isinstance(value_old, ValueWithUnit):
+                # NOTE: ALL CLASSES/INSTANCES ARE CALLABLE!!!
                 pass
             elif callable(value_old):
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
