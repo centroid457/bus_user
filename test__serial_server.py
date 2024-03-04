@@ -405,8 +405,12 @@ class Test__SerialServer_NoConnection:
         victim = self.Victim()
         assert victim.PARAMS["VIN"] == ValueWithUnit(9, unit="V")
         # assert victim._cmd__(LineParsed("vin")) == "9V"
+
         assert victim._cmd__(LineParsed("vin=99")) == AnswerVariants.SUCCESS
         assert victim._cmd__(LineParsed("vin")) == "99V"
+
+        assert victim._cmd__(LineParsed("vin=9.00")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("vin")) == "9.0V"
 
 
 # =====================================================================================================================
