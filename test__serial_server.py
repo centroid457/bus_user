@@ -12,6 +12,55 @@ from bus_user import *
 
 
 # =====================================================================================================================
+class Test__ValueWithUnit:
+    @classmethod
+    def setup_class(cls):
+        pass
+        cls.Victim = type("Victim", (ValueWithUnit,), {})
+
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__str(self):
+        victim = self.Victim()
+        assert victim.value == 0
+        assert victim.UNIT == ""
+        assert victim.SEPARATOR == ""
+        assert str(victim) == "0"
+
+        victim = self.Victim(9)
+        assert victim.value == 9
+        assert victim.UNIT == ""
+        assert victim.SEPARATOR == ""
+        assert str(victim) == "9"
+
+        victim = self.Victim(9, unit="V")
+        assert victim.value == 9
+        assert victim.UNIT == "V"
+        assert victim.SEPARATOR == ""
+        assert str(victim) == "9V"
+
+        victim = self.Victim(9, unit="V", separator=" ")
+        assert victim.value == 9
+        assert victim.UNIT == "V"
+        assert victim.SEPARATOR == " "
+        assert str(victim) == "9 V"
+
+    def test__cmp(self):
+        assert self.Victim() == self.Victim()
+        assert self.Victim(9, separator=" ") == self.Victim(9, separator="")
+        assert self.Victim(9.0) == self.Victim(9)
+
+
+# =====================================================================================================================
 class Test__LineParsed:
     @classmethod
     def setup_class(cls):
@@ -351,6 +400,13 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("var=110 int123=160")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
         assert victim.PARAMS["VAR"] == 11
         assert victim.PARAMS["INT"] == 16
+
+    def test__ValueWithUnit(self):
+        victim = self.Victim()
+        assert victim.PARAMS["VIN"] == ValueWithUnit(9, unit="V")
+        # assert victim._cmd__(LineParsed("vin")) == "9V"
+        assert victim._cmd__(LineParsed("vin=99")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("vin")) == "99V"
 
 
 # =====================================================================================================================

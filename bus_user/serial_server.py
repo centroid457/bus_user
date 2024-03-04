@@ -14,6 +14,44 @@ import funcs_aux
 TYPE__CMD_RESULT = Union[str, List[str]]
 
 
+class ValueWithUnit:
+    """
+    used to keep separated value and measure unit
+    """
+    value: Union[int, float] = 0
+    UNIT: str = ""
+    SEPARATOR: str = ""
+
+    # TODO: add arithmetic/comparing magic methods like SUM/...
+    # TODO: move to funcs_aux
+
+    def __init__(self, value: Union[int, float, Any] = None, unit: str = None, separator: str = None):
+        # FIXME: create class without INIT! with changeable type!!!
+        if value is not None:
+            self.value = float(value)
+            try:
+                if float(value) == int(value):
+                    self.value = int(value)
+            except:
+                pass
+        if unit is not None:
+            self.UNIT = unit
+        if separator is not None:
+            self.SEPARATOR = separator
+
+    def __str__(self) -> str:
+        return f"{self.value}{self.SEPARATOR}{self.UNIT}"
+
+    def __eq__(self, other):
+        # DONT USE JUST str()=str() separator is not valuable!
+        if isinstance(other, ValueWithUnit):
+            return (self.value == other.value) and (self.UNIT, other.UNIT)
+
+    def __ne__(self, other):
+        if isinstance(other, ValueWithUnit):
+            return not self == other
+
+
 # =====================================================================================================================
 class AnswerVariants:
     SUCCESS: str = "OK"
@@ -260,6 +298,11 @@ class SerialServer_Base(QThread):
 
         param_value = param_value.VALUE
 
+        # VARIANTS ------------------------------------------------------------------
+        # ValueWithUnit -------------------------------
+        if isinstance(param_value, ValueWithUnit):
+            return str(param_value)
+
         # CALLABLE -------------------------------
         if callable(param_value):
             try:
@@ -287,16 +330,28 @@ class SerialServer_Base(QThread):
         if line_parsed.ARGS:
             KWARGS = {line_parsed.ARGS[0]: line_parsed.ARGS[1]}
 
-        # check exists all --------------
-        for path_name in KWARGS:
-            path_name__original = funcs_aux.Iterables().path__get_original(path_name, self.PARAMS)
+        # VALIDATE = check AVAILABLE TO CHANGE = exists all and not callable --------------
+        for path in KWARGS:
+            path_name__original = funcs_aux.Iterables().path__get_original(path, self.PARAMS)
             if not path_name__original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
+            value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
+            if isinstance(value_old, ValueWithUnit):
+                pass
+            elif callable(funcs_aux.Iterables().value_by_path__get(path_name__original.VALUE, self.PARAMS)):
+                return self.ANSWER.ERR__NAME_CMD_OR_PARAM
+
         # SET --------------
-        for path_name, path_value in KWARGS.items():
-            path_value = funcs_aux.Strings().try_convert_to__elementary(path_value)
-            result = funcs_aux.Iterables().value_by_path__set(path_name, path_value, self.PARAMS)
+        for path, value_new in KWARGS.items():
+            value_new = funcs_aux.Strings().try_convert_to__elementary(value_new)
+            value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
+            # SET ----------
+            if isinstance(value_old, ValueWithUnit):
+                value_old.value = value_new
+                result = True
+            else:
+                result = funcs_aux.Iterables().value_by_path__set(path, value_new, self.PARAMS)
 
             if not result:
                 return self.ANSWER.FAIL
@@ -375,6 +430,7 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
+        "VIN": ValueWithUnit(9, unit="V"),
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
