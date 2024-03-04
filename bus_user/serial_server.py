@@ -201,7 +201,7 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def _execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.CMD_PREFIX)
+        line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.PREFIX)
         cmd_result = self._cmd__(line_parsed)
 
         # blank line - SEND!!! because value may be BLANK!!!!

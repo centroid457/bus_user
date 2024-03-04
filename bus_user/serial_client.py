@@ -104,7 +104,7 @@ class SerialClient:
     EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
     EOL__UNI_SET: bytes = b"\r\n"
 
-    CMD_PREFIX: Optional[str] = None
+    PREFIX: Optional[str] = None
 
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
@@ -228,7 +228,7 @@ class SerialClient:
         """
         OVERWRITE IF NEED/USED!
         """
-        # self.CMD_PREFIX = ""
+        # self.PREFIX = ""
         return
 
     def _clear_buffer_read(self) -> None:
@@ -490,7 +490,13 @@ class SerialClient:
         self.answer_is_fail(data)
         return data
 
-    def _write_line(self, data: Union[AnyStr, List[AnyStr]], args: Optional[List] = None, kwargs: Optional[Dict] = None) -> bool:
+    def _write_line(
+            self,
+            data: Union[AnyStr, List[AnyStr]],
+            prefix: Optional[str] = None,
+            args: Optional[List] = None,
+            kwargs: Optional[Dict] = None
+    ) -> bool:
         """
         just send data into bus!
         :return: result of sent
@@ -506,14 +512,14 @@ class SerialClient:
         if isinstance(data, (list, tuple, )):
             if len(data) > 1:
                 for data_i in data:
-                    if not self._write_line(data_i):
+                    if not self._write_line(data=data_i, prefix=prefix, args=args, kwargs=kwargs):
                         return False
                 return True
             else:
                 data = data[0]
 
         # SINGLE ---------------------
-        data = self._create_cmd_line(data, *args, **kwargs)
+        data = self._create_cmd_line(cmd=data, prefix=prefix, args=args, kwargs=kwargs)
         self.history.add_input(self._data_ensure_string(data))
 
         data = self._data_ensure_bytes(data)
@@ -533,6 +539,7 @@ class SerialClient:
     def write_read_line(
             self,
             data: Union[AnyStr, List[AnyStr]],
+            prefix: Optional[str] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
     ) -> Union[HistoryIO, NoReturn]:
@@ -544,12 +551,12 @@ class SerialClient:
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
             for data_i in data:
-                history_i = self.write_read_line(data_i)
+                history_i = self.write_read_line(data_i, prefix=prefix, args=args, kwargs=kwargs)
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
             data_o = ""
-            if self._write_line(data=data, args=args, kwargs=kwargs):
+            if self._write_line(data=data, prefix=prefix, args=args, kwargs=kwargs):
                 data_o = self.read_lines()
             history.add_io(self._data_ensure_string(data), data_o)
 
@@ -559,6 +566,7 @@ class SerialClient:
     def write_read_line_last(
             self,
             data: Union[AnyStr, List[AnyStr]],
+            prefix: Optional[str] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
     ) -> Union[str, NoReturn]:
@@ -566,7 +574,7 @@ class SerialClient:
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
         """
-        return self.write_read_line(data=data, args=args, kwargs=kwargs).last_output
+        return self.write_read_line(data=data, prefix=prefix, args=args, kwargs=kwargs).last_output
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
@@ -579,13 +587,16 @@ class SerialClient:
         return history
 
     # CMD =============================================================================================================
-    def _create_cmd_line(self, cmd: Any, *args, **kwargs) -> str:
+    def _create_cmd_line(self, cmd: Any, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[str, Any] = None) -> str:
         result = ""
 
         cmd = str(cmd)
 
-        if self.CMD_PREFIX and not cmd.startswith(self.CMD_PREFIX):
-            result += f"{self.CMD_PREFIX}"
+        if prefix is None:
+            prefix = self.PREFIX
+
+        if prefix and not cmd.startswith(prefix):
+            result += f"{prefix}"
 
         result += f"{cmd}"
 
@@ -627,7 +638,7 @@ class SerialClient:
         """
         if self._GETATTR_STARTSWITH__SEND and item.startswith(self._GETATTR_STARTSWITH__SEND):
             item = item.replace(self._GETATTR_STARTSWITH__SEND, "")
-        return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(item, *args, **kwargs))
+        return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(cmd=item, args=args, kwargs=kwargs))
 
 
 # =====================================================================================================================

@@ -272,11 +272,11 @@ class Test_SerialClient:
         assert self.victim.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
 
     def test__CMD_PREFIX(self):
-        self.victim.CMD_PREFIX = "DEV:01:"
-        assert self.victim.write_read_line("hello").last_output == f"{self.victim.CMD_PREFIX}hello"
-        assert self.victim.write_read_line("hello 12").last_output == f"{self.victim.CMD_PREFIX}hello 12"
+        self.victim.PREFIX = "DEV:01:"
+        assert self.victim.write_read_line("hello").last_output == f"{self.victim.PREFIX}hello"
+        assert self.victim.write_read_line("hello 12").last_output == f"{self.victim.PREFIX}hello 12"
 
-        self.victim.CMD_PREFIX = ""
+        self.victim.PREFIX = ""
         assert self.victim.write_read_line("hello").last_output == "hello"
 
     # -----------------------------------------------------------------------------------------------------------------
@@ -294,10 +294,10 @@ class Test_SerialClient:
         assert self.victim.send__hello() == "hello"
 
     def test__getattr_CMD_PREFIX(self):
-        self.victim.CMD_PREFIX = "DEV:01:"
-        assert self.victim.hello() == f"{self.victim.CMD_PREFIX}hello"
-        assert self.victim.hello(12) == f"{self.victim.CMD_PREFIX}hello 12"
-        self.victim.CMD_PREFIX = ""
+        self.victim.PREFIX = "DEV:01:"
+        assert self.victim.hello() == f"{self.victim.PREFIX}hello"
+        assert self.victim.hello(12) == f"{self.victim.PREFIX}hello 12"
+        self.victim.PREFIX = ""
         assert self.victim.hello() == f"hello"
 
 
