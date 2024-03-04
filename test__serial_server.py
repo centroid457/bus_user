@@ -31,7 +31,7 @@ class Test__LineParsed:
     # -----------------------------------------------------------------------------------------------------------------
     def test__lowercase(self):
         victim = self.Victim("")
-        assert victim.LINE == ""
+        assert victim.ORIGINAL == ""
         assert victim.PREFIX == ""
         assert victim.CMD == ""
         assert victim.ARGS == []
@@ -40,7 +40,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("hello")
-        assert victim.LINE == "hello"
+        assert victim.ORIGINAL == "hello"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == []
@@ -49,7 +49,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO")
-        assert victim.LINE == "HELLO"
+        assert victim.ORIGINAL == "HELLO"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == []
@@ -59,7 +59,7 @@ class Test__LineParsed:
 
     def test__args_kwargs(self):
         victim = self.Victim("HELLO CH")
-        assert victim.LINE == "HELLO CH"
+        assert victim.ORIGINAL == "HELLO CH"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", ]
@@ -68,7 +68,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1")
-        assert victim.LINE == "HELLO CH 1"
+        assert victim.ORIGINAL == "HELLO CH 1"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", "1", ]
@@ -77,7 +77,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH=1")
-        assert victim.LINE == "HELLO CH=1"
+        assert victim.ORIGINAL == "HELLO CH=1"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == []
@@ -86,7 +86,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 1
 
         victim = self.Victim("HELLO CH1 CH2=2    ch3=3  ch4")
-        assert victim.LINE == "HELLO CH1 CH2=2    ch3=3  ch4"
+        assert victim.ORIGINAL == "HELLO CH1 CH2=2    ch3=3  ch4"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch1", "ch4"]
@@ -96,7 +96,7 @@ class Test__LineParsed:
 
     def test__kwargs_spaces(self):
         victim = self.Victim("CH =  1")
-        assert victim.LINE == "CH =  1"
+        assert victim.ORIGINAL == "CH =  1"
         assert victim.PREFIX == ""
         assert victim.CMD == ""
         assert victim.ARGS == []
@@ -105,7 +105,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 1
 
         victim = self.Victim("hello CH =  1")
-        assert victim.LINE == "hello CH =  1"
+        assert victim.ORIGINAL == "hello CH =  1"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == []
@@ -114,7 +114,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 1
 
         victim = self.Victim("hello CH ===  1")
-        assert victim.LINE == "hello CH ===  1"
+        assert victim.ORIGINAL == "hello CH ===  1"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == []
@@ -124,7 +124,7 @@ class Test__LineParsed:
 
     def test__kwargs_only(self):
         victim = self.Victim("CH=1")
-        assert victim.LINE == "CH=1"
+        assert victim.ORIGINAL == "CH=1"
         assert victim.PREFIX == ""
         assert victim.CMD == ""
         assert victim.ARGS == []
@@ -133,7 +133,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 1
 
         victim = self.Victim("CH=1 ch2=2")
-        assert victim.LINE == "CH=1 ch2=2"
+        assert victim.ORIGINAL == "CH=1 ch2=2"
         assert victim.PREFIX == ""
         assert victim.CMD == ""
         assert victim.ARGS == []
@@ -143,7 +143,7 @@ class Test__LineParsed:
 
     def test__prefix(self):
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO")
-        assert victim.LINE == "HELLO CH 1"
+        assert victim.ORIGINAL == "HELLO CH 1"
         assert victim.PREFIX == "hello"
         assert victim.CMD == "ch"
         assert victim.ARGS == ["1", ]
@@ -152,7 +152,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO CH 1")
-        assert victim.LINE == "HELLO CH 1"
+        assert victim.ORIGINAL == "HELLO CH 1"
         assert victim.PREFIX == "hello ch 1"
         assert victim.CMD == ""
         assert victim.ARGS == []
@@ -161,7 +161,7 @@ class Test__LineParsed:
         assert victim.KWARGS_count() == 0
 
         victim = self.Victim("HELLO CH 1", _prefix_expected="HELLO123")
-        assert victim.LINE == "HELLO CH 1"
+        assert victim.ORIGINAL == "HELLO CH 1"
         assert victim.PREFIX == ""
         assert victim.CMD == "hello"
         assert victim.ARGS == ["ch", "1", ]

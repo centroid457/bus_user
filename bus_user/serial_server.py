@@ -32,10 +32,10 @@ class AnswerVariants:
 
 class LineParsed:
     """
-    ALL RESULTS IN LOWERCASE! (EXCEPT ORIGINAL LINE!)
+    ALL RESULTS IN LOWERCASE! (EXCEPT ORIGINAL ORIGINAL!)
     """
     # REAL STATE --------------
-    LINE: str       # ORIGINAL LINE!
+    ORIGINAL: str
     PREFIX: str
     CMD: str
     ARGS: List[str]
@@ -48,7 +48,7 @@ class LineParsed:
         line = str(line)
 
         # INIT ----------------
-        self.LINE = line
+        self.ORIGINAL = line
         self.PREFIX = ""
         self.CMD = ""
         self.ARGS = []
@@ -104,7 +104,7 @@ class SerialServer_Base(QThread):
     ADDRESS: str = None
 
     HELLO_MSG: List[str] = [
-        "SerialServer_Base HELLO LINE 1",
+        "SerialServer_Base HELLO ORIGINAL 1",
         "SerialServer_Base hello line 2",
     ]
 
@@ -323,7 +323,7 @@ class SerialServer_Base(QThread):
         pass
 
         # WORK --------------------------------
-        return line_parsed.LINE
+        return line_parsed.ORIGINAL
 
     # CMDS - SCRIPTS --------------------------------------------------------------------------------------------------
     def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
