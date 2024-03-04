@@ -345,7 +345,12 @@ class Test__SerialServer_NoConnection:
         assert victim.PARAMS["VAR"] == 1
         assert victim._cmd__(LineParsed("var=11 int=16")) == AnswerVariants.SUCCESS
         assert victim.PARAMS["VAR"] == 11
-        assert victim.PARAMS["INT"] == 16           # FIXME: !!!
+        assert victim.PARAMS["INT"] == 16
+
+        # NOCHANGES if wrong name exists
+        assert victim._cmd__(LineParsed("var=110 int123=160")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+        assert victim.PARAMS["VAR"] == 11
+        assert victim.PARAMS["INT"] == 16
 
 
 # =====================================================================================================================

@@ -298,10 +298,10 @@ class SerialServer_Base(QThread):
             path_value = funcs_aux.Strings().try_convert_to__elementary(path_value)
             result = funcs_aux.Iterables().value_by_path__set(path_name, path_value, self.PARAMS)
 
-            if result:
-                return self.ANSWER.SUCCESS
-            else:
+            if not result:
                 return self.ANSWER.FAIL
+
+        return self.ANSWER.SUCCESS
 
     # CMDS - STD ------------------------------------------------------------------------------------------------------
     def cmd__hello(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
