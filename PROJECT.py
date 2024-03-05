@@ -61,11 +61,14 @@ other protocols mot recommended
          "Value_FromVariants",
          "list_results"
          ],
-        "from CMD in SerialServer NONE is equivalent for SUCCESS"
+        ["SerialServer cmd",
+         "NONE is equivalent for SUCCESS",
+         "no need params (like line_parsed as before)",
+         ]
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 5)
+    VERSION: Tuple[int, int, int] = (0, 1, 6)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -74,7 +77,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialServer] add list_results",
+        "[SerialServer/CMDs] no need params (like line_parsed as before)",
     ]
 
     # FINALIZE -----------------------------------------------
