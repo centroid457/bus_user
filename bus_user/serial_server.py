@@ -306,6 +306,18 @@ class SerialServer_Base(QThread):
         ]
         return result
 
+    def _dump_params_and_cmds(self, params_and_cmds: List[str] = None):
+        """
+        used to show several params by pretty print (ready to sent in serial port)
+        cmds used as params in just case if cmd returns exact value! (not for any cmd and not used for results as Answer)
+        """
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+        # todo: finish +apply in _LIST__HELP +apply in ATC emulator!
+
     # -----------------------------------------------------------------------------------------------------------------
     def __init__(self, params: Optional[Dict[str, Any]] = None):
         # FIXME: deprecate param params??? used for tests
