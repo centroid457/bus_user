@@ -15,8 +15,19 @@ import funcs_aux
 TYPE__CMD_RESULT = Union[str, List[str]]
 
 
+class Value_NotPassed:
+    """
+    special object used as value to show that parameter was not passed!
+    dont pass it directl! keep it only as default parameter in class and in methods instead of None Value!
+    it used only in special cases! not always even in one method!!!
+    """
+    pass
+    # def __str__(self):
+    #     return ""     # it used as direct Class! without any instantiation!
+
+
 # =====================================================================================================================
-class ValueWithUnit:
+class Value_WithUnit:
     """
     used to keep separated value and measure unit
     """
@@ -28,6 +39,9 @@ class ValueWithUnit:
     # TODO: move to funcs_aux
 
     def __init__(self, value: Union[int, float, Any] = None, unit: str = None, separator: str = None):
+        """
+        :param value: expecting number (int/float) in any form (str/any other object)!
+        """
         # FIXME: create class without INIT! with changeable type!!!
         if value is not None:
             self.value = float(value)
@@ -46,12 +60,13 @@ class ValueWithUnit:
 
     def __eq__(self, other):
         # DONT USE JUST str()=str() separator is not valuable!
-        if isinstance(other, ValueWithUnit):
+        if isinstance(other, Value_WithUnit):
             return (self.value == other.value) and (self.UNIT, other.UNIT)
+        else:
+            return self.value == other
 
     def __ne__(self, other):
-        if isinstance(other, ValueWithUnit):
-            return not self == other
+        return not self == other
 
 
 # =====================================================================================================================
@@ -63,21 +78,26 @@ class Exx__VariantsIncompatible(Exception):
     pass
 
 
-class ValueFromVariants:
+class Value_FromVariants:
     """
     used to keep separated value and measure unit
     """
     # TODO: move to funcs_aux
-    # TODO: combine with ValueWithUnit - just add ACCEPTABLE(*VARIANTS) and rename UNIT just as SUFFIX!
+    # TODO: combine with Value_WithUnit - just add ACCEPTABLE(*VARIANTS) and rename UNIT just as SUFFIX!
 
     # SETTINGS -----------------------
     CASE_INSENSITIVE: bool = True
     VARIANTS: List[Any] = None
 
     # DATA ---------------------------
-    __value: Any   # changeable
+    __value: Any = None   # changeable
 
-    def __init__(self, value: Union[str, Any], variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
+    def __init__(self, value: Union[str, Any] = None, variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
+        """
+        :param value: None mean NotSelected/NotSet!
+            if you need set None - use string value in any case! 'None'/NONE/none
+        """
+        # FIXME: need think about None value!
         # settings ---------------
         if case_insensitive is not None:
             self.CASE_INSENSITIVE = case_insensitive
@@ -86,18 +106,20 @@ class ValueFromVariants:
 
         # work ---------------
         self._variants_validate()
-        self.value = value
+        if value is not None:
+            self.value = value
 
     def __str__(self) -> str:
         return f"{self.value}"
 
     def __eq__(self, other):
-        if isinstance(other, ValueFromVariants):
+        if isinstance(other, Value_FromVariants):
             return self.value == other.value
+        else:
+            return self.value == other
 
     def __ne__(self, other):
-        if isinstance(other, ValueFromVariants):
-            return not self == other
+        return not self == other
 
     def _variants_validate(self) -> Optional[NoReturn]:
         if self.CASE_INSENSITIVE:
@@ -374,8 +396,8 @@ class SerialServer_Base(QThread):
         param_value = param_value.VALUE
 
         # VARIANTS ------------------------------------------------------------------
-        # ValueWithUnit -------------------------------
-        if isinstance(param_value, ValueWithUnit):
+        # Value_WithUnit -------------------------------
+        if isinstance(param_value, Value_WithUnit):
             return str(param_value)
 
         # CALLABLE -------------------------------
@@ -412,7 +434,7 @@ class SerialServer_Base(QThread):
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
             value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
-            if isinstance(value_old, ValueWithUnit):
+            if isinstance(value_old, Value_WithUnit):
                 # NOTE: ALL CLASSES/INSTANCES ARE CALLABLE!!!
                 pass
             elif callable(value_old):
@@ -423,7 +445,7 @@ class SerialServer_Base(QThread):
             value_new = funcs_aux.Strings().try_convert_to__elementary(value_new)
             value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
             # SET ----------
-            if isinstance(value_old, ValueWithUnit):
+            if isinstance(value_old, Value_WithUnit):
                 value_old.value = value_new
                 result = True
             else:
@@ -506,8 +528,8 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
-        "UNIT": ValueWithUnit(9, unit="V"),
-        "VARIANT": ValueFromVariants(220, variants=[220, 380]),
+        "UNIT": Value_WithUnit(9, unit="V"),
+        "VARIANT": Value_FromVariants(220, variants=[220, 380]),
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:

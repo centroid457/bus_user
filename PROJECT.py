@@ -68,7 +68,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-         "add ValueWithUnit for SerialServer",
+         "add Value_WithUnit for SerialServer",
     ]
 
     # FINALIZE -----------------------------------------------

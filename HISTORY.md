@@ -14,7 +14,7 @@
 
 0.1.2 (2024/03/04 15:37:29)
 ------------------------------
-- add ValueWithUnit for SerialServer  
+- add Value_WithUnit for SerialServer  
 
 0.1.1 (2024/03/04 11:01:41)
 ------------------------------

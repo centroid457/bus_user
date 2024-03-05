@@ -16,7 +16,7 @@ class Test__ValueWithUnit:
     @classmethod
     def setup_class(cls):
         pass
-        cls.Victim = type("Victim", (ValueWithUnit,), {})
+        cls.Victim = type("Victim", (Value_WithUnit,), {})
 
     # @classmethod
     # def teardown_class(cls):
@@ -36,30 +36,37 @@ class Test__ValueWithUnit:
         assert victim.SEPARATOR == ""
         assert str(victim) == "0"
 
-        victim = self.Victim(9)
-        assert victim.value == 9
+        victim = self.Victim(1)
+        assert victim.value == 1
         assert victim.UNIT == ""
         assert victim.SEPARATOR == ""
-        assert str(victim) == "9"
+        assert str(victim) == "1"
 
-        victim = self.Victim(9, unit="V")
-        assert victim.value == 9
+        victim = self.Victim(1, unit="V")
+        assert victim.value == 1
         assert victim.UNIT == "V"
         assert victim.SEPARATOR == ""
-        assert str(victim) == "9V"
+        assert str(victim) == "1V"
 
-        victim = self.Victim(9, unit="V", separator=" ")
-        assert victim.value == 9
+        victim = self.Victim(1, unit="V", separator=" ")
+        assert victim.value == 1
         assert victim.UNIT == "V"
         assert victim.SEPARATOR == " "
-        assert str(victim) == "9 V"
+        assert str(victim) == "1 V"
 
-    def test__cmp(self):
+    def test__cmp__same(self):
         assert self.Victim() == self.Victim()
-        assert self.Victim(9, separator=" ") == self.Victim(9, separator="")
-        assert self.Victim(9.0) == self.Victim(9)
+        assert self.Victim(1, separator=" ") == self.Victim(1, separator="")
+        assert self.Victim(1.0) == self.Victim(1)
 
         assert self.Victim(1) != self.Victim(2)
+
+    def test__cmp__other(self):
+        assert self.Victim() == 0
+        assert self.Victim(1, separator=" ") == 1
+        assert self.Victim(1.0) == 1
+
+        assert self.Victim(1) != 2
 
 
 # =====================================================================================================================
@@ -67,7 +74,7 @@ class Test__ValueFromVariants:
     @classmethod
     def setup_class(cls):
         pass
-        cls.Victim = type("Victim", (ValueFromVariants,), {})
+        cls.Victim = type("Victim", (Value_FromVariants,), {})
 
     # @classmethod
     # def teardown_class(cls):
@@ -113,18 +120,33 @@ class Test__ValueFromVariants:
             print(f"{exx!r}")
             assert False
 
-    def test__types(self):
+    def test__types__None(self):
         victim = self.Victim(value=None, variants=["NONE", ])
-        assert victim.value == "NONE"
+        assert victim.value is None
         assert str(victim) == "NONE"
 
         victim = self.Victim(value="None", variants=[None, ])
         assert victim.value is None
         assert str(victim) == "None"
 
-    def test__cmp(self):
+    def test__types__int(self):
+        victim = self.Victim(value=1, variants=["1", ])
+        assert victim.value == "1"
+        assert str(victim) == "1"
+
+        victim = self.Victim(value="1", variants=[1, ])
+        assert victim.value == 1
+        assert str(victim) == "1"
+
+    def test__cmp__same(self):
         assert self.Victim(value=None, variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
         assert self.Victim(value="NONE", variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
+
+        assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
+
+    def test__cmp__other(self):
+        assert self.Victim(value=None, variants=["NONE", ]) == "NONE"
+        assert self.Victim(value="NONE", variants=["NONE", ]) == "NONE"
 
         assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
 
@@ -472,7 +494,7 @@ class Test__SerialServer_NoConnection:
 
     def test__ValueWithUnit(self):
         victim = self.Victim()
-        assert victim.PARAMS["VIN"] == ValueWithUnit(9, unit="V")
+        assert victim.PARAMS["VIN"] == Value_WithUnit(9, unit="V")
         # assert victim._cmd__(LineParsed("vin")) == "9V"
 
         assert victim._cmd__(LineParsed("vin=99")) == AnswerVariants.SUCCESS
