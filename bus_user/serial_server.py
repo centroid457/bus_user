@@ -132,6 +132,9 @@ class Value_FromVariants:
         yield from self.VARIANTS
 
     def __contains__(self, item):
+        """
+        used to check compatibility
+        """
         for variant in self.VARIANTS:
             if self.CASE_INSENSITIVE:
                 result = str(variant).lower() == str(item).lower()
@@ -178,7 +181,7 @@ class AnswerVariants:
 
     ERR__NAME_CMD_OR_PARAM: str = "ERR__NAME_CMD_OR_PARAM"
     ERR__NAME_SCRIPT: str = "ERR__NAME_SCRIPT"
-    ERR__VALUE: str = "ERR__VALUE"
+    ERR__VALUE_INCOMPATIBLE: str = "ERR__VALUE_INCOMPATIBLE"
     ERR__ARGS_VALIDATION: str = "ERR__ARGS_VALIDATION"
 
     ERR__ENCODING_OR_DEVICE: str = "ERR__ENCODING_OR_DEVICE"
@@ -418,7 +421,7 @@ class SerialServer_Base(QThread):
 
         # VARIANTS ------------------------------------------------------------------
         # Value_WithUnit -------------------------------
-        if isinstance(param_value, Value_WithUnit):
+        if isinstance(param_value, (Value_FromVariants, Value_FromVariants)):
             return str(param_value)
 
         # CALLABLE -------------------------------
@@ -449,7 +452,7 @@ class SerialServer_Base(QThread):
             KWARGS = {line_parsed.ARGS[0]: line_parsed.ARGS[1]}
 
         # VALIDATE = check AVAILABLE TO CHANGE = exists all and not callable --------------
-        for path in KWARGS:
+        for path, value_new in KWARGS.items():
             path_name__original = funcs_aux.Iterables().path__get_original(path, self.PARAMS)
             if not path_name__original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
@@ -458,6 +461,9 @@ class SerialServer_Base(QThread):
             if isinstance(value_old, Value_WithUnit):
                 # NOTE: ALL CLASSES/INSTANCES ARE CALLABLE!!!
                 pass
+            elif isinstance(value_old, Value_FromVariants):
+                if value_new not in value_old:
+                    return self.ANSWER.ERR__VALUE_INCOMPATIBLE
             elif callable(value_old):
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
@@ -466,9 +472,12 @@ class SerialServer_Base(QThread):
             value_new = funcs_aux.Strings().try_convert_to__elementary(value_new)
             value_old = funcs_aux.Iterables().value_by_path__get(path, self.PARAMS).VALUE
             # SET ----------
-            if isinstance(value_old, Value_WithUnit):
-                value_old.value = value_new
-                result = True
+            if isinstance(value_old, (Value_WithUnit, Value_FromVariants)):
+                try:
+                    value_old.value = value_new
+                    result = True
+                except:
+                    return self.ANSWER.ERR__VALUE_INCOMPATIBLE
             else:
                 result = funcs_aux.Iterables().value_by_path__set(path, value_new, self.PARAMS)
 

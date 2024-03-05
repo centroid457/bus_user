@@ -12,7 +12,7 @@ from bus_user import *
 
 
 # =====================================================================================================================
-class Test__ValueWithUnit:
+class Test__Value_WithUnit:
     @classmethod
     def setup_class(cls):
         pass
@@ -70,7 +70,7 @@ class Test__ValueWithUnit:
 
 
 # =====================================================================================================================
-class Test__ValueFromVariants:
+class Test__Value_FromVariants:
     @classmethod
     def setup_class(cls):
         pass
@@ -510,7 +510,7 @@ class Test__SerialServer_NoConnection:
         assert victim.PARAMS["VAR"] == 11
         assert victim.PARAMS["INT"] == 16
 
-    def test__ValueWithUnit(self):
+    def test__Value_WithUnit(self):
         victim = self.Victim()
         victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
         assert victim.PARAMS["UNIT123"] == Value_WithUnit(1, unit="V")
@@ -521,6 +521,22 @@ class Test__SerialServer_NoConnection:
 
         assert victim._cmd__(LineParsed("unit123=1.00")) == AnswerVariants.SUCCESS
         assert victim._cmd__(LineParsed("unit123")) == "1.0V"
+
+        assert victim.PARAMS["UNIT123"] == Value_WithUnit(1.0, unit="V")
+
+    def test__Value_FromVariants(self):
+        victim = self.Victim()
+
+        victim.PARAMS["VARIANT"] = Value_FromVariants(220, variants=[220, 380])
+        assert victim._cmd__(LineParsed("variant")) == "220"
+
+        assert victim._cmd__(LineParsed("variant=11")) == AnswerVariants.ERR__VALUE_INCOMPATIBLE
+        assert victim._cmd__(LineParsed("variant")) == "220"
+
+        assert victim._cmd__(LineParsed("variant=380")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("variant")) == "380"
+
+        assert victim.PARAMS["VARIANT"] == Value_FromVariants(380, variants=[220, 380])
 
 
 # =====================================================================================================================
