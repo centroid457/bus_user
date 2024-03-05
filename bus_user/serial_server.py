@@ -287,6 +287,10 @@ class SerialServer_Base(QThread):
                 params_dump.append(f"  |{name}={{")
                 for name_, value_ in value.items():
                     params_dump.append(f"    |{name_}={value_}")
+            elif isinstance(value, Value_FromVariants):
+                params_dump.append(f"  |{name}={value}{list(value)}")
+            elif isinstance(value, Value_WithUnit):
+                params_dump.append(f"  |{name}={value.value}'{value.UNIT}'")
             else:
                 params_dump.append(f"  |{name}={value}")
 
@@ -557,7 +561,7 @@ class SerialServer_Example(SerialServer_Base):
         "VAR": "",
 
         "STR": "str",
-        "STR_QUOTES": "str'",
+        "QUOTE": "str'",
 
         "BLANC": "",
         "ZERO": 0,

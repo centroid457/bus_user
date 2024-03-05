@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.7 (2024/03/05 16:59:07)
+------------------------------
+- [SerialServer] fix _LIST__HELP - show structure with certainty Units/Variants  
+
 0.1.6 (2024/03/05 16:37:26)
 ------------------------------
 - [SerialServer/CMDs] no need params (like line_parsed as before)  

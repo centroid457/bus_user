@@ -1,4 +1,4 @@
-# bus_user (v0.1.6)
+# bus_user (v0.1.7)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -36,6 +36,7 @@ other protocols mot recommended
 3. SerialServer cmd:  
 	- NONE is equivalent for SUCCESS  
 	- no need params (like line_parsed as before)  
+	- help - for show all variants (Units/Variants/Callables)!  
 
 
 ********************************************************************************

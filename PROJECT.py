@@ -64,11 +64,12 @@ other protocols mot recommended
         ["SerialServer cmd",
          "NONE is equivalent for SUCCESS",
          "no need params (like line_parsed as before)",
+         "help - for show all variants (Units/Variants/Callables)!"
          ]
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 6)
+    VERSION: Tuple[int, int, int] = (0, 1, 7)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -77,7 +78,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialServer/CMDs] no need params (like line_parsed as before)",
+        "[SerialServer] fix _LIST__HELP - show structure with certainty Units/Variants",
     ]
 
     # FINALIZE -----------------------------------------------
