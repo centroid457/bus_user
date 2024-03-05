@@ -125,6 +125,23 @@ class Value_FromVariants:
     def __ne__(self, other):
         return not self == other
 
+    def __len__(self):
+        return len(self.VARIANTS)
+
+    def __iter__(self):
+        yield from self.VARIANTS
+
+    def __contains__(self, item):
+        for variant in self.VARIANTS:
+            if self.CASE_INSENSITIVE:
+                result = str(variant).lower() == str(item).lower()
+            else:
+                result = str(variant) == str(item)
+            if result:
+                return True
+
+        return False
+
     def _variants_validate(self) -> Optional[NoReturn]:
         if self.CASE_INSENSITIVE:
             real_len = len(set(map(lambda item: str(item).lower(), self.VARIANTS)))
@@ -532,7 +549,7 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
-        "UNIT": Value_WithUnit(9, unit="V"),
+        "UNIT": Value_WithUnit(1, unit="V"),
         "VARIANT": Value_FromVariants(220, variants=[220, 380]),
     }
 

@@ -121,6 +121,10 @@ class Test__ValueFromVariants:
             assert False
 
     def test__types__None(self):
+        victim = self.Victim(variants=["NONE", ])
+        assert victim.value == Value_NotPassed
+        # assert str(victim) == "NONE"
+
         victim = self.Victim(value=None, variants=["NONE", ])
         assert victim.value == "NONE"
         assert str(victim) == "NONE"
@@ -149,6 +153,20 @@ class Test__ValueFromVariants:
         assert self.Victim(value="NONE", variants=["NONE", ]) == "NONE"
 
         assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
+
+    def test__contain(self):
+        victim = self.Victim(variants=["NONE", ])
+        assert None in victim
+        assert "None" in victim
+        assert "NONE" in victim
+
+    def test__len(self):
+        assert len(self.Victim(variants=[0, ])) == 1
+        assert len(self.Victim(variants=[0, 1])) == 2
+
+    def test__iter(self):
+        assert list(self.Victim(variants=[0, ])) == [0, ]
+        assert list(self.Victim(variants=[0, 1])) == [0, 1, ]
 
 
 # =====================================================================================================================
@@ -494,14 +512,15 @@ class Test__SerialServer_NoConnection:
 
     def test__ValueWithUnit(self):
         victim = self.Victim()
-        assert victim.PARAMS["VIN"] == Value_WithUnit(9, unit="V")
-        # assert victim._cmd__(LineParsed("vin")) == "9V"
+        victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
+        assert victim.PARAMS["UNIT123"] == Value_WithUnit(1, unit="V")
+        assert victim._cmd__(LineParsed("unit123")) == "1V"
 
-        assert victim._cmd__(LineParsed("vin=99")) == AnswerVariants.SUCCESS
-        assert victim._cmd__(LineParsed("vin")) == "99V"
+        assert victim._cmd__(LineParsed("unit123=11")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("unit123")) == "11V"
 
-        assert victim._cmd__(LineParsed("vin=9.00")) == AnswerVariants.SUCCESS
-        assert victim._cmd__(LineParsed("vin")) == "9.0V"
+        assert victim._cmd__(LineParsed("unit123=1.00")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("unit123")) == "1.0V"
 
 
 # =====================================================================================================================
