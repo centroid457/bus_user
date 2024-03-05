@@ -60,10 +60,11 @@ other protocols mot recommended
          "Value_WithUnit",
          "Value_FromVariants",
          ],
+        "from CMD in SerialServer NONE is equivalent for SUCCESS"
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 3)
+    VERSION: Tuple[int, int, int] = (0, 1, 4)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -72,7 +73,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-         "[SerialServer] add Value_WithUnit/Value_FromVariants/Value_NotPassed",
+        "[SerialServer] from CMD NONE is equivalent for SUCCESS",
     ]
 
     # FINALIZE -----------------------------------------------

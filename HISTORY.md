@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.4 (2024/03/05 14:40:05)
+------------------------------
+- [SerialServer] from CMD NONE is equivalent for SUCCESS  
+
 0.1.3 (2024/03/05 13:42:36)
 ------------------------------
 - [SerialServer] add Value_WithUnit/Value_FromVariants/Value_NotPassed  

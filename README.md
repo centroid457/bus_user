@@ -1,4 +1,4 @@
-# bus_user (v0.1.3)
+# bus_user (v0.1.4)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -32,6 +32,7 @@ other protocols mot recommended
 	- as Callable  
 	- Value_WithUnit  
 	- Value_FromVariants  
+3. from CMD in SerialServer NONE is equivalent for SUCCESS  
 
 
 ********************************************************************************
