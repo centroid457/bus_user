@@ -538,6 +538,14 @@ class Test__SerialServer_NoConnection:
 
         assert victim.PARAMS["VARIANT"] == Value_FromVariants(380, variants=[220, 380])
 
+    def test__list_results(self):
+        victim = self.Victim()
+        victim.PARAMS["VARIANT"] = Value_FromVariants(220, variants=[220, 380])
+        victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
+
+        assert victim.list_results(["VARIANT", "UNIT123"]) == ["VARIANT=220", "UNIT123=1V"]
+        assert victim.list_results(["on", "unit123"]) == [f"on={AnswerVariants.SUCCESS}", "unit123=1V"]
+
 
 # =====================================================================================================================
 @pytest.mark.skip
