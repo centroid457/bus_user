@@ -1,4 +1,4 @@
-# bus_user (v0.1.2)
+# bus_user (v0.1.3)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -27,8 +27,11 @@ other protocols mot recommended
 1. Serial:  
 	- Client+Server  
 	- connect with ADDRESS_APPLY_FIRST_VACANT  
-	- Server - set/get params by SlashOrSpacePath addressing  
-	- values used as Callable and SerialServer  
+	- set/get params by SlashOrSpacePath addressing  
+2. SerialServer values:  
+	- as Callable  
+	- Value_WithUnit  
+	- Value_FromVariants  
 
 
 ********************************************************************************

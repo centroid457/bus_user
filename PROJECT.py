@@ -53,13 +53,17 @@ other protocols mot recommended
         ["Serial",
             "Client+Server",
             "connect with ADDRESS_APPLY_FIRST_VACANT",
-            "Server - set/get params by SlashOrSpacePath addressing",
-            "values used as Callable and SerialServer",
-         ]
+            "set/get params by SlashOrSpacePath addressing",
+         ],
+        ["SerialServer values",
+         "as Callable",
+         "Value_WithUnit",
+         "Value_FromVariants",
+         ],
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 2)
+    VERSION: Tuple[int, int, int] = (0, 1, 3)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -68,7 +72,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-         "add Value_WithUnit for SerialServer",
+         "[SerialServer] add Value_WithUnit/Value_FromVariants/Value_NotPassed",
     ]
 
     # FINALIZE -----------------------------------------------
