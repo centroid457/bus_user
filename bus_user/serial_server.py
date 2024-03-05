@@ -93,7 +93,7 @@ class Value_FromVariants:
     VARIANTS: List[Any] = None
 
     # DATA ---------------------------
-    __value: Any = Value_NotPassed   # changeable   # TODO: default as first in variant!
+    __value: Any = Value_NotPassed   # changeable   # TODO: default as first in variant! or pass exact value!
 
     def __init__(self, value: Union[str, Any] = Value_NotPassed, variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
         """
