@@ -17,11 +17,14 @@ TYPE__CMD_RESULT = Union[str, List[str]]
 
 class Value_NotPassed:
     """
+    resolve not passed parameters in case of None value!
+
     special object used as value to show that parameter was not passed!
     dont pass it directl! keep it only as default parameter in class and in methods instead of None Value!
     it used only in special cases! not always even in one method!!!
     """
     pass
+    # @classmethod
     # def __str__(self):
     #     return ""     # it used as direct Class! without any instantiation!
 
@@ -90,9 +93,9 @@ class Value_FromVariants:
     VARIANTS: List[Any] = None
 
     # DATA ---------------------------
-    __value: Any = None   # changeable
+    __value: Any = Value_NotPassed   # changeable
 
-    def __init__(self, value: Union[str, Any] = None, variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
+    def __init__(self, value: Union[str, Any] = Value_NotPassed, variants: List[Union[str, Any]] = None, case_insensitive: bool = None):
         """
         :param value: None mean NotSelected/NotSet!
             if you need set None - use string value in any case! 'None'/NONE/none
@@ -106,7 +109,8 @@ class Value_FromVariants:
 
         # work ---------------
         self._variants_validate()
-        if value is not None:
+
+        if value != Value_NotPassed:
             self.value = value
 
     def __str__(self) -> str:

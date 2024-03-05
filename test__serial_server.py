@@ -122,7 +122,7 @@ class Test__ValueFromVariants:
 
     def test__types__None(self):
         victim = self.Victim(value=None, variants=["NONE", ])
-        assert victim.value is None
+        assert victim.value == "NONE"
         assert str(victim) == "NONE"
 
         victim = self.Victim(value="None", variants=[None, ])
