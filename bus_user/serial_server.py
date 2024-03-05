@@ -387,18 +387,25 @@ class SerialServer_Base(QThread):
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
+        # GET METHOD --------------------
         if meth_name__original:
             meth_cmd = getattr(self, meth_name__original.VALUE)
         else:
             meth_cmd = self._cmd__param_as_cmd
 
+        # EXEC METHOD --------------------
         try:
             result = meth_cmd(line_parsed)
-            if result is None:
-                result = self.ANSWER.SUCCESS
+        except TypeError as exx:
+            try:
+                result = meth_cmd()
+            except:
+                result = self.ANSWER.FAIL
         except:
             result = self.ANSWER.FAIL
 
+        if result is None:
+            result = self.ANSWER.SUCCESS
         return result
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
@@ -582,7 +589,12 @@ class SerialServer_Example(SerialServer_Base):
         "VARIANT": Value_FromVariants(220, variants=[220, 380]),
     }
 
-    def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+    def cmd__cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # NOTE: NONE is equivalent for SUCCESS
+        # do smth
+        pass
+
+    def cmd__cmd_no_line(self) -> TYPE__CMD_RESULT:
         # NOTE: NONE is equivalent for SUCCESS
         # do smth
         pass

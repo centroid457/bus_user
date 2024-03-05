@@ -352,7 +352,7 @@ class Test__SerialServer_NoConnection:
             "run",
             "hello", "help", "echo",
 
-            "on",
+            "cmd", "cmd_no_line"
         }
         assert set(victim._LIST__SCRIPTS) == {
             "script1",
@@ -360,7 +360,8 @@ class Test__SerialServer_NoConnection:
 
     def test__cmd__cmd(self):
         victim = self.Victim()
-        assert victim._cmd__(LineParsed("on")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("cmd")) == AnswerVariants.SUCCESS
+        assert victim._cmd__(LineParsed("cmd_no_line")) == AnswerVariants.SUCCESS
 
     def test__cmd__echo(self):
         victim = self.Victim()
@@ -544,7 +545,7 @@ class Test__SerialServer_NoConnection:
         victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
 
         assert victim.list_results(["VARIANT", "UNIT123"]) == ["VARIANT=220", "UNIT123=1V"]
-        assert victim.list_results(["on", "unit123"]) == [f"on={AnswerVariants.SUCCESS}", "unit123=1V"]
+        assert victim.list_results(["cmd", "unit123"]) == [f"cmd={AnswerVariants.SUCCESS}", "unit123=1V"]
 
 
 # =====================================================================================================================
