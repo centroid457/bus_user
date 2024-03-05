@@ -379,7 +379,14 @@ class SerialServer_Base(QThread):
         else:
             meth_cmd = self._cmd__param_as_cmd
 
-        return meth_cmd(line_parsed)
+        try:
+            result = meth_cmd(line_parsed)
+            if result is None:
+                result = self.ANSWER.SUCCESS
+        except:
+            result = self.ANSWER.FAIL
+
+        return result
 
     def _cmd__param_as_cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # PREPARE -------------------------------
@@ -563,13 +570,14 @@ class SerialServer_Example(SerialServer_Base):
     }
 
     def cmd__on(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # NOTE: NONE is equivalent for SUCCESS
         # do smth
-        return self.ANSWER.SUCCESS
+        pass
 
     # -----------------------------------------------------------------------------------------------------------------
     def script__script1(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
-        return self.ANSWER.SUCCESS
+        pass
 
 
 # =====================================================================================================================
