@@ -78,7 +78,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialServer] Value_FromVariants = apply comparing objects by str()",
+        "[SerialClient] address__autodetect_logic = apply Exx as False",
     ]
 
     # FINALIZE -----------------------------------------------
