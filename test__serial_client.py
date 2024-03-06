@@ -119,8 +119,12 @@ class Test_SerialClient:
             print(msg)
             raise Exception(msg)
 
-        cls.Victim = type("Victim", (SerialClient,), {})
-        cls.Victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
+        class Victim(SerialClient):
+            ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
+            def address__autodetect_logic(self) -> bool:
+                return self.write_read_line_last("echo") == "echo"
+
+        cls.Victim = Victim
         cls.victim = cls.Victim()
         cls.victim.connect()
 
@@ -137,37 +141,26 @@ class Test_SerialClient:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESS_APPLY_FIRST_VACANT(self):
-        assert self.victim.connect()
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
-
-        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.NOT_USED
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NOT_USED
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS is not None
 
     def test__ADDRESS_APPLY_AUTODETECT(self):
-        pass
-        # todo: finish!!!
-        # todo: finish!!!
-        # todo: finish!!!
-        # todo: finish!!!
-        # todo: finish!!!
-        # todo: finish!!!
-        # todo: finish!!!
-        # assert self.victim.connect()
-        # self.victim.disconnect()
-        # self.victim.ADDRESS = None
-        #
-        # self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.NOT_USED
-        # assert not self.victim.connect(_raise=False)
-        #
-        # self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
-        # assert self.victim.connect(_raise=False)
-        # assert self.victim.ADDRESS is not None
+        self.victim.disconnect()
+
+        self.victim.ADDRESS = None
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NOT_USED
+        assert not self.victim.connect(_raise=False)
+
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.AUTODETECT
+        assert self.victim.connect(_raise=False)
+        assert self.victim.ADDRESS is not None
 
     def test__connect_multy(self):
         assert self.victim.connect()

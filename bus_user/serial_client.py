@@ -37,6 +37,7 @@ class Exx_SerialAddresses_NoVacant(Exception):
 class Exx_SerialAddresses_NoAutodetected(Exception):
     pass
 
+
 class Exx_SerialAddress_AlreadyOpened(Exception):
     """
     SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
@@ -88,17 +89,17 @@ class TypeWrReturn(Enum):
     DICT = auto()
 
 
-class AddressAutoAcceptance(Enum):
+class AddressAutoAcceptanceVariant(Enum):
     NOT_USED = auto()
-    FIRST_VACANT = auto()   # ADDRESS_APPLY_FIRST_VACANT
-    AUTOEDTECT = auto()
+    FIRST_VACANT = auto()
+    AUTODETECT = auto()
 
 
 # =====================================================================================================================
 class SerialClient:
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
-    ADDRESS_AUTOACCEPT: AddressAutoAcceptance = AddressAutoAcceptance.NOT_USED
+    ADDRESS_AUTOACCEPT: AddressAutoAcceptanceVariant = AddressAutoAcceptanceVariant.NOT_USED
     ADDRESS: str = None
 
     _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
@@ -170,9 +171,9 @@ class SerialClient:
 
         address = address or self.ADDRESS
         if not address:
-            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptance.FIRST_VACANT and self.address__apply_first_vacant():
+            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_VACANT and self._address__apply_first_vacant():
                 pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptance.AUTOEDTECT and self.address__apply_autodetect():
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.AUTODETECT and self._address__apply_autodetect():
                 pass
             else:
                 msg = Exx_SerialAddress_NotConfigured
@@ -224,7 +225,7 @@ class SerialClient:
         self._clear_buffer_read()
         return True
 
-    def address__apply_first_vacant(self) -> bool:
+    def _address__apply_first_vacant(self) -> bool:
         ports = self.system_ports__detect()
         if not ports:
             msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
@@ -249,7 +250,7 @@ class SerialClient:
         2. if this func return True - address would be accepted!
         """
 
-    def address__apply_autodetect(self) -> bool:
+    def _address__apply_autodetect(self) -> bool:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
