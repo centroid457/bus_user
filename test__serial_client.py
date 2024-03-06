@@ -137,7 +137,8 @@ class Test_SerialClient:
         self.victim.connect()
 
     def teardown_method(self, method):
-        pass
+        if self.victim:
+            self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESS_APPLY_FIRST_VACANT(self):

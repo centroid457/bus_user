@@ -263,10 +263,12 @@ class SerialClient:
             try:
                 if self.address__autodetect_logic():
                     self.ADDRESS = address
+                    self.disconnect()
                     return True
             except:
-                pass
+                self.disconnect()
 
+        # FINISH -------------
         msg = Exx_SerialAddresses_NoAutodetected
         print(msg)
 
