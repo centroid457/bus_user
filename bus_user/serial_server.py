@@ -1,4 +1,4 @@
-from .serial_client import SerialClient
+from .serial_client import SerialClient, AddressAutoAcceptance
 
 from typing import *
 import time
@@ -271,7 +271,7 @@ class SerialServer_Base(QThread):
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
 
-    ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
+    ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
     ADDRESS: str = None
 
     HELLO_MSG: List[str] = [
@@ -346,8 +346,8 @@ class SerialServer_Base(QThread):
         self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
-        if self.ADDRESS_APPLY_FIRST_VACANT is not None:
-            self._SERIAL_CLIENT.ADDRESS_APPLY_FIRST_VACANT = self.ADDRESS_APPLY_FIRST_VACANT
+        if self.ADDRESS_AUTOACCEPT is not None:
+            self._SERIAL_CLIENT.ADDRESS_AUTOACCEPT = self.ADDRESS_AUTOACCEPT
 
     def _init_lists(self) -> None:
         self._LIST__CMDS = []

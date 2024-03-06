@@ -26,7 +26,6 @@ other protocols mot recommended
 ## Features
 1. Serial:  
 	- Client+Server  
-	- connect with ADDRESS_APPLY_FIRST_VACANT  
 	- set/get params by SlashOrSpacePath addressing  
 2. SerialServer values:  
 	- as Callable  

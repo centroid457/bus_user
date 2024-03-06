@@ -120,7 +120,7 @@ class Test_SerialClient:
             raise Exception(msg)
 
         cls.Victim = type("Victim", (SerialClient,), {})
-        cls.Victim.ADDRESS_APPLY_FIRST_VACANT = True
+        cls.Victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
         cls.victim = cls.Victim()
         cls.victim.connect()
 
@@ -142,11 +142,32 @@ class Test_SerialClient:
 
         self.victim.ADDRESS = None
 
-        self.victim.ADDRESS_APPLY_FIRST_VACANT = False
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.NOT_USED
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS_APPLY_FIRST_VACANT = True
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
         assert self.victim.connect(_raise=False)
+        assert self.victim.ADDRESS is not None
+
+    def test__ADDRESS_APPLY_AUTODETECT(self):
+        pass
+        # todo: finish!!!
+        # todo: finish!!!
+        # todo: finish!!!
+        # todo: finish!!!
+        # todo: finish!!!
+        # todo: finish!!!
+        # todo: finish!!!
+        # assert self.victim.connect()
+        # self.victim.disconnect()
+        # self.victim.ADDRESS = None
+        #
+        # self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.NOT_USED
+        # assert not self.victim.connect(_raise=False)
+        #
+        # self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptance.FIRST_VACANT
+        # assert self.victim.connect(_raise=False)
+        # assert self.victim.ADDRESS is not None
 
     def test__connect_multy(self):
         assert self.victim.connect()
@@ -156,7 +177,7 @@ class Test_SerialClient:
     def test__pipeline_open_close(self):
         self.victim.disconnect()
         self.victim = self.Victim()
-        self.victim.connect()
+        assert self.victim.connect()
         assert self.victim.write_read_line("hello").last_output == "hello"
 
         self.victim.disconnect()

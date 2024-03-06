@@ -52,7 +52,7 @@ other protocols mot recommended
 
         ["Serial",
             "Client+Server",
-            "connect with ADDRESS_APPLY_FIRST_VACANT",
+            "connect with ADDRESS FIRST_VACANT",
             "set/get params by SlashOrSpacePath addressing",
          ],
         ["SerialServer values",

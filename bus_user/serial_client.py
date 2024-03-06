@@ -34,6 +34,9 @@ class Exx_SerialAddresses_NoVacant(Exception):
     pass
 
 
+class Exx_SerialAddresses_NoAutodetected(Exception):
+    pass
+
 class Exx_SerialAddress_AlreadyOpened(Exception):
     """
     SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
@@ -85,14 +88,20 @@ class TypeWrReturn(Enum):
     DICT = auto()
 
 
+class AddressAutoAcceptance(Enum):
+    NOT_USED = auto()
+    FIRST_VACANT = auto()   # ADDRESS_APPLY_FIRST_VACANT
+    AUTOEDTECT = auto()
+
+
 # =====================================================================================================================
 class SerialClient:
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
-    ADDRESS_APPLY_FIRST_VACANT: Optional[bool] = None
+    ADDRESS_AUTOACCEPT: AddressAutoAcceptance = AddressAutoAcceptance.NOT_USED
     ADDRESS: str = None
 
-    _TIMEOUT__READ_FIRST: float = 0.5       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
     # _TIMEOUT__READ_LAST: float = 0.9
     BAUDRATE: int = 9600        # 115200
@@ -161,19 +170,10 @@ class SerialClient:
 
         address = address or self.ADDRESS
         if not address:
-            if self.ADDRESS_APPLY_FIRST_VACANT:
-                ports = self.system_ports__detect()
-                if not ports:
-                    msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
-                    exx = Exx_SerialAddress_NotExists(msg)
-
-                else:
-                    for address in ports:
-                        if self.connect(address=address, _raise=False):
-                            return True
-
-                    msg = Exx_SerialAddresses_NoVacant
-                    exx = Exx_SerialAddresses_NoVacant()
+            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptance.FIRST_VACANT and self.address__apply_first_vacant():
+                pass
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptance.AUTOEDTECT and self.address__apply_autodetect():
+                pass
             else:
                 msg = Exx_SerialAddress_NotConfigured
                 exx = Exx_SerialAddress_NotConfigured()
@@ -223,6 +223,47 @@ class SerialClient:
         # exit()
         self._clear_buffer_read()
         return True
+
+    def address__apply_first_vacant(self) -> bool:
+        ports = self.system_ports__detect()
+        if not ports:
+            msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
+            print(msg)
+            return False
+
+        for address in ports:
+            if self.connect(address=address, _raise=False):
+                self.ADDRESS = address
+                return True
+
+        msg = Exx_SerialAddresses_NoVacant
+        print(msg)
+
+    def address__autodetect_logic(self) -> bool:
+        """
+        overwrite for you case!
+        used to find exact device in all comport by some special logic like IDN/NAME value.
+
+        IDEA:
+        1. this func will exec on every accessible address
+        2. if this func return True - address would be accepted!
+        """
+
+    def address__apply_autodetect(self) -> bool:
+        """
+        dont overwrite! dont mess with address__autodetect_logic!
+        used to find exact device in all comport by some special logic like IDN/NAME value
+        """
+        for address in self.system_ports__detect():
+            if not self.connect(address=address, _raise=False):
+                continue
+
+            if self.address__autodetect_logic():
+                self.ADDRESS = address
+                return True
+
+        msg = Exx_SerialAddresses_NoAutodetected
+        print(msg)
 
     def cmd_prefix__set(self) -> None:
         """
