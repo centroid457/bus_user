@@ -61,6 +61,12 @@ class Value_WithUnit:
     def __str__(self) -> str:
         return f"{self.value}{self.SEPARATOR}{self.UNIT}"
 
+    def __repr__(self) -> str:
+        """
+        used as help
+        """
+        return f"{self.value}'{self.UNIT}'"
+
     def __eq__(self, other):
         # DONT USE JUST str()=str() separator is not valuable!
         if isinstance(other, Value_WithUnit):
@@ -115,6 +121,12 @@ class Value_FromVariants:
 
     def __str__(self) -> str:
         return f"{self.value}"
+
+    def __repr__(self) -> str:
+        """
+        used as help
+        """
+        return f"{self.value}{self.VARIANTS}"
 
     def __eq__(self, other):
         if isinstance(other, Value_FromVariants):
@@ -284,15 +296,13 @@ class SerialServer_Base(QThread):
         params_dump = []
         for name, value in self.PARAMS.items():
             if isinstance(value, dict):
-                params_dump.append(f"  |{name}={{")
+                params_dump.append(" "*2 + f"|{name}={{")
                 for name_, value_ in value.items():
-                    params_dump.append(f"    |{name_}={value_}")
-            elif isinstance(value, Value_FromVariants):
-                params_dump.append(f"  |{name}={value}{list(value)}")
-            elif isinstance(value, Value_WithUnit):
-                params_dump.append(f"  |{name}={value.value}'{value.UNIT}'")
+                    params_dump.append(" "*4 + f"|{name_}={value_}")
+            elif isinstance(value, (Value_WithUnit, Value_FromVariants)):
+                params_dump.append(" "*2 + f"|{name}={repr(value)}")
             else:
-                params_dump.append(f"  |{name}={value}")
+                params_dump.append(" "*2 + f"|{name}={value}")
 
         # WORK --------------------------------
         result = [
@@ -310,9 +320,9 @@ class SerialServer_Base(QThread):
         ]
         return result
 
-    def list_results(self, lines: List[str]) -> List[str]:
+    def list_param_results(self, lines: List[str]) -> List[str]:
         """
-        used to show several params and cmd results (ready to pretty sent in serial port)
+        used to show several PARAMS and CMD results (ready to pretty sent in serial port)
         cmds used as params in just case if cmd returns exact value! (not for any cmd and not used for results as Answer)
         """
         result = []

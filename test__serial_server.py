@@ -544,8 +544,8 @@ class Test__SerialServer_NoConnection:
         victim.PARAMS["VARIANT"] = Value_FromVariants(220, variants=[220, 380])
         victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
 
-        assert victim.list_results(["VARIANT", "UNIT123"]) == ["VARIANT=220", "UNIT123=1V"]
-        assert victim.list_results(["cmd", "unit123"]) == [f"cmd={AnswerVariants.SUCCESS}", "unit123=1V"]
+        assert victim.list_param_results(["VARIANT", "UNIT123"]) == ["VARIANT=220", "UNIT123=1V"]
+        assert victim.list_param_results(["cmd", "unit123"]) == [f"cmd={AnswerVariants.SUCCESS}", "unit123=1V"]
 
 
 # =====================================================================================================================
