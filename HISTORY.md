@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.10 (2024/03/06 17:02:29)
+------------------------------
+- [SerialClient] address__autodetect_logic = apply Exx as False  
+
 0.1.9 (2024/03/06 16:46:22)
 ------------------------------
 - [SerialServer] Value_FromVariants = apply comparing objects by str()  
