@@ -68,9 +68,9 @@ class Value_WithUnit:
         return f"{self.value}'{self.UNIT}'"
 
     def __eq__(self, other):
-        # DONT USE JUST str()=str() separator is not valuable!
+        # DONT USE JUST str()=str() separator is not valuable! especially for digital values
         if isinstance(other, Value_WithUnit):
-            return (self.value == other.value) and (self.UNIT, other.UNIT)
+            return (self.value == other.value) and (self.UNIT == other.UNIT)
         else:
             return self.value == other
 
@@ -130,9 +130,13 @@ class Value_FromVariants:
 
     def __eq__(self, other):
         if isinstance(other, Value_FromVariants):
-            return self.value == other.value
+            other = other.value
+
+        # todo: decide is it correct using comparing by str()??? by now i think it is good enough! but maybe add it as parameter
+        if self.CASE_INSENSITIVE:
+            return (self.value == other) or (str(self.value).lower() == str(other).lower())
         else:
-            return self.value == other
+            return (self.value == other) or (str(self.value) == str(other))
 
     def __ne__(self, other):
         return not self == other

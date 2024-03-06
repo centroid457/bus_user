@@ -142,17 +142,20 @@ class Test__Value_FromVariants:
         assert victim.value == 1
         assert str(victim) == "1"
 
-    def test__cmp__same(self):
+    def test__cmp__same_obj(self):
         assert self.Victim(value=None, variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
         assert self.Victim(value="NONE", variants=["NONE", ]) == self.Victim(value="None", variants=["NONE", ])
+        assert self.Victim(value=None, variants=["None", ]) == self.Victim(value=None, variants=["NONE", ])
 
-        assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
+        assert self.Victim(value=None, variants=["None", ], case_insensitive=False) != self.Victim(value=None, variants=["NONE", ])
 
-    def test__cmp__other(self):
+    def test__cmp__simple_value(self):
         assert self.Victim(value=None, variants=["NONE", ]) == "NONE"
         assert self.Victim(value="NONE", variants=["NONE", ]) == "NONE"
-
-        assert self.Victim(value=None, variants=["NONE", ]) != self.Victim(value=None, variants=["None", ])
+        assert self.Victim(value=None, variants=["None", ]) == "NONE"
+        assert self.Victim(value=None, variants=[None, ]) == "NONE"
+        assert self.Victim(value=None, variants=[None, ], case_insensitive=False) != "NONE"
+        assert self.Victim(value=None, variants=[None, ], case_insensitive=False) == "None"
 
     def test__contain(self):
         victim = self.Victim(variants=["NONE", ])
