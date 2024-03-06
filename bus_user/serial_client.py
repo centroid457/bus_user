@@ -240,7 +240,7 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoVacant
         print(msg)
 
-    def address__autodetect_logic(self) -> bool:
+    def address__autodetect_logic(self) -> Union[bool, NoReturn]:
         """
         overwrite for you case!
         used to find exact device in all comport by some special logic like IDN/NAME value.
@@ -248,6 +248,7 @@ class SerialClient:
         IDEA:
         1. this func will exec on every accessible address
         2. if this func return True - address would be accepted!
+        3. raiseExx/NoReturn - equivalent as False!
         """
 
     def _address__apply_autodetect(self) -> bool:
@@ -259,9 +260,12 @@ class SerialClient:
             if not self.connect(address=address, _raise=False):
                 continue
 
-            if self.address__autodetect_logic():
-                self.ADDRESS = address
-                return True
+            try:
+                if self.address__autodetect_logic():
+                    self.ADDRESS = address
+                    return True
+            except:
+                pass
 
         msg = Exx_SerialAddresses_NoAutodetected
         print(msg)
