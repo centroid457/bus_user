@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.9 (2024/03/06 16:46:22)
+------------------------------
+- [SerialServer] Value_FromVariants = apply comparing objects by str()  
+
 0.1.8 (2024/03/06 15:45:15)
 ------------------------------
 - [SerialClient] separate AddressAutoAcceptanceVariant inn class +add AUTODETECT by func  
