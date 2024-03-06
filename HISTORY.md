@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.8 (2024/03/06 15:45:15)
+------------------------------
+- [SerialClient] separate AddressAutoAcceptanceVariant inn class +add AUTODETECT by func  
+
 0.1.7 (2024/03/05 16:59:07)
 ------------------------------
 - [SerialServer] fix _LIST__HELP - show structure with certainty Units/Variants  

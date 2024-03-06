@@ -52,7 +52,7 @@ other protocols mot recommended
 
         ["Serial",
             "Client+Server",
-            "connect with ADDRESS FIRST_VACANT",
+            "connect with AddressAutoAcceptanceVariant FIRST_VACANT/AUTODETECT",
             "set/get params by SlashOrSpacePath addressing",
          ],
         ["SerialServer values",
@@ -69,7 +69,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 7)
+    VERSION: Tuple[int, int, int] = (0, 1, 8)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -78,7 +78,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialServer] fix _LIST__HELP - show structure with certainty Units/Variants",
+        "[SerialClient] separate AddressAutoAcceptanceVariant inn class +add AUTODETECT by func",
     ]
 
     # FINALIZE -----------------------------------------------
