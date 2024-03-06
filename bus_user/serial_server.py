@@ -466,6 +466,7 @@ class SerialServer_Base(QThread):
             return str(param_value)
 
         # CALLABLE -------------------------------
+        # todo: add call func with remaining ARGS as func positional params??
         if callable(param_value):
             try:
                 param_value = param_value()
