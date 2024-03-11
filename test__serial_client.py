@@ -199,12 +199,12 @@ class Test_SerialClient:
         assert SerialClient(address="HELLO").address_check_exists() is False
 
     def test__ensure_bytes(self):
-        assert self.Victim._data_ensure_bytes("111") == b"111"
-        assert self.Victim._data_ensure_bytes(b"111") == b"111"
+        assert self.Victim._data_ensure__bytes("111") == b"111"
+        assert self.Victim._data_ensure__bytes(b"111") == b"111"
 
     def test__ensure_str(self):
-        assert self.Victim._data_ensure_string("111") == "111"
-        assert self.Victim._data_ensure_string(b"111") == "111"
+        assert self.Victim._data_ensure__string("111") == "111"
+        assert self.Victim._data_ensure__string(b"111") == "111"
 
     def test__eol(self):
         self.Victim.EOL__SEND = b"\n"

@@ -420,14 +420,14 @@ class SerialClient:
 
     # SUCCESS ---------------------------------------------------------------------------------------------------------
     def answer_is_success(self, data: AnyStr) -> bool:
-        data = self._data_ensure_string(data)
+        data = self._data_ensure__string(data)
         return self.ANSWER_SUCCESS.upper() == data.upper()
 
     def answer_is_fail(self, data: AnyStr, _raise: Optional[bool] = None) -> Union[bool, NoReturn]:
         if _raise is None:
             _raise = self.RAISE_READ_FAIL_PATTERN
 
-        data = self._data_ensure_string(data)
+        data = self._data_ensure__string(data)
         if isinstance(self.ANSWER_FAIL_PATTERN, str):
             patterns = [self.ANSWER_FAIL_PATTERN, ]
         else:
@@ -444,7 +444,7 @@ class SerialClient:
 
         return False
 
-    # EOL__SEND -------------------------------------------------------------------------------------------------------
+    # BYTES -------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> bytes:
         if not data.endswith(cls.EOL__SEND):
@@ -461,16 +461,24 @@ class SerialClient:
             data = data_new
         return data
 
+    @classmethod
+    def _bytes_edition__apply(cls, data: bytes) -> bytes:
+        """not used so far!!!
+        need to handle editions used by hand in manual typing from terminal!
+        """
+        # TODO: finish or leave blank! its not so necessary!!! and seems a little bit hard to apply
+        return data
+
     # BYTES/STR -------------------------------------------------------------------------------------------------------
     @classmethod
-    def _data_ensure_bytes(cls, data: AnyStr) -> bytes:
+    def _data_ensure__bytes(cls, data: AnyStr) -> bytes:
         if isinstance(data, bytes):
             return data
         else:
             return bytes(data, encoding=cls.ENCODING)
 
     @classmethod
-    def _data_ensure_string(cls, data: AnyStr) -> str:
+    def _data_ensure__string(cls, data: AnyStr) -> str:
         if isinstance(data, bytes):
             return data.decode(encoding=cls.ENCODING)
         else:
@@ -506,7 +514,13 @@ class SerialClient:
             if not new_char:
                 # print(f"detected finish line")
                 break
+            if new_char == b'\x7f':     # BACKSPACE
+                # LINE EDITION --------------
+                data = data[:-1]
+                continue
+
             if new_char in self.EOL__UNI_SET:
+                # LINE FINISHED --------------
                 eol_received = True
                 if data:
                     break
@@ -532,8 +546,9 @@ class SerialClient:
         if data:
             self.msg_log(msg)
 
+        data = self._bytes_edition__apply(data)
         data = self._bytes_eol__clear(data)
-        data = self._data_ensure_string(data)
+        data = self._data_ensure__string(data)
         self.history.add_output(data)
         self.answer_is_fail(data)
         return data
@@ -568,9 +583,9 @@ class SerialClient:
 
         # SINGLE ---------------------
         data = self._create_cmd_line(cmd=data, prefix=prefix, args=args, kwargs=kwargs)
-        self.history.add_input(self._data_ensure_string(data))
+        self.history.add_input(self._data_ensure__string(data))
 
-        data = self._data_ensure_bytes(data)
+        data = self._data_ensure__bytes(data)
         data = self._bytes_eol__ensure(data)
 
         data_length = self._SERIAL.write(data)
@@ -606,7 +621,7 @@ class SerialClient:
             data_o = ""
             if self._write_line(data=data, prefix=prefix, args=args, kwargs=kwargs):
                 data_o = self.read_lines()
-            history.add_io(self._data_ensure_string(data), data_o)
+            history.add_io(self._data_ensure__string(data), data_o)
 
         # RESULT ----------------------------
         return history
