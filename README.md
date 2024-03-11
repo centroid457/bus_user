@@ -1,4 +1,4 @@
-# bus_user (v0.1.10)
+# bus_user (v0.1.11)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -28,6 +28,7 @@ other protocols mot recommended
 	- Client+Server  
 	- connect with AddressAutoAcceptanceVariant FIRST_VACANT/AUTODETECT  
 	- set/get params by SlashOrSpacePath addressing  
+	- handle BackSpace send manually from terminal  
 2. SerialServer values:  
 	- as Callable  
 	- Value_WithUnit  

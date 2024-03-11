@@ -16,8 +16,9 @@ class PROJECT:
     # PROJECT ----------------------------------------------
     NAME_IMPORT: str = "bus_user"
     KEYWORDS: List[str] = [
-        "serial", "serial bus", "pyserial", "serial port", "com port", "comport", "rs232",
-        "i2c"
+        "serial", "serial bus", "pyserial", "serial port", "com port", "comport", "rs232", "UART", "TTL",
+        "serial client", "serial server", "serial emulator",
+        "i2c",
     ]
     CLASSIFIERS_TOPICS_ADD: List[str] = [
         # "Topic :: Communications",
@@ -54,6 +55,7 @@ other protocols mot recommended
             "Client+Server",
             "connect with AddressAutoAcceptanceVariant FIRST_VACANT/AUTODETECT",
             "set/get params by SlashOrSpacePath addressing",
+            "handle BackSpace send manually from terminal",
          ],
         ["SerialServer values",
          "as Callable",
@@ -69,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 10)
+    VERSION: Tuple[int, int, int] = (0, 1, 11)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -78,7 +80,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] address__autodetect_logic = apply Exx as False",
+        "[SerialClient] handle BackSpace send manually from terminal",
     ]
 
     # FINALIZE -----------------------------------------------

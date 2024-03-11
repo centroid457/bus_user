@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.1.11 (2024/03/11 11:22:41)
+------------------------------
+- [SerialClient] handle BackSpace send manually from terminal  
+
 0.1.10 (2024/03/06 17:02:29)
 ------------------------------
 - [SerialClient] address__autodetect_logic = apply Exx as False  
