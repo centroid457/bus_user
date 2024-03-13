@@ -75,6 +75,7 @@ other protocols mot recommended
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
+        "TESTS with several PORTS!",
     ]
     FIXME: List[str] = [
         "..."
