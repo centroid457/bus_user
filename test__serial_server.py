@@ -17,7 +17,6 @@ class Test__Value_WithUnit:
     def setup_class(cls):
         pass
         cls.Victim = type("Victim", (Value_WithUnit,), {})
-
     # @classmethod
     # def teardown_class(cls):
     #     pass
