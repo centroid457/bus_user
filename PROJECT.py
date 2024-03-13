@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 11)
+    VERSION: Tuple[int, int, int] = (0, 1, 12)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -80,7 +80,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] handle BackSpace send manually from terminal",
+        "[SerialClient] fix autodetect",
     ]
 
     # FINALIZE -----------------------------------------------
