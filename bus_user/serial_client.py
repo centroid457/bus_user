@@ -166,10 +166,8 @@ class SerialClient:
         if _raise is None:
             _raise = self.RAISE_CONNECT
 
-        if self._SERIAL.is_open:
-            return True
-
         address = address or self.ADDRESS
+
         if not address:
             if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_VACANT and self._address__apply_first_vacant():
                 pass
@@ -181,6 +179,9 @@ class SerialClient:
         else:
             # WORK ---------------------------------
             self._SERIAL.port = address
+            if self._SERIAL.is_open:
+                return True
+
             try:
                 self._SERIAL.open()
             except Exception as _exx:
@@ -226,13 +227,7 @@ class SerialClient:
         return True
 
     def _address__apply_first_vacant(self) -> bool:
-        ports = self.system_ports__detect()
-        if not ports:
-            msg = f"[ERROR] PORTS NO ONE IN SYSTEM"
-            print(msg)
-            return False
-
-        for address in ports:
+        for address in self.system_ports__detect():
             if self.connect(address=address, _raise=False):
                 self.ADDRESS = address
                 return True
