@@ -178,7 +178,13 @@ class SerialClient:
                 exx = Exx_SerialAddress_NotConfigured()
         else:
             # WORK ---------------------------------
-            self._SERIAL.port = address
+            if self._SERIAL.port != address:
+                self._SERIAL.port = address
+                if self._SERIAL.is_open:
+                    self._SERIAL.port = None
+                    # this is Attempt to connect to already opened port
+                    return False
+
             if self._SERIAL.is_open:
                 return True
 
