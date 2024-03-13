@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 12)
+    VERSION: Tuple[int, int, int] = (0, 1, 13)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -81,7 +81,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] fix autodetect",
+        "[SerialClient] fix autodetect = switching to already opened",
     ]
 
     # FINALIZE -----------------------------------------------

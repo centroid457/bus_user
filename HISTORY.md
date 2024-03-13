@@ -4,6 +4,7 @@
 ## TODO
 1. add all other port settings into SerialClient  
 2. test work with several lines EOL__SEND  
+3. TESTS with several PORTS!  
 
 ********************************************************************************
 ## FIXME
@@ -11,6 +12,10 @@
 
 ********************************************************************************
 ## NEWS
+
+0.1.13 (2024/03/13 16:17:31)
+------------------------------
+- [SerialClient] fix autodetect = switching to already opened  
 
 0.1.12 (2024/03/13 15:58:51)
 ------------------------------
