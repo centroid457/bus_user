@@ -90,16 +90,21 @@ class TypeWrReturn(Enum):
 
 
 class AddressAutoAcceptanceVariant(Enum):
-    NOT_USED = auto()
+    NONE = auto()
     FIRST_VACANT = auto()
-    AUTODETECT = auto()
+    FIRST_SHORTED = auto()
+    FIRST_ANSWER_VALID = auto()
+
+    # NOT APPLYED YET!!!
+    PAIRED_FIRST = auto()
+    PAIRED_SECOND = auto()
 
 
 # =====================================================================================================================
 class SerialClient:
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
-    ADDRESS_AUTOACCEPT: AddressAutoAcceptanceVariant = AddressAutoAcceptanceVariant.NOT_USED
+    ADDRESS_AUTOACCEPT: AddressAutoAcceptanceVariant = AddressAutoAcceptanceVariant.NONE
     ADDRESS: str = None
 
     _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
@@ -149,6 +154,19 @@ class SerialClient:
         msg = f"[{self._SERIAL.port}]{msg}"
         print(msg)
 
+    def cmd_prefix__set(self) -> None:
+        """
+        OVERWRITE IF NEED/USED!
+        """
+        # self.PREFIX = ""
+        return
+
+    def _clear_buffer_read(self) -> None:
+        try:
+            self.read_lines(_timeout=0.3)
+        except:
+            pass
+
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
         self._SERIAL.close()
@@ -169,9 +187,11 @@ class SerialClient:
         address = address or self.ADDRESS
 
         if not address:
-            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_VACANT and self._address__apply_first_vacant():
+            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_VACANT and self._address_apply__first_vacant():
                 pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.AUTODETECT and self._address__apply_autodetect():
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_SHORTED and self._address_apply__first_shorted():
+                pass
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_ANSWER_VALID and self._address_apply__first_answer_valid():
                 pass
             else:
                 msg = Exx_SerialAddress_NotConfigured
@@ -185,8 +205,9 @@ class SerialClient:
                     # this is Attempt to connect to already opened port
                     return False
 
-            if self._SERIAL.is_open:
-                return True
+            else:
+                if self._SERIAL.is_open:
+                    return True
 
             try:
                 self._SERIAL.open()
@@ -232,7 +253,8 @@ class SerialClient:
         self._clear_buffer_read()
         return True
 
-    def _address__apply_first_vacant(self) -> bool:
+    # ADDRESS =========================================================================================================
+    def _address_apply__first_vacant(self) -> bool:
         for address in self.system_ports__detect():
             if self.connect(address=address, _raise=False):
                 self.ADDRESS = address
@@ -241,7 +263,44 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoVacant
         print(msg)
 
-    def address__autodetect_logic(self) -> Union[bool, NoReturn]:
+    def _address_apply__first_answer_valid(self) -> bool:
+        """
+        dont overwrite! dont mess with address__autodetect_logic!
+        used to find exact device in all comport by some special logic like IDN/NAME value
+        """
+        for address in self.system_ports__detect():
+            try:
+                if self.connect(address=address, _raise=False) and self.address__answer_validation():
+                    self.ADDRESS = address
+                    # self.disconnect()
+                    return True
+            except:
+                self.disconnect()
+
+        # FINISH -------------
+        msg = Exx_SerialAddresses_NoAutodetected
+        print(msg)
+
+    def _address_apply__first_shorted(self) -> bool:
+        """
+        dont overwrite! dont mess with address__autodetect_logic!
+        used to find exact device in all comport by some special logic like IDN/NAME value
+        """
+        for address in self.system_ports__detect():
+            try:
+                if self.connect(address=address, _raise=False) and self.address__answer_validation__shorted():
+                    self.ADDRESS = address
+                    # self.disconnect()
+                    return True
+            except:
+                self.disconnect()
+
+        # FINISH -------------
+        msg = Exx_SerialAddresses_NoAutodetected
+        print(msg)
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def address__answer_validation(self) -> Union[bool, NoReturn]:
         """
         overwrite for you case!
         used to find exact device in all comport by some special logic like IDN/NAME value.
@@ -252,39 +311,9 @@ class SerialClient:
         3. raiseExx/NoReturn - equivalent as False!
         """
 
-    def _address__apply_autodetect(self) -> bool:
-        """
-        dont overwrite! dont mess with address__autodetect_logic!
-        used to find exact device in all comport by some special logic like IDN/NAME value
-        """
-        for address in self.system_ports__detect():
-            if not self.connect(address=address, _raise=False):
-                continue
-
-            try:
-                if self.address__autodetect_logic():
-                    self.ADDRESS = address
-                    self.disconnect()
-                    return True
-            except:
-                self.disconnect()
-
-        # FINISH -------------
-        msg = Exx_SerialAddresses_NoAutodetected
-        print(msg)
-
-    def cmd_prefix__set(self) -> None:
-        """
-        OVERWRITE IF NEED/USED!
-        """
-        # self.PREFIX = ""
-        return
-
-    def _clear_buffer_read(self) -> None:
-        try:
-            self.read_lines(_timeout=0.3)
-        except:
-            pass
+    def address__answer_validation__shorted(self) -> Union[bool, NoReturn]:
+        LOAD = "CHECK_SHORTED"
+        return self.write_read_line_last(LOAD) == LOAD
 
     # DETECT PORTS ====================================================================================================
     def address_check_exists(self) -> bool:

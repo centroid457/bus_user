@@ -53,7 +53,7 @@ other protocols mot recommended
 
         ["Serial",
             "Client+Server",
-            "connect with AddressAutoAcceptanceVariant FIRST_VACANT/AUTODETECT",
+            "connect with AddressAutoAcceptanceVariant FIRST_VACANT/FIRST_ANSWER_VALID",
             "set/get params by SlashOrSpacePath addressing",
             "handle BackSpace send manually from terminal",
          ],

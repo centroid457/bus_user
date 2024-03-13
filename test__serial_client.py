@@ -121,7 +121,7 @@ class Test_SerialClient:
 
         class Victim(SerialClient):
             ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
-            def address__autodetect_logic(self) -> Union[bool, NoReturn]:
+            def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
 
         cls.Victim = Victim
@@ -145,7 +145,7 @@ class Test_SerialClient:
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
-        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NOT_USED
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NONE
         assert not self.victim.connect(_raise=False)
 
         self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
@@ -156,18 +156,18 @@ class Test_SerialClient:
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
-        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NOT_USED
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NONE
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.AUTODETECT
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_ANSWER_VALID
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS is not None
 
         # ==============
         self.victim.disconnect()
         class Victim(SerialClient):
-            ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.AUTODETECT
-            def address__autodetect_logic(self) -> Union[bool, NoReturn]:
+            ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_ANSWER_VALID
+            def address__answer_validation(self) -> Union[bool, NoReturn]:
                 raise
 
         assert not Victim().connect(_raise=False)
