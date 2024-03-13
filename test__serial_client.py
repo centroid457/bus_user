@@ -109,24 +109,22 @@ class Test_HistoryIO:
 
 # =====================================================================================================================
 class Test_SerialClient:
-    Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
-    victim: SerialClient = None
+    Victim: Type[SerialClient]
+    victim: SerialClient
 
     @classmethod
     def setup_class(cls):
-        if cls.Victim.system_ports__count() != 1:
-            msg = f"[ERROR] need connect only one SerialPort and short Rx+Tx"
-            print(msg)
-            raise Exception(msg)
-
         class Victim(SerialClient):
-            ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
+            ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_SHORTED
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
-        cls.victim.connect()
+        if not cls.victim.connect(_raise=False):
+            msg = f"[ERROR] not found PORT shorted by Rx+Tx"
+            print(msg)
+            raise Exception(msg)
 
     @classmethod
     def teardown_class(cls):
@@ -134,14 +132,16 @@ class Test_SerialClient:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.victim.connect()
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_SHORTED
+        self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
+        pass
         if self.victim:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__ADDRESS_APPLY_FIRST_VACANT(self):
+    def test__ADDRESS_APPLY__FIRST_VACANT(self):
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
@@ -152,7 +152,18 @@ class Test_SerialClient:
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS is not None
 
-    def test__ADDRESS_APPLY_AUTODETECT(self):
+    def test__ADDRESS_APPLY__FIRST_SHORTED(self):
+        self.victim.disconnect()
+
+        self.victim.ADDRESS = None
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.NONE
+        assert not self.victim.connect(_raise=False)
+
+        self.victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_SHORTED
+        assert self.victim.connect(_raise=False)
+        assert self.victim.ADDRESS is not None
+
+    def test__ADDRESS_APPLY__FIRST_ANSWER_VALID(self):
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
@@ -173,19 +184,19 @@ class Test_SerialClient:
         assert not Victim().connect(_raise=False)
 
     def test__connect_multy(self):
-        assert self.victim.connect()
-        assert self.victim.connect()
-        assert self.victim.connect()
+        assert self.victim.connect(_raise=False)
+        assert self.victim.connect(_raise=False)
+        assert self.victim.connect(_raise=False)
 
     def test__pipeline_open_close(self):
         self.victim.disconnect()
         self.victim = self.Victim()
-        assert self.victim.connect()
+        assert self.victim.connect(_raise=False)
         assert self.victim.write_read_line("hello").last_output == "hello"
 
         self.victim.disconnect()
         self.victim = self.Victim()
-        self.victim.connect()
+        self.victim.connect(_raise=False)
         assert self.victim.write_read_line("hello").last_output == "hello"
         self.victim.disconnect()
 
