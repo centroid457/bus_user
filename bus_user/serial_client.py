@@ -190,12 +190,12 @@ class SerialClient:
         address = address or self.ADDRESS
 
         if not address:
-            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_VACANT and self._address_apply__first_vacant():
-                pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_SHORTED and self._address_apply__first_shorted():
-                pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_ANSWER_VALID and self._address_apply__first_answer_valid():
-                pass
+            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_VACANT:
+                return self._address_apply__first_vacant()
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_SHORTED:
+                return self._address_apply__first_shorted()
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_ANSWER_VALID:
+                return self._address_apply__first_answer_valid()
             else:
                 msg = Exx_SerialAddress_NotConfigured
                 exx = Exx_SerialAddress_NotConfigured()
@@ -266,36 +266,32 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoVacant
         print(msg)
 
-    def _address_apply__first_answer_valid(self) -> bool:
-        """
-        dont overwrite! dont mess with address__autodetect_logic!
-        used to find exact device in all comport by some special logic like IDN/NAME value
-        """
-        for address in self.system_ports__detect():
-            try:
-                if self.connect(address=address, _raise=False) and self.address__answer_validation():
-                    self.ADDRESS = address
-                    # self.disconnect()
-                    return True
-            except:
-                self.disconnect()
-
-        # FINISH -------------
-        msg = Exx_SerialAddresses_NoAutodetected
-        print(msg)
-
     def _address_apply__first_shorted(self) -> bool:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         for address in self.system_ports__detect():
-            try:
-                if self.connect(address=address, _raise=False) and self.address__answer_validation__shorted():
+            if self.connect(address=address, _raise=False):
+                if self.address__answer_validation__shorted():
                     self.ADDRESS = address
-                    # self.disconnect()
                     return True
-            except:
+                self.disconnect()
+
+        # FINISH -------------
+        msg = Exx_SerialAddresses_NoAutodetected
+        print(msg)
+
+    def _address_apply__first_answer_valid(self) -> bool:
+        """
+        dont overwrite! dont mess with address__autodetect_logic!
+        used to find exact device in all comport by some special logic like IDN/NAME value
+        """
+        for address in self.system_ports__detect():
+            if self.connect(address=address, _raise=False):
+                if self.address__answer_validation():
+                    self.ADDRESS = address
+                    return True
                 self.disconnect()
 
         # FINISH -------------
