@@ -89,7 +89,7 @@ class TypeWrReturn(Enum):
     DICT = auto()
 
 
-class AddressAutoAcceptanceVariant(Enum):
+class AddressAutoAcceptVariant(Enum):
     NONE = auto()
     FIRST_VACANT = auto()
     FIRST_SHORTED = auto()
@@ -104,7 +104,7 @@ class AddressAutoAcceptanceVariant(Enum):
 class SerialClient:
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
-    ADDRESS_AUTOACCEPT: AddressAutoAcceptanceVariant = AddressAutoAcceptanceVariant.NONE
+    ADDRESS_AUTOACCEPT: AddressAutoAcceptVariant = AddressAutoAcceptVariant.NONE
     ADDRESS: str = None
 
     _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
@@ -169,7 +169,10 @@ class SerialClient:
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
-        self._SERIAL.close()
+        try:
+            self._SERIAL.close()
+        except:
+            pass
 
     def connect(
             self,
@@ -187,11 +190,11 @@ class SerialClient:
         address = address or self.ADDRESS
 
         if not address:
-            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_VACANT and self._address_apply__first_vacant():
+            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_VACANT and self._address_apply__first_vacant():
                 pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_SHORTED and self._address_apply__first_shorted():
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_SHORTED and self._address_apply__first_shorted():
                 pass
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptanceVariant.FIRST_ANSWER_VALID and self._address_apply__first_answer_valid():
+            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_ANSWER_VALID and self._address_apply__first_answer_valid():
                 pass
             else:
                 msg = Exx_SerialAddress_NotConfigured

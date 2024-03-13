@@ -585,11 +585,11 @@ class Test_SerialServer_WithConnection:
         # some bytes may be lost or added extra!!!
 
         # EMU ---------------
-        self.VictimEmu.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
+        self.VictimEmu.ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
         self.victim_emu = self.VictimEmu()
         self.victim_emu.start()
         # -------------------
-        self.Victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
+        self.Victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
         self.victim = self.Victim()
         self.victim.connect()
 

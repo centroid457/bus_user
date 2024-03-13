@@ -26,7 +26,7 @@ other protocols mot recommended
 ## Features
 1. Serial:  
 	- Client+Server  
-	- connect with AddressAutoAcceptanceVariant FIRST_VACANT/AUTODETECT  
+	- connect with AddressAutoAcceptVariant FIRST_VACANT/AUTODETECT  
 	- set/get params by SlashOrSpacePath addressing  
 	- handle BackSpace send manually from terminal  
 2. SerialServer values:  

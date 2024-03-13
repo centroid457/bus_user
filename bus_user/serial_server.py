@@ -1,4 +1,4 @@
-from .serial_client import SerialClient, AddressAutoAcceptanceVariant
+from .serial_client import SerialClient, AddressAutoAcceptVariant
 
 from typing import *
 import time
@@ -275,7 +275,7 @@ class SerialServer_Base(QThread):
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
 
-    ADDRESS_AUTOACCEPT = AddressAutoAcceptanceVariant.FIRST_VACANT
+    ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
     ADDRESS: str = None
 
     HELLO_MSG: List[str] = [
