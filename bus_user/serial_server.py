@@ -268,6 +268,17 @@ class LineParsed:
 
 
 # =====================================================================================================================
+class SerialServer_Echo(QThread):
+    # TODO: create it just out of curiosity!
+    # TODO: create it just out of curiosity!
+    # TODO: create it just out of curiosity!
+    # TODO: create it just out of curiosity!
+    # TODO: create it just out of curiosity!
+    # TODO: create it just out of curiosity!
+    #   fix base just for all incorrect variants!
+    pass
+
+
 class SerialServer_Base(QThread):
     # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
@@ -276,7 +287,7 @@ class SerialServer_Base(QThread):
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
     ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
-    HELLO_MSG__SEND_ON_START: bool = True
+    HELLO_MSG__SEND_ON_START: bool = None   # dont set here on True! use it only as overwritten if needed!!!
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
@@ -293,6 +304,15 @@ class SerialServer_Base(QThread):
 
     _LIST__CMDS: List[str]
     _LIST__SCRIPTS: List[str]
+
+    MONITOR_READY: bool = None  # active working state on ReadingWriting - used for waiting active state!
+
+    def wait__monitor_ready(self) -> None:
+        """
+        ALWAYS WAIT IT BEFORE START EXPLUATATION!
+        """
+        while not self.MONITOR_READY:
+            time.sleep(0.5)
 
     @property
     def _LIST__HELP(self) -> List[str]:
@@ -380,6 +400,7 @@ class SerialServer_Base(QThread):
             self._execute_line("hello")
 
         while True:
+            self.MONITOR_READY = True
             line = None
             try:
                 line = self._SERIAL_CLIENT.read_line()
@@ -392,6 +413,11 @@ class SerialServer_Base(QThread):
     def disconnect(self):
         self._SERIAL_CLIENT.disconnect()
         self.terminate()
+        self.MONITOR_READY = False
+
+    def terminate(self):
+        super().terminate()
+        self.MONITOR_READY = False
 
     # -----------------------------------------------------------------------------------------------------------------
     def _execute_line(self, line: str) -> bool:

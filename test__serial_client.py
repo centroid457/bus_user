@@ -149,25 +149,22 @@ class Test_SerialClient_Paired:
         assert self.victim.addresses_paired__count() > 0    # HERE YOU NEED CONNECT/CREATE/COMMUTATE ONE PAIR!
         print(f"{self.victim.ADDRESSES__PAIRED=}")
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        self.victim._EMULATOR = SerialServer_Base()
+
+        assert self.victim._EMULATOR.isRunning() is False
         assert self.victim.connect(_raise=False)
+        assert self.victim._EMULATOR.isRunning() is True
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
+        assert self.victim._EMULATOR._SERIAL_CLIENT.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
+
+        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+
+        assert self.victim._write_line("echo 123")
+        assert self.victim.read_line(_timeout=1) == "echo 123"
         self.victim.disconnect()
 
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # FIXME: add test for emulator!!!!
-        # self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
-        # assert self.victim.connect(_raise=False)
-        # assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
-        # self.victim.disconnect()
+        assert self.victim._EMULATOR.isRunning() is False
 
 
 # =====================================================================================================================

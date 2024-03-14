@@ -555,8 +555,9 @@ class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
-    VictimEmu: Type[SerialServer_Base] = type("VictimEmu", (SerialServer_Example,), {})
-    victim_emu: SerialServer_Base = None
+    VictimEmu: Type[SerialServer_Example] = type("Victim", (SerialServer_Example,), {})
+    victim_emu: SerialServer_Example = None
+
 
     @classmethod
     def setup_class(cls):
@@ -565,35 +566,19 @@ class Test_SerialServer_WithConnection:
             print(msg)
             raise Exception(msg)
 
-        # cls.VictimEmu.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][0]
-        # cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
-
-        cls.VictimEmu.HELLO_MSG__SEND_ON_START = False
-
-        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED
-
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-        # FIXME: USE ADDRESS FOR EMULATOR!!!
-
         cls.victim_emu = cls.VictimEmu()
-        cls.victim = cls.Victim()
+        cls.victim_emu.HELLO_MSG__SEND_ON_START = False
 
-        cls.victim_emu.start()
+        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        cls.Victim._EMULATOR = cls.victim_emu
+
+        cls.victim = cls.Victim()
         cls.victim.connect()
 
     @classmethod
     def teardown_class(cls):
         if cls.victim:
             cls.victim.disconnect()
-        if cls.victim_emu:
-            cls.victim_emu.disconnect()
 
     def setup_method(self, method):
         pass
@@ -603,10 +588,9 @@ class Test_SerialServer_WithConnection:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
+        assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR.HELLO_MSG
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
         assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
-        # assert self.victim.write_read_line_last("123") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 
 
 # =====================================================================================================================

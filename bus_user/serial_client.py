@@ -93,7 +93,7 @@ class AddressAutoAcceptVariant(Enum):
     FIRST_FREE = auto()
     FIRST_FREE__SHORTED = auto()
     FIRST_FREE__ANSWER_VALID = auto()
-    FIRST_FREE__PAIRED = auto()
+    FIRST_FREE__PAIRED_FOR_EMU = auto()
 
 
 TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
@@ -144,7 +144,7 @@ class SerialClient:
     _GETATTR_STARTSWITH__SEND: str = "send__"
 
     # test purpose EMULATOR -----------------
-    _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED
+    _EMULATOR: 'SerialServer_Base' = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient!
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -197,6 +197,11 @@ class SerialClient:
         except:
             pass
 
+        try:
+            self._EMULATOR.disconnect()
+        except:
+            pass
+
     def connect(
             self,
             address: Optional[str] = None,
@@ -221,8 +226,8 @@ class SerialClient:
             return self._address_apply__first_free__shorted()
         elif address == AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
             return self._address_apply__first_free__answer_valid()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
-            return self._address_apply__first_free__paired()
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
+            return self._address_apply__first_free__paired_for_emu()
 
         elif isinstance(address, str):
             # CHANGE PORT OR USE SAME ---------------------------------
@@ -334,7 +339,7 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoAutodetected
         print(msg)
 
-    def _address_apply__first_free__paired(self, index: int) -> bool:
+    def _address_apply__first_free__paired_for_emu(self) -> bool:
         """
         # FIXME: exists weakness - you need connect at once whole pair!
             if you would use several pairs and delay connecting secondary devices - it will be incorrect pairing!
@@ -351,10 +356,13 @@ class SerialClient:
         }
         """
         for pair in self.addresses_paired__detect():
-            address = pair[index]
+            address = pair[0]
             if self.connect(address=address, _raise=False):
+                if self._EMULATOR:
+                    self._EMULATOR._SERIAL_CLIENT.ADDRESS = pair[1]
+                    self._EMULATOR.start()
+                    self._EMULATOR.wait__monitor_ready()
                 return True
-            # self.disconnect()
 
         # FINISH -------------
         msg = Exx_SerialAddresses_NoAutodetected
