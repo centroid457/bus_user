@@ -551,7 +551,6 @@ class Test__SerialServer_NoConnection:
 
 
 # =====================================================================================================================
-@pytest.mark.skip
 class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
@@ -561,10 +560,22 @@ class Test_SerialServer_WithConnection:
 
     @classmethod
     def setup_class(cls):
-        if cls.Victim.addresses_system__count() != 2:
-            msg = f"[ERROR] need connect TWO SerialPorts and short Rx+Tx between them"
+        if cls.Victim.addresses_paired__count() < 1:
+            msg = f"[ERROR] need connect TWO SerialPorts"
             print(msg)
             raise Exception(msg)
+
+        cls.VictimEmu.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][0]
+        cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
+
+        cls.victim_emu = cls.VictimEmu()
+        cls.victim = cls.Victim()
+
+        cls.victim_emu.start()
+        cls.victim.connect()
+
+        time.sleep(0.5)
+        cls.victim._clear_buffer_read()
 
     @classmethod
     def teardown_class(cls):
@@ -581,20 +592,6 @@ class Test_SerialServer_WithConnection:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        # TODO: use good COM-ports!!! my Profilic is not work correctly!!! but CH341A seems work fine!!!
-        # some bytes may be lost or added extra!!!
-
-        # EMU ---------------
-        self.VictimEmu.ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
-        self.victim_emu = self.VictimEmu()
-        self.victim_emu.start()
-        # -------------------
-        self.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
-        self.victim = self.Victim()
-        self.victim.connect()
-
-        time.sleep(1)
-        self.victim._clear_buffer_read()
         assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
         # assert self.victim.write_read_line_last("123") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 

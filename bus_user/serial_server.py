@@ -281,7 +281,7 @@ class SerialServer_Base(QThread):
         "SerialServer_Base hello line 2",
     ]
 
-    PARAMS: Dict[str, Union[Any, Dict[Union[str, int], Any]]]
+    PARAMS: Dict[str, Union[Any, Dict[Union[str, int], Any]]] = None
     ANSWER: Type[AnswerVariants] = AnswerVariants
 
     # AUX -----------------------------------------------------
@@ -336,11 +336,15 @@ class SerialServer_Base(QThread):
         return result
 
     # -----------------------------------------------------------------------------------------------------------------
-    def __init__(self, params: Optional[Dict[str, Any]] = None):
+    def __init__(self, params: Dict[str, Any] = None):
         # FIXME: deprecate param params??? used for tests?
         super().__init__()
 
-        self.PARAMS = params or self.PARAMS or {}
+        if params:
+            self.PARAMS = params
+        else:
+            self.PARAMS = {}
+
         self._init_lists()
 
         self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()

@@ -518,6 +518,8 @@ class SerialClient:
             remain.disconnect()
 
         cls.ADDRESSES__PAIRED = result
+
+        print(f"{cls.ADDRESSES__PAIRED=}")
         return result
 
     # COUNTS -----------------------------------------
