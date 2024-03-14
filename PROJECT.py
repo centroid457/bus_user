@@ -83,7 +83,7 @@ other protocols mot recommended
         ["[SerialClient] BIG REF",
             "ref address as TYPE__ADDRESS with autoconnect",
             "add lists ADDRESSES__SYSTEM/PAIRED",
-            "AddressAutoAcceptVariant - add FIRST_PAIRED_0/1"
+            "[AddressAutoAcceptVariant] add FIRST_SHORTED + FIRST_PAIRED_0/1"
          ]
     ]
 
