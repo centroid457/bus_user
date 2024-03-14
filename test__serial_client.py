@@ -169,6 +169,7 @@ class Test_SerialClient_OnShortedPort:
     def setup_class(cls):
         class Victim(SerialClient):
             ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
 

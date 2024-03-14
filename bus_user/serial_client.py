@@ -302,11 +302,9 @@ class SerialClient:
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
-        for address in self.addresses_system__detect():
+        for address in self.addresses_shorted__detect():
             if self.connect(address=address, _raise=False):
-                if self.address__answer_validation__shorted():
-                    return True
-                self.disconnect()
+                return True
 
         # FINISH -------------
         msg = Exx_SerialAddresses_NoAutodetected
@@ -332,12 +330,25 @@ class SerialClient:
 
     def _address_apply__first_free__paired(self, index: int) -> bool:
         """
+        # FIXME: exists weakness - you need connect at once whole pair!
+            if you would use several pairs and delay connecting secondary devices - it will be incorrect pairing!
+            may be need using naming pairs! and set pair name with connecting first
+            first connects on free port, second connect by pair name??? feels good
+        cls.pairs = {
+            0: (COM1, COM2),
+            1: (COM3, COM4),
+        }
+
+        cls.pairs = {
+            "ATC": (COM1, COM2),    # change name
+            1: (COM3, COM4),
+        }
         """
         for pair in self.addresses_paired__detect():
             address = pair[index]
             if self.connect(address=address, _raise=False):
                 return True
-            self.disconnect()
+            # self.disconnect()
 
         # FINISH -------------
         msg = Exx_SerialAddresses_NoAutodetected
@@ -486,6 +497,24 @@ class SerialClient:
 
         if _lock_port:
             _lock_port.close()
+        return result
+
+    @classmethod
+    def addresses_shorted__detect(cls) -> List[str]:
+        if SerialClient.ADDRESSES__SHORTED:
+            return SerialClient.ADDRESSES__SHORTED
+
+        # WORK ----------------------------------------------
+        result = []
+        for address in cls.addresses_system__detect():
+            obj = cls()
+            if obj.connect(address=address, _raise=False):
+                if obj.address__answer_validation__shorted():
+                    result.append(address)
+                obj.disconnect()
+
+        SerialClient.ADDRESSES__SHORTED = result
+        print(f"{cls.ADDRESSES__SHORTED=}")
         return result
 
     @classmethod
