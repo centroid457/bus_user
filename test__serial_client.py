@@ -149,15 +149,25 @@ class Test_SerialClient_Paired:
         assert self.victim.addresses_paired__count() > 0    # HERE YOU NEED CONNECT/CREATE/COMMUTATE ONE PAIR!
         print(f"{self.victim.ADDRESSES__PAIRED=}")
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
         self.victim.disconnect()
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
-        assert self.victim.connect(_raise=False)
-        assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
-        self.victim.disconnect()
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # FIXME: add test for emulator!!!!
+        # self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
+        # assert self.victim.connect(_raise=False)
+        # assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
+        # self.victim.disconnect()
 
 
 # =====================================================================================================================

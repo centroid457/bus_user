@@ -568,10 +568,19 @@ class Test_SerialServer_WithConnection:
         # cls.VictimEmu.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][0]
         # cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
 
-        cls.VictimEmu.HELLO_SEND_ON_START = False
+        cls.VictimEmu.HELLO_MSG__SEND_ON_START = False
 
-        cls.VictimEmu.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0
-        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
+        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
+        # FIXME: USE ADDRESS FOR EMULATOR!!!
 
         cls.victim_emu = cls.VictimEmu()
         cls.victim = cls.Victim()

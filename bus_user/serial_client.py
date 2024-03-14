@@ -93,9 +93,7 @@ class AddressAutoAcceptVariant(Enum):
     FIRST_FREE = auto()
     FIRST_FREE__SHORTED = auto()
     FIRST_FREE__ANSWER_VALID = auto()
-
-    FIRST_FREE__PAIRED_0 = auto()
-    FIRST_FREE__PAIRED_1 = auto()
+    FIRST_FREE__PAIRED = auto()
 
 
 TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
@@ -144,6 +142,9 @@ class SerialClient:
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
 
     _GETATTR_STARTSWITH__SEND: str = "send__"
+
+    # test purpose EMULATOR -----------------
+    _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -220,10 +221,8 @@ class SerialClient:
             return self._address_apply__first_free__shorted()
         elif address == AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
             return self._address_apply__first_free__answer_valid()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0:
-            return self._address_apply__first_free__paired(0)
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1:
-            return self._address_apply__first_free__paired(1)
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
+            return self._address_apply__first_free__paired()
 
         elif isinstance(address, str):
             # CHANGE PORT OR USE SAME ---------------------------------

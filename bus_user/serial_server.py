@@ -276,7 +276,7 @@ class SerialServer_Base(QThread):
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
     ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
-    HELLO_SEND_ON_START: bool = True
+    HELLO_MSG__SEND_ON_START: bool = True
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
@@ -374,7 +374,7 @@ class SerialServer_Base(QThread):
             print(msg)
             return
 
-        if self.HELLO_SEND_ON_START:
+        if self.HELLO_MSG__SEND_ON_START:
             self._SERIAL_CLIENT._write_line("")
             self._SERIAL_CLIENT._write_line("="*50)
             self._execute_line("hello")

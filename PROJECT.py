@@ -83,7 +83,7 @@ other protocols mot recommended
 
 
 
-        "[SerialServer_Base] add HELLO_SEND_ON_START",
+        "[SerialServer_Base] add HELLO_MSG__SEND_ON_START",
     ]
 
     # FINALIZE -----------------------------------------------
