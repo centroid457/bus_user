@@ -132,6 +132,10 @@ class SerialClient:
     history: HistoryIO = None
     _SERIAL: Serial
 
+    ADDRESSES__SYSTEM: List[str] = []
+    ADDRESSES__SHORTED: List[str] = []
+    ADDRESSES__PAIRED: List[Tuple[str, str]] = []
+
     def __init__(self, address: TYPE__ADDRESS = None):
         super().__init__()
         self._SERIAL = Serial()
@@ -333,6 +337,9 @@ class SerialClient:
 
     @classmethod
     def system_ports__detect(cls) -> List[str]:
+        if cls.ADDRESSES__SYSTEM:
+            return cls.ADDRESSES__SYSTEM
+
         result = cls._system_ports__detect_1__standard_method()
         for port in cls._system_ports__detect_2__direct_access():
             if port not in result:
@@ -344,7 +351,7 @@ class SerialClient:
         else:
             print("[WARN] detected no serial ports")
 
-        cls.addresses = result
+        cls.ADDRESSES__SYSTEM = result
         return result
 
     @staticmethod
