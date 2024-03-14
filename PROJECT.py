@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 2)
+    VERSION: Tuple[int, int, int] = (0, 2, 3)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -80,9 +80,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-
-
-
+        ["[SerialClient]",
+            "ref to FIRST_FREE__PAIRED_FOR_EMU",
+            "add Emulator into it!!!",
+         ],
         "[SerialServer_Base] add HELLO_MSG__SEND_ON_START",
     ]
 

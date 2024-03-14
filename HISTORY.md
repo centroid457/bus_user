@@ -12,6 +12,13 @@
 ********************************************************************************
 ## NEWS
 
+0.2.3 (2024/03/14 19:41:42)
+------------------------------
+- [SerialClient]:  
+	- ref to FIRST_FREE__PAIRED_FOR_EMU  
+	- add Emulator into it!!!  
+- [SerialServer_Base] add HELLO_MSG__SEND_ON_START  
+
 0.2.2 (2024/03/14 16:53:05)
 ------------------------------
 - [SerialClient] renames + add addresses_shorted__detect/*count  
