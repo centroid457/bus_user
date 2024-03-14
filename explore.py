@@ -7,7 +7,7 @@ from object_info import ObjectInfo
 
 
 class DevEmulator(SerialServer_Example):
-    ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
+    ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
 
 
 emu = DevEmulator()

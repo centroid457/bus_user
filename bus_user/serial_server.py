@@ -274,9 +274,7 @@ class SerialServer_Base(QThread):
 
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
-
-    ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
-    ADDRESS: str = None
+    ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
 
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",
@@ -339,7 +337,7 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def __init__(self, params: Optional[Dict[str, Any]] = None):
-        # FIXME: deprecate param params??? used for tests
+        # FIXME: deprecate param params??? used for tests?
         super().__init__()
 
         self.PARAMS = params or self.PARAMS or {}
@@ -350,8 +348,6 @@ class SerialServer_Base(QThread):
         self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
-        if self.ADDRESS_AUTOACCEPT is not None:
-            self._SERIAL_CLIENT.ADDRESS = self.ADDRESS_AUTOACCEPT
 
     def _init_lists(self) -> None:
         self._LIST__CMDS = []
@@ -366,7 +362,7 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
-        if not self._SERIAL_CLIENT.connect():
+        if not self._SERIAL_CLIENT.connect(_raise=False):
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
