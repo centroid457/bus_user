@@ -95,8 +95,8 @@ class AddressAutoAcceptVariant(Enum):
     FIRST_ANSWER_VALID = auto()
 
     # NOT APPLYED YET!!!
-    PAIRED_FIRST = auto()
-    PAIRED_SECOND = auto()
+    FIRST_PAIRED_0 = auto()
+    FIRST_PAIRED_1 = auto()
 
 
 TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
@@ -203,6 +203,10 @@ class SerialClient:
             return self._address_apply__first_shorted()
         elif address == AddressAutoAcceptVariant.FIRST_ANSWER_VALID:
             return self._address_apply__first_answer_valid()
+        elif address == AddressAutoAcceptVariant.FIRST_PAIRED_0:
+            return self._address_apply__paired(0)
+        elif address == AddressAutoAcceptVariant.FIRST_PAIRED_1:
+            return self._address_apply__paired(1)
 
         elif isinstance(address, str):
             # CHANGE PORT OR USE SAME ---------------------------------
@@ -303,6 +307,19 @@ class SerialClient:
                 except:
                     pass
                 self.disconnect()
+
+        # FINISH -------------
+        msg = Exx_SerialAddresses_NoAutodetected
+        print(msg)
+
+    def _address_apply__paired(self, index: int) -> bool:
+        """
+        """
+        for pair in self.addresses_paired__detect():
+            address = pair[index]
+            if self.connect(address=address, _raise=False):
+                return True
+            self.disconnect()
 
         # FINISH -------------
         msg = Exx_SerialAddresses_NoAutodetected
@@ -454,10 +471,6 @@ class SerialClient:
         return result
 
     @classmethod
-    def addresses_system__count(cls) -> int:
-        return len(cls.addresses_system__detect())
-
-    @classmethod
     def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
         if cls.ADDRESSES__PAIRED:
             return cls.ADDRESSES__PAIRED
@@ -488,6 +501,15 @@ class SerialClient:
 
         cls.ADDRESSES__PAIRED = result
         return result
+
+    # COUNTS -----------------------------------------
+    @classmethod
+    def addresses_system__count(cls) -> int:
+        return len(cls.addresses_system__detect())
+
+    @classmethod
+    def addresses_paired__count(cls) -> int:
+        return len(cls.addresses_paired__detect())
 
     # RW ==============================================================================================================
     pass
