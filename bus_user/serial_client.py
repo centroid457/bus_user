@@ -239,7 +239,8 @@ class SerialClient:
                     msg = f"[ERROR] PORT OTHER ERROR {self._SERIAL}"
                     exx = Exx_SerialAddress_OtherError(repr(_exx))
 
-        # FINISH --------------------------------------
+        # FINISH -----------------------------------------------
+        # FAIL -----------------------------
         if exx:
             if not _silent:
                 self.msg_log(msg)
@@ -249,6 +250,7 @@ class SerialClient:
             else:
                 return False
 
+        # OK -----------------------------
         if not _silent:
             msg = f"[OK] connected {self._SERIAL}"
             self.msg_log(msg)
@@ -257,6 +259,7 @@ class SerialClient:
         # ObjectInfo(self._SERIAL, log_iter=True).print()
         # exit()
         self._clear_buffer_read()
+        self.ADDRESS = self._SERIAL.port
         return True
 
     # ADDRESS =========================================================================================================
