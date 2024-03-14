@@ -213,6 +213,7 @@ class Test_SerialClient_OnShortedPort:
 
         self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         assert self.victim.connect(_raise=False)
+        assert self.victim.addresses_shorted__count() > 0
 
     def test__ADDRESS__FIRST_ANSWER_VALID(self):
         self.victim.disconnect()

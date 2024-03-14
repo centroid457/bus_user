@@ -556,6 +556,10 @@ class SerialClient:
         return len(cls.addresses_system__detect())
 
     @classmethod
+    def addresses_shorted__count(cls) -> int:
+        return len(cls.addresses_shorted__detect())
+
+    @classmethod
     def addresses_paired__count(cls) -> int:
         return len(cls.addresses_paired__detect())
 
