@@ -94,7 +94,6 @@ class AddressAutoAcceptVariant(Enum):
     FIRST_FREE__SHORTED = auto()
     FIRST_FREE__ANSWER_VALID = auto()
 
-    # NOT APPLYED YET!!!
     FIRST_FREE__PAIRED_0 = auto()
     FIRST_FREE__PAIRED_1 = auto()
 
