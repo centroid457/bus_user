@@ -151,7 +151,7 @@ class SerialClient:
     _SERIAL: Serial
 
     ADDRESSES__SYSTEM: List[str] = []
-    ADDRESSES__SHORTED: List[str] = []              # NOT LOADED! # TODO: add method!
+    ADDRESSES__SHORTED: List[str] = []
     ADDRESSES__PAIRED: List[Tuple[str, str]] = []
 
     def __init__(self, address: TYPE__ADDRESS = None):
@@ -289,6 +289,14 @@ class SerialClient:
         return True
 
     # ADDRESS =========================================================================================================
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+
     def _address_apply__first_free(self) -> bool:
         for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False):
@@ -371,6 +379,14 @@ class SerialClient:
         return self.write_read_line_last(LOAD) == LOAD
 
     # DETECT PORTS ====================================================================================================
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+
     def address__check_exists(self) -> bool:
         try:
             self.connect(_raise=True, _silent=True)
@@ -564,6 +580,12 @@ class SerialClient:
         return len(cls.addresses_paired__detect())
 
     # RW ==============================================================================================================
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
     pass
 
     # SUCCESS ---------------------------------------------------------------------------------------------------------
