@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.2.2 (2024/03/14 16:53:05)
+------------------------------
+- [SerialClient] renames + add addresses_shorted__detect/*count  
+
 0.2.1 (2024/03/14 15:03:50)
 ------------------------------
 - [SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!  

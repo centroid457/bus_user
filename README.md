@@ -1,4 +1,4 @@
-# bus_user (v0.2.1)
+# bus_user (v0.2.2)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -26,7 +26,7 @@ other protocols mot recommended
 ## Features
 1. Serial:  
 	- Client+Server  
-	- connect with AddressAutoAcceptVariant FIRST_VACANT/FIRST_ANSWER_VALID  
+	- connect with AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID  
 	- set/get params by SlashOrSpacePath addressing  
 	- handle BackSpace send manually from terminal  
 2. SerialServer values:  
