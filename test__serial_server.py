@@ -565,8 +565,11 @@ class Test_SerialServer_WithConnection:
             print(msg)
             raise Exception(msg)
 
-        cls.VictimEmu.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][0]
-        cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
+        # cls.VictimEmu.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][0]
+        # cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
+
+        cls.VictimEmu.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_0
+        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_1
 
         cls.victim_emu = cls.VictimEmu()
         cls.victim = cls.Victim()

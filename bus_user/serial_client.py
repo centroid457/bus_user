@@ -372,8 +372,8 @@ class SerialClient:
 
     @classmethod
     def addresses_system__detect(cls) -> List[str]:
-        if cls.ADDRESSES__SYSTEM:
-            return cls.ADDRESSES__SYSTEM
+        if SerialClient.ADDRESSES__SYSTEM:
+            return SerialClient.ADDRESSES__SYSTEM
 
         result = cls._addresses_system__detect_1__standard_method()
         for port in cls._addresses_system__detect_2__direct_access():
@@ -386,7 +386,7 @@ class SerialClient:
         else:
             print("[WARN] detected no serial ports")
 
-        cls.ADDRESSES__SYSTEM = result
+        SerialClient.ADDRESSES__SYSTEM = result
         return result
 
     @staticmethod
@@ -490,8 +490,8 @@ class SerialClient:
 
     @classmethod
     def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
-        if cls.ADDRESSES__PAIRED:
-            return cls.ADDRESSES__PAIRED
+        if SerialClient.ADDRESSES__PAIRED:
+            return SerialClient.ADDRESSES__PAIRED
 
         # WORK ----------------------------------------------
         echo_load = "ECHO_LOAD"
@@ -517,8 +517,7 @@ class SerialClient:
         for remain in instances_free:
             remain.disconnect()
 
-        cls.ADDRESSES__PAIRED = result
-
+        SerialClient.ADDRESSES__PAIRED = result
         print(f"{cls.ADDRESSES__PAIRED=}")
         return result
 
