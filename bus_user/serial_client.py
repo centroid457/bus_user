@@ -104,6 +104,24 @@ TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
 
 # =====================================================================================================================
 class SerialClient:
+    """
+
+    NOTE:
+    1. use good COM-port adapters!!!
+        some bites may be lost (usually on started byte) or added extra chars (usually to start and end of line)!!!
+
+        =WRONG=
+        - PROFILIC - often!
+        - FTDI FT232RL - sometimes but less than on Profilic
+
+        =GOOD=
+        - CH340 - no one error so far!
+        - CH341A (big universal) - no one error so far!
+
+        =NOT TESTED= wait postage from Aliexpress
+        - CP2102
+        - CH341T
+    """
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
     ADDRESS: TYPE__ADDRESS = None
