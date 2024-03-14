@@ -146,9 +146,18 @@ class Test_SerialClient:
         self.victim.disconnect()
 
         assert self.victim.ADDRESSES__PAIRED == []
-        self.victim.addresses_paired__detect()
+        assert self.victim.addresses_paired__count() > 0    # HERE YOU NEED CONNECT/CREATE/COMMUTATE ONE PAIR!
         print(f"{self.victim.ADDRESSES__PAIRED=}")
-        # assert self.victim.ADDRESSES__PAIRED == []
+
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_0
+        assert self.victim.connect(_raise=False)
+        assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
+        self.victim.disconnect()
+
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_1
+        assert self.victim.connect(_raise=False)
+        assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
+        self.victim.disconnect()
 
     def test__ADDRESS__FIRST_VACANT(self):
         self.victim.disconnect()
