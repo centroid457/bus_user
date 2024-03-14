@@ -555,7 +555,7 @@ class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
-    VictimEmu: Type[SerialServer_Base] = type("VictimEmu", (SerialServer_Base,), {})
+    VictimEmu: Type[SerialServer_Base] = type("VictimEmu", (SerialServer_Example,), {})
     victim_emu: SerialServer_Base = None
 
     @classmethod
@@ -596,6 +596,8 @@ class Test_SerialServer_WithConnection:
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
         assert self.victim.write_read_line("hello").list_output() == self.victim_emu.HELLO_MSG
+        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
         # assert self.victim.write_read_line_last("123") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 
 
