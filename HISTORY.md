@@ -4,7 +4,6 @@
 ## TODO
 1. add all other port settings into SerialClient  
 2. test work with several lines EOL__SEND  
-3. TESTS with several PORTS!  
 
 ********************************************************************************
 ## FIXME
@@ -12,6 +11,13 @@
 
 ********************************************************************************
 ## NEWS
+
+0.2.0 (2024/03/14 14:43:38)
+------------------------------
+- [SerialClient] BIG REF:  
+	- ref address as TYPE__ADDRESS with autoconnect  
+	- add lists ADDRESSES__SYSTEM/PAIRED  
+	- AddressAutoAcceptVariant - add FIRST_PAIRED_0/1  
 
 0.1.13 (2024/03/13 16:17:31)
 ------------------------------

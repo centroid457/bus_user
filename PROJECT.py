@@ -71,17 +71,20 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 1, 13)
+    VERSION: Tuple[int, int, int] = (0, 2, 0)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
-        "TESTS with several PORTS!",
     ]
     FIXME: List[str] = [
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] fix autodetect = switching to already opened",
+        ["[SerialClient] BIG REF",
+            "ref address as TYPE__ADDRESS with autoconnect",
+            "add lists ADDRESSES__SYSTEM/PAIRED",
+            "AddressAutoAcceptVariant - add FIRST_PAIRED_0/1"
+         ]
     ]
 
     # FINALIZE -----------------------------------------------
