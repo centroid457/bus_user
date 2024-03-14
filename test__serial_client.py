@@ -108,7 +108,7 @@ class Test_HistoryIO:
 
 
 # =====================================================================================================================
-class Test_SerialClient:
+class Test_SerialClient_Paired:
     Victim: Type[SerialClient]
     victim: SerialClient
 
@@ -159,6 +159,42 @@ class Test_SerialClient:
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
         self.victim.disconnect()
 
+
+# =====================================================================================================================
+class Test_SerialClient_OnShortedPort:
+    Victim: Type[SerialClient]
+    victim: SerialClient
+
+    @classmethod
+    def setup_class(cls):
+        class Victim(SerialClient):
+            ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+            def address__answer_validation(self) -> Union[bool, NoReturn]:
+                return self.write_read_line_last("echo") == "echo"
+
+        cls.Victim = Victim
+        cls.victim = cls.Victim()
+        if not cls.victim.connect(_raise=False):
+            msg = f"[ERROR] not found PORT shorted by Rx+Tx"
+            print(msg)
+            raise Exception(msg)
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim:
+            cls.victim.disconnect()
+
+    def setup_method(self, method):
+        if not isinstance(self.victim.ADDRESS, str):
+            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+        self.victim.connect(_raise=False)
+
+    def teardown_method(self, method):
+        pass
+        if self.victim:
+            self.victim.disconnect()
+
+    # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESS__FIRST_VACANT(self):
         self.victim.disconnect()
 
