@@ -569,6 +569,7 @@ class Test_SerialServer_WithConnection:
         # cls.Victim.ADDRESS = cls.Victim.ADDRESSES__PAIRED[0][1]
 
         cls.VictimEmu.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0
+        cls.VictimEmu.HELLO_SEND_ON_START = False
         cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
 
         cls.victim_emu = cls.VictimEmu()
@@ -576,9 +577,6 @@ class Test_SerialServer_WithConnection:
 
         cls.victim_emu.start()
         cls.victim.connect()
-
-        time.sleep(0.5)
-        cls.victim._clear_buffer_read()
 
     @classmethod
     def teardown_class(cls):

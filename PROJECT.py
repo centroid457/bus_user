@@ -80,7 +80,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] renames + add addresses_shorted__detect/*count",
+
+
+
+        "[SerialServer_Base] add HELLO_SEND_ON_START",
     ]
 
     # FINALIZE -----------------------------------------------
