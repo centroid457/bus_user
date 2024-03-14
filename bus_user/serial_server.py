@@ -274,7 +274,7 @@ class SerialServer_Base(QThread):
 
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
-    ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
+    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",

@@ -7,7 +7,7 @@ from object_info import ObjectInfo
 
 
 class DevEmulator(SerialServer_Example):
-    ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
+    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
 
 emu = DevEmulator()
@@ -15,7 +15,7 @@ emu.start()
 
 
 # victim = SerialClient()
-# victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
+# victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 # victim.connect()
 #
 # # ObjectInfo(victim._SERIAL).print()

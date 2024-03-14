@@ -90,13 +90,13 @@ class TypeWrReturn(Enum):
 
 
 class AddressAutoAcceptVariant(Enum):
-    FIRST_VACANT = auto()
-    FIRST_SHORTED = auto()
-    FIRST_ANSWER_VALID = auto()
+    FIRST_FREE = auto()
+    FIRST_FREE__SHORTED = auto()
+    FIRST_FREE__ANSWER_VALID = auto()
 
     # NOT APPLYED YET!!!
-    FIRST_PAIRED_0 = auto()
-    FIRST_PAIRED_1 = auto()
+    FIRST_FREE__PAIRED_0 = auto()
+    FIRST_FREE__PAIRED_1 = auto()
 
 
 TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
@@ -215,16 +215,16 @@ class SerialClient:
         if address is None:
             msg = Exx_SerialAddress_NotConfigured
             exx = Exx_SerialAddress_NotConfigured()
-        elif address == AddressAutoAcceptVariant.FIRST_VACANT:
-            return self._address_apply__first_vacant()
-        elif address == AddressAutoAcceptVariant.FIRST_SHORTED:
-            return self._address_apply__first_shorted()
-        elif address == AddressAutoAcceptVariant.FIRST_ANSWER_VALID:
-            return self._address_apply__first_answer_valid()
-        elif address == AddressAutoAcceptVariant.FIRST_PAIRED_0:
-            return self._address_apply__paired(0)
-        elif address == AddressAutoAcceptVariant.FIRST_PAIRED_1:
-            return self._address_apply__paired(1)
+        elif address == AddressAutoAcceptVariant.FIRST_FREE:
+            return self._address_apply__first_free()
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
+            return self._address_apply__first_free__shorted()
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
+            return self._address_apply__first_free__answer_valid()
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0:
+            return self._address_apply__first_free__paired(0)
+        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1:
+            return self._address_apply__first_free__paired(1)
 
         elif isinstance(address, str):
             # CHANGE PORT OR USE SAME ---------------------------------
@@ -289,7 +289,7 @@ class SerialClient:
         return True
 
     # ADDRESS =========================================================================================================
-    def _address_apply__first_vacant(self) -> bool:
+    def _address_apply__first_free(self) -> bool:
         for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False):
                 return True
@@ -297,7 +297,7 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoVacant
         print(msg)
 
-    def _address_apply__first_shorted(self) -> bool:
+    def _address_apply__first_free__shorted(self) -> bool:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
@@ -312,7 +312,7 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoAutodetected
         print(msg)
 
-    def _address_apply__first_answer_valid(self) -> bool:
+    def _address_apply__first_free__answer_valid(self) -> bool:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
@@ -330,7 +330,7 @@ class SerialClient:
         msg = Exx_SerialAddresses_NoAutodetected
         print(msg)
 
-    def _address_apply__paired(self, index: int) -> bool:
+    def _address_apply__first_free__paired(self, index: int) -> bool:
         """
         """
         for pair in self.addresses_paired__detect():

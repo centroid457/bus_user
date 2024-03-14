@@ -53,7 +53,7 @@ other protocols mot recommended
 
         ["Serial",
             "Client+Server",
-            "connect with AddressAutoAcceptVariant FIRST_VACANT/FIRST_ANSWER_VALID",
+            "connect with AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID",
             "set/get params by SlashOrSpacePath addressing",
             "handle BackSpace send manually from terminal",
          ],
@@ -80,7 +80,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!",
+        "[SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0/1 in server!!!",
     ]
 
     # FINALIZE -----------------------------------------------

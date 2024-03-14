@@ -115,7 +115,7 @@ class Test_SerialClient_Paired:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
 
@@ -133,7 +133,7 @@ class Test_SerialClient_Paired:
 
     def setup_method(self, method):
         if not isinstance(self.victim.ADDRESS, str):
-            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
@@ -149,12 +149,12 @@ class Test_SerialClient_Paired:
         assert self.victim.addresses_paired__count() > 0    # HERE YOU NEED CONNECT/CREATE/COMMUTATE ONE PAIR!
         print(f"{self.victim.ADDRESSES__PAIRED=}")
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_0
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_0
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
         self.victim.disconnect()
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_PAIRED_1
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_1
         assert self.victim.connect(_raise=False)
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
         self.victim.disconnect()
@@ -168,7 +168,7 @@ class Test_SerialClient_OnShortedPort:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
 
@@ -186,7 +186,7 @@ class Test_SerialClient_OnShortedPort:
 
     def setup_method(self, method):
         if not isinstance(self.victim.ADDRESS, str):
-            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
@@ -201,7 +201,7 @@ class Test_SerialClient_OnShortedPort:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
         assert self.victim.connect(_raise=False)
 
     def test__ADDRESS__FIRST_SHORTED(self):
@@ -210,7 +210,7 @@ class Test_SerialClient_OnShortedPort:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         assert self.victim.connect(_raise=False)
 
     def test__ADDRESS__FIRST_ANSWER_VALID(self):
@@ -219,13 +219,13 @@ class Test_SerialClient_OnShortedPort:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_ANSWER_VALID
+        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
         assert self.victim.connect(_raise=False)
 
         # ==============
         self.victim.disconnect()
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_ANSWER_VALID
+            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 raise Exception()
 
