@@ -342,8 +342,10 @@ class SerialServer_Base(QThread):
 
         if params:
             self.PARAMS = params
-        else:
+        elif not self.PARAMS:
             self.PARAMS = {}
+        else:
+            pass
 
         self._init_lists()
 
