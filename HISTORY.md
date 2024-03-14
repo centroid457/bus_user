@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.2.1 (2024/03/14 15:03:50)
+------------------------------
+- [SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!  
+
 0.2.0 (2024/03/14 14:46:27)
 ------------------------------
 - [SerialClient] BIG REF:  

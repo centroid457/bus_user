@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 0)
+    VERSION: Tuple[int, int, int] = (0, 2, 1)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "test work with several lines EOL__SEND",
@@ -80,11 +80,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        ["[SerialClient] BIG REF",
-            "ref address as TYPE__ADDRESS with autoconnect",
-            "add lists ADDRESSES__SYSTEM/PAIRED",
-            "[AddressAutoAcceptVariant] add FIRST_SHORTED + FIRST_PAIRED_0/1"
-         ]
+        "[SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!",
     ]
 
     # FINALIZE -----------------------------------------------
