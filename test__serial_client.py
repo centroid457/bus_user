@@ -196,10 +196,10 @@ class Test_SerialClient:
         self.victim.disconnect()
 
     def test__detect_available_ports(self):
-        assert self.Victim.system_ports__count() > 0
+        assert self.Victim.addresses_system__count() > 0
 
     def test__connect_address_NOTexisted(self):
-        assert SerialClient(address="HELLO").address_check_exists() is False
+        assert SerialClient(address="HELLO").address__check_exists() is False
 
     def test__ensure_bytes(self):
         assert self.Victim._data_ensure__bytes("111") == b"111"

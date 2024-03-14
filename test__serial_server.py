@@ -561,7 +561,7 @@ class Test_SerialServer_WithConnection:
 
     @classmethod
     def setup_class(cls):
-        if cls.Victim.system_ports__count() != 2:
+        if cls.Victim.addresses_system__count() != 2:
             msg = f"[ERROR] need connect TWO SerialPorts and short Rx+Tx between them"
             print(msg)
             raise Exception(msg)

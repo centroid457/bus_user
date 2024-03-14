@@ -133,7 +133,7 @@ class SerialClient:
     _SERIAL: Serial
 
     ADDRESSES__SYSTEM: List[str] = []
-    ADDRESSES__SHORTED: List[str] = []
+    ADDRESSES__SHORTED: List[str] = []              # NOT LOADED! # TODO: add method!
     ADDRESSES__PAIRED: List[Tuple[str, str]] = []
 
     def __init__(self, address: TYPE__ADDRESS = None):
@@ -268,7 +268,7 @@ class SerialClient:
 
     # ADDRESS =========================================================================================================
     def _address_apply__first_vacant(self) -> bool:
-        for address in self.system_ports__detect():
+        for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False):
                 return True
 
@@ -280,7 +280,7 @@ class SerialClient:
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
-        for address in self.system_ports__detect():
+        for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False):
                 if self.address__answer_validation__shorted():
                     return True
@@ -295,7 +295,7 @@ class SerialClient:
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
-        for address in self.system_ports__detect():
+        for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False):
                 try:
                     if self.address__answer_validation():
@@ -325,7 +325,7 @@ class SerialClient:
         return self.write_read_line_last(LOAD) == LOAD
 
     # DETECT PORTS ====================================================================================================
-    def address_check_exists(self) -> bool:
+    def address__check_exists(self) -> bool:
         try:
             self.connect(_raise=True, _silent=True)
             self.disconnect()
@@ -336,12 +336,12 @@ class SerialClient:
         return True
 
     @classmethod
-    def system_ports__detect(cls) -> List[str]:
+    def addresses_system__detect(cls) -> List[str]:
         if cls.ADDRESSES__SYSTEM:
             return cls.ADDRESSES__SYSTEM
 
-        result = cls._system_ports__detect_1__standard_method()
-        for port in cls._system_ports__detect_2__direct_access():
+        result = cls._addresses_system__detect_1__standard_method()
+        for port in cls._addresses_system__detect_2__direct_access():
             if port not in result:
                 result.append(port)
 
@@ -355,7 +355,7 @@ class SerialClient:
         return result
 
     @staticmethod
-    def _system_ports__detect_1__standard_method() -> Union[List[str], NoReturn]:
+    def _addresses_system__detect_1__standard_method() -> Union[List[str], NoReturn]:
         """
         WINDOWS - USB
             ==========OBJECTINFO.PRINT==========================================================================
@@ -427,7 +427,7 @@ class SerialClient:
         return result
 
     @staticmethod
-    def _system_ports__detect_2__direct_access() -> Union[List[str], NoReturn]:
+    def _addresses_system__detect_2__direct_access() -> Union[List[str], NoReturn]:
         """Определяет список портов (НЕОТКРЫТЫХ+ОТКРЫТЫХ!!!) - способом 2 (слепым тестом подключения и анализом исключений)
         Всегда срабатывает!
         """
@@ -446,7 +446,7 @@ class SerialClient:
 
         result: List[str] = []
         for name in attempt_list:
-            if SerialClient(address=name).address_check_exists():
+            if SerialClient(address=name).address__check_exists():
                 result.append(name)
 
         if _lock_port:
@@ -454,8 +454,21 @@ class SerialClient:
         return result
 
     @classmethod
-    def system_ports__count(cls) -> int:
-        return len(cls.system_ports__detect())
+    def addresses_system__count(cls) -> int:
+        return len(cls.addresses_system__detect())
+
+    @classmethod
+    def addresses_paired__detect(cls) -> int:
+        for address in cls.addresses_system__detect():
+            pass
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
+        # FIXME: FINISH!!!
 
     # RW ==============================================================================================================
     pass
