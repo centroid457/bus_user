@@ -351,7 +351,7 @@ class SerialServer_Base(QThread):
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if self.ADDRESS_AUTOACCEPT is not None:
-            self._SERIAL_CLIENT.ADDRESS_AUTOACCEPT = self.ADDRESS_AUTOACCEPT
+            self._SERIAL_CLIENT.ADDRESS = self.ADDRESS_AUTOACCEPT
 
     def _init_lists(self) -> None:
         self._LIST__CMDS = []

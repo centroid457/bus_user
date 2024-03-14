@@ -90,7 +90,6 @@ class TypeWrReturn(Enum):
 
 
 class AddressAutoAcceptVariant(Enum):
-    NONE = auto()
     FIRST_VACANT = auto()
     FIRST_SHORTED = auto()
     FIRST_ANSWER_VALID = auto()
@@ -100,12 +99,14 @@ class AddressAutoAcceptVariant(Enum):
     PAIRED_SECOND = auto()
 
 
+TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
+
+
 # =====================================================================================================================
 class SerialClient:
     # TODO: use thread!???
     # SETTINGS ------------------------------------------------
-    ADDRESS_AUTOACCEPT: AddressAutoAcceptVariant = AddressAutoAcceptVariant.NONE
-    ADDRESS: str = None
+    ADDRESS: TYPE__ADDRESS = None
 
     _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
@@ -131,13 +132,13 @@ class SerialClient:
     history: HistoryIO = None
     _SERIAL: Serial
 
-    def __init__(self, address: Optional[str] = None):
+    def __init__(self, address: TYPE__ADDRESS = None):
         super().__init__()
         self._SERIAL = Serial()
         self.history = HistoryIO()
 
         # set only address!!!
-        if address:
+        if address is not None:
             self.ADDRESS = address
 
         # apply settings
@@ -189,17 +190,17 @@ class SerialClient:
 
         address = address or self.ADDRESS
 
-        if not address:
-            if self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_VACANT:
-                return self._address_apply__first_vacant()
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_SHORTED:
-                return self._address_apply__first_shorted()
-            elif self.ADDRESS_AUTOACCEPT == AddressAutoAcceptVariant.FIRST_ANSWER_VALID:
-                return self._address_apply__first_answer_valid()
-            else:
-                msg = Exx_SerialAddress_NotConfigured
-                exx = Exx_SerialAddress_NotConfigured()
-        else:
+        if address is None:
+            msg = Exx_SerialAddress_NotConfigured
+            exx = Exx_SerialAddress_NotConfigured()
+        elif address == AddressAutoAcceptVariant.FIRST_VACANT:
+            return self._address_apply__first_vacant()
+        elif address == AddressAutoAcceptVariant.FIRST_SHORTED:
+            return self._address_apply__first_shorted()
+        elif address == AddressAutoAcceptVariant.FIRST_ANSWER_VALID:
+            return self._address_apply__first_answer_valid()
+
+        elif isinstance(address, str):
             # CHANGE PORT OR USE SAME ---------------------------------
             if self._SERIAL.port != address:
                 if self._SERIAL.is_open:
@@ -262,7 +263,6 @@ class SerialClient:
     def _address_apply__first_vacant(self) -> bool:
         for address in self.system_ports__detect():
             if self.connect(address=address, _raise=False):
-                self.ADDRESS = address
                 return True
 
         msg = Exx_SerialAddresses_NoVacant
@@ -276,7 +276,6 @@ class SerialClient:
         for address in self.system_ports__detect():
             if self.connect(address=address, _raise=False):
                 if self.address__answer_validation__shorted():
-                    self.ADDRESS = address
                     return True
                 self.disconnect()
 
@@ -293,7 +292,6 @@ class SerialClient:
             if self.connect(address=address, _raise=False):
                 try:
                     if self.address__answer_validation():
-                        self.ADDRESS = address
                         return True
                 except:
                     pass

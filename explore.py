@@ -15,7 +15,7 @@ emu.start()
 
 
 # victim = SerialClient()
-# victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
+# victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
 # victim.connect()
 #
 # # ObjectInfo(victim._SERIAL).print()

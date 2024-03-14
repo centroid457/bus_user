@@ -589,7 +589,7 @@ class Test_SerialServer_WithConnection:
         self.victim_emu = self.VictimEmu()
         self.victim_emu.start()
         # -------------------
-        self.Victim.ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_VACANT
+        self.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
         self.victim = self.Victim()
         self.victim.connect()
 
