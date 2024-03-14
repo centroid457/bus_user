@@ -132,7 +132,8 @@ class Test_SerialClient:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
+        if not isinstance(self.victim.ADDRESS, str):
+            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
         self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
@@ -141,7 +142,7 @@ class Test_SerialClient:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__ADDRESS_APPLY__FIRST_VACANT(self):
+    def test__ADDRESS__FIRST_VACANT(self):
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
@@ -150,7 +151,7 @@ class Test_SerialClient:
         self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_VACANT
         assert self.victim.connect(_raise=False)
 
-    def test__ADDRESS_APPLY__FIRST_SHORTED(self):
+    def test__ADDRESS__FIRST_SHORTED(self):
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
@@ -159,7 +160,7 @@ class Test_SerialClient:
         self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_SHORTED
         assert self.victim.connect(_raise=False)
 
-    def test__ADDRESS_APPLY__FIRST_ANSWER_VALID(self):
+    def test__ADDRESS__FIRST_ANSWER_VALID(self):
         self.victim.disconnect()
 
         self.victim.ADDRESS = None
@@ -182,7 +183,7 @@ class Test_SerialClient:
         assert self.victim.connect(_raise=False)
         assert self.victim.connect(_raise=False)
 
-    def test__pipeline_open_close(self):
+    def test__recreate_object(self):
         self.victim.disconnect()
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
@@ -196,9 +197,6 @@ class Test_SerialClient:
 
     def test__detect_available_ports(self):
         assert self.Victim.system_ports__count() > 0
-
-    # def test__connect_address_existed(self):
-    #     assert SerialClient().address_check_exists() is True
 
     def test__connect_address_NOTexisted(self):
         assert SerialClient(address="HELLO").address_check_exists() is False
