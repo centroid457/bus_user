@@ -179,7 +179,7 @@ class Test_SerialClient:
         class Victim(SerialClient):
             ADDRESS_AUTOACCEPT = AddressAutoAcceptVariant.FIRST_ANSWER_VALID
             def address__answer_validation(self) -> Union[bool, NoReturn]:
-                raise
+                raise Exception()
 
         assert not Victim().connect(_raise=False)
 

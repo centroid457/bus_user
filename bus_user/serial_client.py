@@ -200,8 +200,10 @@ class SerialClient:
                 msg = Exx_SerialAddress_NotConfigured
                 exx = Exx_SerialAddress_NotConfigured()
         else:
-            # WORK ---------------------------------
+            # CHANGE PORT OR USE SAME ---------------------------------
             if self._SERIAL.port != address:
+                if self._SERIAL.is_open:
+                    self._SERIAL.close()
                 self._SERIAL.port = address
                 if self._SERIAL.is_open:
                     self._SERIAL.port = None
@@ -289,9 +291,12 @@ class SerialClient:
         """
         for address in self.system_ports__detect():
             if self.connect(address=address, _raise=False):
-                if self.address__answer_validation():
-                    self.ADDRESS = address
-                    return True
+                try:
+                    if self.address__answer_validation():
+                        self.ADDRESS = address
+                        return True
+                except:
+                    pass
                 self.disconnect()
 
         # FINISH -------------
