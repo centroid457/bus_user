@@ -142,6 +142,14 @@ class Test_SerialClient:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
+    def test__ADDRESS__PAIRED(self):
+        self.victim.disconnect()
+
+        assert self.victim.ADDRESSES__PAIRED == []
+        self.victim.addresses_paired__detect()
+        print(f"{self.victim.ADDRESSES__PAIRED=}")
+        # assert self.victim.ADDRESSES__PAIRED == []
+
     def test__ADDRESS__FIRST_VACANT(self):
         self.victim.disconnect()
 

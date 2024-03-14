@@ -458,17 +458,36 @@ class SerialClient:
         return len(cls.addresses_system__detect())
 
     @classmethod
-    def addresses_paired__detect(cls) -> int:
+    def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
+        if cls.ADDRESSES__PAIRED:
+            return cls.ADDRESSES__PAIRED
+
+        # WORK ----------------------------------------------
+        echo_load = "ECHO_LOAD"
+        result = []
+        instances_free = []
         for address in cls.addresses_system__detect():
-            pass
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
-        # FIXME: FINISH!!!
+            instance = cls(address)
+            if instance.connect(_raise=False):
+                instances_free.append(instance)
+
+        while len(instances_free) > 1:
+            main = instances_free.pop(0)
+            main._write_line(echo_load)
+            for index, slave in enumerate(instances_free):
+                if slave.read_line(_timeout=0.2) == echo_load:
+                    result.append((main.ADDRESS, slave.ADDRESS))
+                    slave.disconnect()
+                    instances_free.pop(index)
+                    break
+
+            main.disconnect()
+
+        for remain in instances_free:
+            remain.disconnect()
+
+        cls.ADDRESSES__PAIRED = result
+        return result
 
     # RW ==============================================================================================================
     pass
