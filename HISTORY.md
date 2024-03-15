@@ -11,6 +11,10 @@
 ********************************************************************************
 ## NEWS
 
+0.2.5 (2024/03/15 11:05:32)
+------------------------------
+- [SerialServer] zero place EMULATOR.ADDRESS.FIRST_FREE__PAIRED_FOR_EMU  
+
 0.2.4 (2024/03/15 10:45:47)
 ------------------------------
 - [SerialClient] zero + clear Emulator buffer on connection  

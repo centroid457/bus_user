@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 4)
+    VERSION: Tuple[int, int, int] = (0, 2, 5)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -79,7 +79,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] zero + clear Emulator buffer on connection",
+        "[SerialServer] zero place EMULATOR.ADDRESS.FIRST_FREE__PAIRED_FOR_EMU",
     ]
 
     # FINALIZE -----------------------------------------------
