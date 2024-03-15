@@ -12,7 +12,7 @@ from bus_user import *
 
 
 # =====================================================================================================================
-class Test_HistoryIO:
+class Test__HistoryIO:
     VICTIM: Type[HistoryIO] = type("Victim", (HistoryIO,), {})
 
     @classmethod
@@ -108,7 +108,7 @@ class Test_HistoryIO:
 
 
 # =====================================================================================================================
-class Test_SerialClient_Paired:
+class Test__PortPaired:
     Victim: Type[SerialClient]
     victim: SerialClient
 
@@ -168,7 +168,7 @@ class Test_SerialClient_Paired:
 
 
 # =====================================================================================================================
-class Test_SerialClient_OnShortedPort:
+class Test__PortShorted:
     Victim: Type[SerialClient]
     victim: SerialClient
 

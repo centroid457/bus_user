@@ -120,26 +120,31 @@ class SerialClient:
         - CH341T
     """
     # TODO: use thread!???
+    pass
+    pass
+    pass
+
     # SETTINGS ------------------------------------------------
     ADDRESS: TYPE__ADDRESS = None
 
-    _TIMEOUT__READ_FIRST: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    TIMEOUT__READ: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
-    # _TIMEOUT__READ_LAST: float = 0.9
     BAUDRATE: int = 9600        # 115200
 
     CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = False
-    ENCODING: str = "utf8"
-    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
-    EOL__UNI_SET: bytes = b"\r\n"
 
     PREFIX: Optional[str] = None
 
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
+
+    # rare INFRASTRUCTURE -----------------
+    ENCODING: str = "utf8"
+    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
+    EOL__UNI_SET: bytes = b"\r\n"
 
     _GETATTR_STARTSWITH__SEND: str = "send__"
 
@@ -166,7 +171,7 @@ class SerialClient:
         # apply settings
         # self._SERIAL.interCharTimeout = 0.8
         self._SERIAL.baudrate = self.BAUDRATE
-        self._SERIAL.timeout = self._TIMEOUT__READ_FIRST
+        self._SERIAL.timeout = self.TIMEOUT__READ
         # self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
     def __del__(self):
@@ -362,6 +367,7 @@ class SerialClient:
                     self._EMULATOR._SERIAL_CLIENT.ADDRESS = pair[1]
                     self._EMULATOR.start()
                     self._EMULATOR.wait__monitor_ready()
+                    self._clear_buffer_read()
                 return True
 
         # FINISH -------------
@@ -654,7 +660,7 @@ class SerialClient:
             return bytes(data, encoding=cls.ENCODING)
 
     @classmethod
-    def _data_ensure__string(cls, data: AnyStr) -> str:
+    def _data_ensure__string(cls, data: AnyStr) -> Union[str, NoReturn]:
         if isinstance(data, bytes):
             return data.decode(encoding=cls.ENCODING)
         else:
@@ -684,7 +690,7 @@ class SerialClient:
         data = b""
         eol_received = False
 
-        self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_FIRST or None
+        self._SERIAL.timeout = _timeout or self.TIMEOUT__READ or None
         while True:
             new_char = self._SERIAL.readline(1)
             if not new_char:
@@ -704,8 +710,6 @@ class SerialClient:
                     continue
 
             data += new_char
-            # if data:
-            #     self._SERIAL.timeout = _timeout or self._TIMEOUT__READ_LAST or None
 
         # RESULT ----------------------
         if data:

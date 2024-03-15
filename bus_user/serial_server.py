@@ -287,7 +287,7 @@ class SerialServer_Base(QThread):
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
     ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
-    HELLO_MSG__SEND_ON_START: bool = None   # dont set here on True! use it only as overwritten if needed!!!
+    HELLO_MSG__SEND_ON_START: bool = True   # dont set here on True! use it only as overwritten if needed!!!
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
@@ -372,7 +372,7 @@ class SerialServer_Base(QThread):
 
         self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()
         self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
-        self._SERIAL_CLIENT._TIMEOUT__READ_FIRST = None
+        self._SERIAL_CLIENT.TIMEOUT__READ = None
         if self.ADDRESS is not None:
             self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
 
