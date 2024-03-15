@@ -285,7 +285,7 @@ class SerialServer_Base(QThread):
 
     # SETTINGS ------------------------------------------------
     SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
-    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
+    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU!
 
     HELLO_MSG__SEND_ON_START: bool = True   # dont set here on True! use it only as overwritten if needed!!!
     HELLO_MSG: List[str] = [
