@@ -175,6 +175,8 @@ class SerialClient:
         self._SERIAL.timeout = self.TIMEOUT__READ
         # self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
+        # self.addresses_system__detect()   # DONT USE in init!!!
+
     def __del__(self):
         self.disconnect()
 
@@ -420,6 +422,7 @@ class SerialClient:
         if SerialClient.ADDRESSES__SYSTEM:
             return SerialClient.ADDRESSES__SYSTEM
 
+        # WORK -------------------------------------------------------
         result = cls._addresses_system__detect_1__standard_method()
         for port in cls._addresses_system__detect_2__direct_access():
             if port not in result:
