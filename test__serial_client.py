@@ -156,16 +156,26 @@ class Test__PortPaired:
         assert self.victim._EMULATOR.isRunning() is False
         assert self.victim.connect(_raise=False)
         assert self.victim._EMULATOR.isRunning() is True
+
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
+        assert self.victim.ADDRESS == self.victim.addresses_paired__get_used()[0]
+
         assert self.victim._EMULATOR._SERIAL_CLIENT.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
+        assert self.victim._EMULATOR._SERIAL_CLIENT.ADDRESS == self.victim.addresses_paired__get_used()[1]
 
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
         assert self.victim._write_line("echo 123")
         assert self.victim.read_line(_timeout=1) == "echo 123"
+
+        # RECONNECT ----------------
         self.victim.disconnect()
 
         assert self.victim._EMULATOR.isRunning() is False
+        assert self.victim.connect(_raise=False)
+        assert self.victim._EMULATOR.isRunning() is True
+
+        assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
 
 # =====================================================================================================================
