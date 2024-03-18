@@ -149,7 +149,8 @@ class SerialClient:
     _GETATTR_STARTSWITH__SEND: str = "send__"
 
     # test purpose EMULATOR -----------------
-    _EMULATOR: 'SerialServer_Base' = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient!
+    _EMULATOR: 'SerialServer_Base' = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR could be used for test reason and check values in realtime!!
+    _EMULATOR_START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -292,9 +293,19 @@ class SerialClient:
         self.cmd_prefix__set()
         # ObjectInfo(self._SERIAL, log_iter=True).print()
         # exit()
-        self._clear_buffer_read()
         self.ADDRESS = self._SERIAL.port
+        self.emulator_start()
+
+        self._clear_buffer_read()
         return True
+
+    def emulator_start(self):
+        if self._EMULATOR and self._EMULATOR_START:
+            pair_used = self.addresses_paired__get_used()
+            if pair_used:
+                self._EMULATOR._SERIAL_CLIENT.ADDRESS = pair_used[1]
+                self._EMULATOR.start()
+                self._EMULATOR.wait__monitor_ready()
 
     # ADDRESS =========================================================================================================
     pass
@@ -363,11 +374,6 @@ class SerialClient:
         for pair in self.addresses_paired__detect():
             address = pair[0]
             if self.connect(address=address, _raise=False):
-                if self._EMULATOR:
-                    self._EMULATOR._SERIAL_CLIENT.ADDRESS = pair[1]
-                    self._EMULATOR.start()
-                    self._EMULATOR.wait__monitor_ready()
-                    self._clear_buffer_read()
                 return True
 
         # FINISH -------------
@@ -577,6 +583,11 @@ class SerialClient:
         SerialClient.ADDRESSES__PAIRED = result
         print(f"{cls.ADDRESSES__PAIRED=}")
         return result
+
+    def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:
+        for pair in self.addresses_paired__detect():
+            if self.ADDRESS in pair:
+                return pair
 
     # COUNTS -----------------------------------------
     @classmethod

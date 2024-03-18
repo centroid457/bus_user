@@ -151,6 +151,7 @@ class Test__PortPaired:
 
         self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
         self.victim._EMULATOR = SerialServer_Base()
+        self.victim._EMULATOR_START = True
 
         assert self.victim._EMULATOR.isRunning() is False
         assert self.victim.connect(_raise=False)

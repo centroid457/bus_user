@@ -571,6 +571,7 @@ class Test_SerialServer_WithConnection:
 
         cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
         cls.Victim._EMULATOR = cls.victim_emu
+        cls.Victim._EMULATOR_START = True
 
         cls.victim = cls.Victim()
         cls.victim.connect()
