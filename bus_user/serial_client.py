@@ -565,7 +565,7 @@ class SerialClient:
             if instance.connect(_raise=False):
                 instances_free.append(instance)
 
-        while len(instances_free) > 1:
+        while instances_free:
             main = instances_free.pop(0)
             main._write_line(echo_load)
             for index, slave in enumerate(instances_free):
