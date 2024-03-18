@@ -391,3 +391,42 @@ class Test__PortShorted:
 
 
 # =====================================================================================================================
+@pytest.mark.skip
+class Test__PortShorted_validateDevice_Infinit:
+    Victim: Type[SerialClient]
+    victim: SerialClient
+
+    @classmethod
+    def setup_class(cls):
+        class Victim(SerialClient):
+            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+
+        cls.Victim = Victim
+        cls.victim = cls.Victim()
+        if not cls.victim.connect(_raise=False):
+            msg = f"[ERROR] not found PORT shorted by Rx+Tx"
+            print(msg)
+            raise Exception(msg)
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim:
+            cls.victim.disconnect()
+
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__1(self):
+        index = 0
+        while True:
+            index += 1
+            load = f"echo {index}"
+            print(load)
+            assert self.victim.write_read_line_last(load) == load
+
+
+# =====================================================================================================================
