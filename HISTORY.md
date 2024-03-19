@@ -11,6 +11,11 @@
 ********************************************************************************
 ## NEWS
 
+0.2.11 (2024/03/19 16:57:00)
+------------------------------
+- [SerialClient] separate _EMULATOR__CLS/INST  
+- [SerialServer] start add first logger  
+
 0.2.10 (2024/03/19 12:52:46)
 ------------------------------
 - [SerialServer] add connect (fix reconnection)  
