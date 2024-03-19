@@ -209,7 +209,14 @@ class Test__SerialClient_Emulated:
         #     self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__1(self):
+    def test__reconnect(self):
+        assert self.victim._EMULATOR.isRunning() is True
+        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+
+        self.victim.disconnect()
+        assert self.victim._EMULATOR.isRunning() is False
+
+        self.victim.connect()
         assert self.victim._EMULATOR.isRunning() is True
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 

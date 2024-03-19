@@ -379,6 +379,12 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
+        if self.MONITOR_READY:
+            # just for sure
+            msg = f"[WARN] ALREADY STARTED={self.__class__.__name__}"
+            print(msg)
+            return
+
         if not self.SERIAL_CLIENT.connect(_raise=False):
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
@@ -401,6 +407,11 @@ class SerialServer_Base(QThread):
 
             if line:
                 self._execute_line(line)
+
+    def connect(self) -> None:
+        if not self.isRunning():
+            self.start()
+            self.wait__monitor_ready()
 
     def disconnect(self):
         self.SERIAL_CLIENT.disconnect()

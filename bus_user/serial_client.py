@@ -311,8 +311,7 @@ class SerialClient:
             pair_used = self.addresses_paired__get_used()
             if pair_used:
                 self._EMULATOR.SERIAL_CLIENT.ADDRESS = pair_used[1]
-                self._EMULATOR.start()
-                self._EMULATOR.wait__monitor_ready()
+                self._EMULATOR.connect()
 
     # ADDRESS =========================================================================================================
     pass
