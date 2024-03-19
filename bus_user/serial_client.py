@@ -257,6 +257,7 @@ class SerialClient:
 
             else:
                 if self._SERIAL.is_open:
+                    self.emulator_start(_dont_start_emu)
                     return True
 
             try:
@@ -304,18 +305,19 @@ class SerialClient:
         # exit()
         self.ADDRESS = self._SERIAL.port
 
-        if not _dont_start_emu:
-            self.emulator_start()
+        self.emulator_start(_dont_start_emu)
 
         self._clear_buffer_read()
         return True
 
-    def emulator_start(self):
-        if self._EMULATOR__INST and self._EMULATOR__START:
-            pair_used = self.addresses_paired__get_used()
-            if pair_used:
-                self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
-                self._EMULATOR__INST.connect()
+    def emulator_start(self, _dont_start_emu: bool = None) -> None:
+        if not _dont_start_emu:
+            if self._EMULATOR__INST and self._EMULATOR__START:
+                pair_used = self.addresses_paired__get_used()
+                if pair_used:
+                    self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
+                    self._EMULATOR__INST.connect()
+                    self._clear_buffer_read()
 
     # ADDRESS =========================================================================================================
     pass
