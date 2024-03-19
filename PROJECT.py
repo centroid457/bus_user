@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 8)
+    VERSION: Tuple[int, int, int] = (0, 2, 9)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -79,13 +79,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] FIX connect! add param _dont_start_emu",
-
-         ["[SerialServer]",
-         "add SerialServer_Echo",
-         "FIX ADDRESS usage!",
-         ],
-        "[SerialDerivatives] add SerialClient_Shorted/SerialClient_Emulated",
+        "[SerialServer] return back ADDRESS",
     ]
 
     # FINALIZE -----------------------------------------------
