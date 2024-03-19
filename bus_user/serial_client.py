@@ -305,7 +305,7 @@ class SerialClient:
         if self._EMULATOR and self._EMULATOR_START:
             pair_used = self.addresses_paired__get_used()
             if pair_used:
-                self._EMULATOR._SERIAL_CLIENT.ADDRESS = pair_used[1]
+                self._EMULATOR.SERIAL_CLIENT.ADDRESS = pair_used[1]
                 self._EMULATOR.start()
                 self._EMULATOR.wait__monitor_ready()
 
@@ -556,6 +556,8 @@ class SerialClient:
 
     @classmethod
     def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
+        print(f"111111{cls.ADDRESSES__PAIRED=}")
+
         if SerialClient.ADDRESSES__PAIRED:
             return SerialClient.ADDRESSES__PAIRED
 
@@ -572,7 +574,7 @@ class SerialClient:
             main = instances_free.pop(0)
             main._write_line(echo_load)
             for index, slave in enumerate(instances_free):
-                if slave.read_line(_timeout=0.2) == echo_load:
+                if slave.read_line(_timeout=0.3) == echo_load:
                     result.append((main.ADDRESS, slave.ADDRESS))
                     slave.disconnect()
                     instances_free.pop(index)
@@ -584,7 +586,7 @@ class SerialClient:
             remain.disconnect()
 
         SerialClient.ADDRESSES__PAIRED = result
-        print(f"{cls.ADDRESSES__PAIRED=}")
+        print(f"22222222{cls.ADDRESSES__PAIRED=}")
         return result
 
     def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:

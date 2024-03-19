@@ -273,8 +273,7 @@ class SerialServer_Base(QThread):
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
 
     # SETTINGS ------------------------------------------------
-    SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient
-    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU!
+    SERIAL_CLIENT: SerialClient = SerialClient()
 
     HELLO_MSG__SEND_ON_START: bool = True   # dont set here on True! use it only as overwritten if needed!!!
     HELLO_MSG: List[str] = [
@@ -286,8 +285,6 @@ class SerialServer_Base(QThread):
     ANSWER: Type[AnswerVariants] = AnswerVariants
 
     # AUX -----------------------------------------------------
-    _SERIAL_CLIENT: SerialClient
-
     _GETATTR_STARTSWITH__CMD: str = "cmd__"
     _GETATTR_STARTSWITH__SCRIPT: str = "script__"
 
@@ -339,7 +336,7 @@ class SerialServer_Base(QThread):
         """
         result = []
         for line in lines:
-            line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.PREFIX)
+            line_parsed = LineParsed(line, _prefix_expected=self.SERIAL_CLIENT.PREFIX)
             line_result = self._cmd__(line_parsed)
             result.append(f"{line}={line_result}")
 
@@ -359,11 +356,10 @@ class SerialServer_Base(QThread):
 
         self._init_lists()
 
-        self._SERIAL_CLIENT = self.SERIAL_CLIENT__CLS()
-        self._SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
-        self._SERIAL_CLIENT.TIMEOUT__READ = None
-        if self.ADDRESS is not None:
-            self._SERIAL_CLIENT.ADDRESS = self.ADDRESS
+        self.SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
+        self.SERIAL_CLIENT.TIMEOUT__READ = None
+        if not self.SERIAL_CLIENT.ADDRESS:
+            self.SERIAL_CLIENT.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU! as default!
 
     def _init_lists(self) -> None:
         self._LIST__CMDS = []
@@ -378,30 +374,30 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
-        if not self._SERIAL_CLIENT.connect(_raise=False):
+        if not self.SERIAL_CLIENT.connect(_raise=False):
             msg = f"[ERROR]NOT STARTED={self.__class__.__name__}"
             print(msg)
             return
 
         if self.HELLO_MSG__SEND_ON_START:
-            self._SERIAL_CLIENT._write_line("")
-            self._SERIAL_CLIENT._write_line("="*50)
+            self.SERIAL_CLIENT._write_line("")
+            self.SERIAL_CLIENT._write_line("="*50)
             # self._execute_line("hello")
-            self._SERIAL_CLIENT._write_line(self.HELLO_MSG)
+            self.SERIAL_CLIENT._write_line(self.HELLO_MSG)
 
         while True:
             self.MONITOR_READY = True
             line = None
             try:
-                line = self._SERIAL_CLIENT.read_line()
+                line = self.SERIAL_CLIENT.read_line()
             except:
-                self._SERIAL_CLIENT._write_line(self.ANSWER.ERR__ENCODING_OR_DEVICE)
+                self.SERIAL_CLIENT._write_line(self.ANSWER.ERR__ENCODING_OR_DEVICE)
 
             if line:
                 self._execute_line(line)
 
     def disconnect(self):
-        self._SERIAL_CLIENT.disconnect()
+        self.SERIAL_CLIENT.disconnect()
         self.terminate()
         self.MONITOR_READY = False
 
@@ -411,14 +407,14 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def _execute_line(self, line: str) -> bool:
-        line_parsed = LineParsed(line, _prefix_expected=self._SERIAL_CLIENT.PREFIX)
+        line_parsed = LineParsed(line, _prefix_expected=self.SERIAL_CLIENT.PREFIX)
         cmd_result = self._cmd__(line_parsed)
 
         # blank line - SEND!!! because value may be BLANK!!!!
         # if not cmd_result:
         #     return True
 
-        write_result = self._SERIAL_CLIENT._write_line(cmd_result)
+        write_result = self.SERIAL_CLIENT._write_line(cmd_result)
         return write_result
 
     # CMD - ENTRY POINT -----------------------------------------------------------------------------------------------
@@ -598,7 +594,7 @@ class SerialServer_Echo(SerialServer_Base):
     ]
 
     def _execute_line(self, line: str) -> bool:
-        write_result = self._SERIAL_CLIENT._write_line(line)
+        write_result = self.SERIAL_CLIENT._write_line(line)
         return write_result
 
 
