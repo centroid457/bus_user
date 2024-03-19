@@ -176,6 +176,8 @@ class SerialClient:
         # self._SERIAL.write_timeout = self._TIMEOUT__WRITE
 
         # self.addresses_system__detect()   # DONT USE in init!!!
+        # self.addresses_shorted__detect()   # DONT USE in init!!!
+        # self.addresses_paired__detect()   # DONT USE in init!!!
 
     def __del__(self):
         self.disconnect()
@@ -594,7 +596,7 @@ class SerialClient:
 
     def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:
         for pair in self.addresses_paired__detect():
-            if self.ADDRESS in pair:
+            if self._SERIAL.port in pair:
                 return pair
 
     # COUNTS -----------------------------------------

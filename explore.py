@@ -7,6 +7,7 @@ from object_info import ObjectInfo
 
 
 class DevEmulator(SerialServer_Example):
+    pass
     ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
 
 

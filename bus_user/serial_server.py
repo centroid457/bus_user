@@ -385,6 +385,7 @@ class SerialServer_Base(QThread):
             return
 
         if self.HELLO_MSG__SEND_ON_START:
+            self.HELLO_MSG.append(f"Started on [{self.SERIAL_CLIENT._SERIAL.port}]")
             self.SERIAL_CLIENT._write_line("")
             self.SERIAL_CLIENT._write_line("="*50)
             # self._execute_line("hello")
