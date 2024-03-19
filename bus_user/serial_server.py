@@ -1,4 +1,4 @@
-from .serial_client import SerialClient, AddressAutoAcceptVariant
+from .serial_client import SerialClient, AddressAutoAcceptVariant, TYPE__ADDRESS
 
 from typing import *
 import time
@@ -273,9 +273,11 @@ class SerialServer_Base(QThread):
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
 
     # SETTINGS ------------------------------------------------
-    SERIAL_CLIENT: SerialClient = SerialClient()
+    _SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient  # usually not redefines!
+    SERIAL_CLIENT: SerialClient
+    ADDRESS: str = None     # DON'T DEPRECATE! usually use only as exact port or keep NONE!
 
-    HELLO_MSG__SEND_ON_START: bool = True   # dont set here on True! use it only as overwritten if needed!!!
+    HELLO_MSG__SEND_ON_START: bool = True   # don't set here on True! use it only as overwritten if needed!!!
     HELLO_MSG: List[str] = [
         "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
@@ -356,8 +358,11 @@ class SerialServer_Base(QThread):
 
         self._init_lists()
 
+        self.SERIAL_CLIENT = self._SERIAL_CLIENT__CLS()
         self.SERIAL_CLIENT.RAISE_READ_FAIL_PATTERN = False
         self.SERIAL_CLIENT.TIMEOUT__READ = None
+        if self.ADDRESS:
+            self.SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if not self.SERIAL_CLIENT.ADDRESS:
             self.SERIAL_CLIENT.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU! as default!
 
