@@ -268,17 +268,6 @@ class LineParsed:
 
 
 # =====================================================================================================================
-class SerialServer_Echo(QThread):
-    # TODO: create it just out of curiosity!
-    # TODO: create it just out of curiosity!
-    # TODO: create it just out of curiosity!
-    # TODO: create it just out of curiosity!
-    # TODO: create it just out of curiosity!
-    # TODO: create it just out of curiosity!
-    #   fix base just for all incorrect variants!
-    pass
-
-
 class SerialServer_Base(QThread):
     # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
@@ -397,7 +386,8 @@ class SerialServer_Base(QThread):
         if self.HELLO_MSG__SEND_ON_START:
             self._SERIAL_CLIENT._write_line("")
             self._SERIAL_CLIENT._write_line("="*50)
-            self._execute_line("hello")
+            # self._execute_line("hello")
+            self._SERIAL_CLIENT._write_line(self.HELLO_MSG)
 
         while True:
             self.MONITOR_READY = True
@@ -598,6 +588,18 @@ class SerialServer_Base(QThread):
 
         meth_cmd = getattr(self, meth_name__original.VALUE)
         return meth_cmd(line_parsed)
+
+
+# =====================================================================================================================
+class SerialServer_Echo(SerialServer_Base):
+    HELLO_MSG: List[str] = [
+        "SerialServer_Echo",
+        "started!",
+    ]
+
+    def _execute_line(self, line: str) -> bool:
+        write_result = self._SERIAL_CLIENT._write_line(line)
+        return write_result
 
 
 # =====================================================================================================================

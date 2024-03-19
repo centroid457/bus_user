@@ -1,6 +1,7 @@
 from .history import *
 from .serial_client import *
 from .serial_server import *
+from .serial_derivatives import *
 
 # from .bus_i2c import *  # import only Linux supported modul return exx
 try:
