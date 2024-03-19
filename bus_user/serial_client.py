@@ -214,7 +214,8 @@ class SerialClient:
             self,
             address: Optional[str] = None,
             _raise: Optional[bool] = None,
-            _silent: Optional[bool] = None
+            _silent: Optional[bool] = None,
+            _dont_start_emu: bool = None
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
@@ -296,7 +297,9 @@ class SerialClient:
         # ObjectInfo(self._SERIAL, log_iter=True).print()
         # exit()
         self.ADDRESS = self._SERIAL.port
-        self.emulator_start()
+
+        if not _dont_start_emu:
+            self.emulator_start()
 
         self._clear_buffer_read()
         return True
@@ -332,7 +335,7 @@ class SerialClient:
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         for address in self.addresses_shorted__detect():
-            if self.connect(address=address, _raise=False):
+            if self.connect(address=address, _raise=False, _dont_start_emu=True):
                 return True
 
         # FINISH -------------
@@ -409,7 +412,7 @@ class SerialClient:
 
     def address__check_exists(self) -> bool:
         try:
-            self.connect(_raise=True, _silent=True)
+            self.connect(_raise=True, _silent=True, _dont_start_emu=True)
             self.disconnect()
         except Exx_SerialAddress_NotExists:
             return False
@@ -545,7 +548,7 @@ class SerialClient:
         result = []
         for address in cls.addresses_system__detect():
             obj = cls()
-            if obj.connect(address=address, _raise=False):
+            if obj.connect(address=address, _raise=False, _dont_start_emu=True):
                 if obj.address__answer_validation__shorted():
                     result.append(address)
                 obj.disconnect()
@@ -556,7 +559,7 @@ class SerialClient:
 
     @classmethod
     def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
-        print(f"111111{cls.ADDRESSES__PAIRED=}")
+        # print(f"111111{cls.ADDRESSES__PAIRED=}")
 
         if SerialClient.ADDRESSES__PAIRED:
             return SerialClient.ADDRESSES__PAIRED
@@ -567,7 +570,7 @@ class SerialClient:
         instances_free = []
         for address in cls.addresses_system__detect():
             instance = cls(address)
-            if instance.connect(_raise=False):
+            if instance.connect(_raise=False, _dont_start_emu=True):
                 instances_free.append(instance)
 
         while instances_free:
@@ -586,7 +589,7 @@ class SerialClient:
             remain.disconnect()
 
         SerialClient.ADDRESSES__PAIRED = result
-        print(f"22222222{cls.ADDRESSES__PAIRED=}")
+        print(f"{cls.ADDRESSES__PAIRED=}")
         return result
 
     def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:

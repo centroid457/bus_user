@@ -179,8 +179,8 @@ class Test__PortPaired:
 
 
 class Test__SerialClient_Emulated:
-    Victim: Type[SerialClient]
-    victim: SerialClient
+    Victim: Type[SerialClient_Emulated]
+    victim: SerialClient_Emulated
 
     @classmethod
     def setup_class(cls):
@@ -190,7 +190,7 @@ class Test__SerialClient_Emulated:
         cls.Victim = Victim
         cls.victim = cls.Victim()
         if not cls.victim.connect(_raise=False):
-            msg = f"[ERROR] not found PORT shorted by Rx+Tx"
+            msg = f"[ERROR] not found PORT PAIRED"
             print(msg)
             raise Exception(msg)
 
