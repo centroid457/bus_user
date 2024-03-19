@@ -79,13 +79,11 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
+        "[SerialClient] FIX connect! add param _dont_start_emu",
 
-
-
-
-        ["[SerialServer]",
+         ["[SerialServer]",
          "add SerialServer_Echo",
-         "FIX ADDRESS!",
+         "FIX ADDRESS usage!",
          ],
         "[SerialDerivatives] add SerialClient_Shorted/SerialClient_Emulated",
     ]

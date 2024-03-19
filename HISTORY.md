@@ -11,6 +11,14 @@
 ********************************************************************************
 ## NEWS
 
+0.2.8 (2024/03/19 11:28:44)
+------------------------------
+- [SerialClient] FIX connect! add param _dont_start_emu  
+- [SerialServer]:  
+	- add SerialServer_Echo  
+	- FIX ADDRESS usage!  
+- [SerialDerivatives] add SerialClient_Shorted/SerialClient_Emulated  
+
 0.2.7 (2024/03/18 15:15:51)
 ------------------------------
 - zero add tests RECONNECT  

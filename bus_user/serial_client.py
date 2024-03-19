@@ -215,7 +215,7 @@ class SerialClient:
             address: Optional[str] = None,
             _raise: Optional[bool] = None,
             _silent: Optional[bool] = None,
-            _dont_start_emu: bool = None
+            _dont_start_emu: bool = None    # specially keep ability to connect without Emu on cls main perpose (search ports)!
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
