@@ -12,8 +12,8 @@ class SerialClient_Shorted(SerialClient):
 
 class SerialClient_Emulated(SerialClient):
     ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-    _EMULATOR = SerialServer_Example()
-    _EMULATOR_START = True
+    _EMULATOR__CLS = SerialServer_Example
+    _EMULATOR__START = True
 
 
 # =====================================================================================================================

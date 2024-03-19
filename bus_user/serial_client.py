@@ -149,8 +149,9 @@ class SerialClient:
     _GETATTR_STARTSWITH__SEND: str = "send__"
 
     # test purpose EMULATOR -----------------
-    _EMULATOR: 'SerialServer_Base' = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR could be used for test reason and check values in realtime!!
-    _EMULATOR_START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
+    _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR__INST could be used for test reason and check values in realtime!!
+    _EMULATOR__INST: 'SerialServer_Base' = None
+    _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -164,6 +165,9 @@ class SerialClient:
         super().__init__()
         self._SERIAL = Serial()
         self.history = HistoryIO()
+
+        if self._EMULATOR__CLS:
+            self._EMULATOR__INST = self._EMULATOR__CLS()
 
         # set only address!!!
         if address is not None:
@@ -208,7 +212,7 @@ class SerialClient:
             pass
 
         try:
-            self._EMULATOR.disconnect()
+            self._EMULATOR__INST.disconnect()
         except:
             pass
 
@@ -307,11 +311,11 @@ class SerialClient:
         return True
 
     def emulator_start(self):
-        if self._EMULATOR and self._EMULATOR_START:
+        if self._EMULATOR__INST and self._EMULATOR__START:
             pair_used = self.addresses_paired__get_used()
             if pair_used:
-                self._EMULATOR.SERIAL_CLIENT.ADDRESS = pair_used[1]
-                self._EMULATOR.connect()
+                self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
+                self._EMULATOR__INST.connect()
 
     # ADDRESS =========================================================================================================
     pass

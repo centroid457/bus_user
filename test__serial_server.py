@@ -570,8 +570,8 @@ class Test_SerialServer_WithConnection:
         cls.victim_emu.HELLO_MSG__SEND_ON_START = False
 
         cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-        cls.Victim._EMULATOR = cls.victim_emu
-        cls.Victim._EMULATOR_START = True
+        cls.Victim._EMULATOR__INST = cls.victim_emu
+        cls.Victim._EMULATOR__START = True
 
         cls.victim = cls.Victim()
         cls.victim.connect()
@@ -589,7 +589,7 @@ class Test_SerialServer_WithConnection:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR.HELLO_MSG
+        assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR__INST.HELLO_MSG
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
         assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
 

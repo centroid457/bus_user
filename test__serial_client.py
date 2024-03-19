@@ -150,18 +150,18 @@ class Test__PortPaired:
         print(f"{self.victim.ADDRESSES__PAIRED=}")
 
         self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-        self.victim._EMULATOR = SerialServer_Base()
-        self.victim._EMULATOR_START = True
+        self.victim._EMULATOR__INST = SerialServer_Base()
+        self.victim._EMULATOR__START = True
 
-        assert self.victim._EMULATOR.isRunning() is False
+        assert self.victim._EMULATOR__INST.isRunning() is False
         assert self.victim.connect(_raise=False)
-        assert self.victim._EMULATOR.isRunning() is True
+        assert self.victim._EMULATOR__INST.isRunning() is True
 
         assert self.victim.ADDRESS == self.victim.ADDRESSES__PAIRED[0][0]
         assert self.victim.ADDRESS == self.victim.addresses_paired__get_used()[0]
 
-        assert self.victim._EMULATOR.SERIAL_CLIENT.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
-        assert self.victim._EMULATOR.SERIAL_CLIENT.ADDRESS == self.victim.addresses_paired__get_used()[1]
+        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
+        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.ADDRESS == self.victim.addresses_paired__get_used()[1]
 
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
@@ -171,9 +171,9 @@ class Test__PortPaired:
         # RECONNECT ----------------
         self.victim.disconnect()
 
-        assert self.victim._EMULATOR.isRunning() is False
+        assert self.victim._EMULATOR__INST.isRunning() is False
         assert self.victim.connect(_raise=False)
-        assert self.victim._EMULATOR.isRunning() is True
+        assert self.victim._EMULATOR__INST.isRunning() is True
 
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
@@ -210,14 +210,14 @@ class Test__SerialClient_Emulated:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__reconnect(self):
-        assert self.victim._EMULATOR.isRunning() is True
+        assert self.victim._EMULATOR__INST.isRunning() is True
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
         self.victim.disconnect()
-        assert self.victim._EMULATOR.isRunning() is False
+        assert self.victim._EMULATOR__INST.isRunning() is False
 
         self.victim.connect()
-        assert self.victim._EMULATOR.isRunning() is True
+        assert self.victim._EMULATOR__INST.isRunning() is True
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
 
