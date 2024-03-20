@@ -301,7 +301,7 @@ class SerialServer_Base(QThread):
         """
         ALWAYS WAIT IT BEFORE START EXPLUATATION!
         """
-        self.logger.debug("touch")
+        self.logger.debug("")
 
         while not self.CYCLE_ACTIVE:
             time.sleep(0.5)
@@ -388,7 +388,7 @@ class SerialServer_Base(QThread):
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
         _formatter = logging.Formatter(
-            '%(asctime)s[%(levelname)s](%(name)s(%(filename)s).%(funcName)s/thread%(thread)s(line%(lineno)d)%(msg)s')
+            '%(asctime)s[%(levelname)s/thread%(thread)s]%(name)s(%(filename)s).%(funcName)s(line%(lineno)d)%(msg)s')
 
         # _handler_file = logging.FileHandler(f"SerialServer_Base{datetime.datetime.now()}.log")
         _handler_file = logging.FileHandler(f"SerialServer_Base.log")
@@ -405,7 +405,7 @@ class SerialServer_Base(QThread):
 
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
-        self.logger.debug("touch")
+        self.logger.debug("")
 
         if self.CYCLE_ACTIVE:
             # just for sure
@@ -425,10 +425,10 @@ class SerialServer_Base(QThread):
             # self._execute_line("hello")
             self.SERIAL_CLIENT._write_line(self.HELLO_MSG)
 
-        self.cycle()
+        self._cycle__activate()
 
-    def cycle(self) -> Never:
-        self.logger.debug("touch")
+    def _cycle__activate(self) -> Never:
+        self.logger.debug("")
 
         while True:
             self.CYCLE_ACTIVE = True
@@ -442,28 +442,30 @@ class SerialServer_Base(QThread):
                 self._execute_line(line)
 
     def connect(self) -> None:
-        self.logger.debug("touch")
+        self.logger.debug("")
 
         # if not self.isRunning():
         self.start()
         self.wait__cycle_active()
 
     def disconnect(self):
-        self.logger.debug("touch")
+        self.logger.debug("")
 
-        self.SERIAL_CLIENT.disconnect()
         self.terminate()
-        self.CYCLE_ACTIVE = False
+        # self.SERIAL_CLIENT.disconnect()
+        # self.CYCLE_ACTIVE = False
 
     def terminate(self):
-        self.logger.debug("touch")
+        self.SERIAL_CLIENT.disconnect()
 
-        super().terminate()
+        if self.isRunning():
+            self.logger.debug("")
+            super().terminate()
         self.CYCLE_ACTIVE = False
 
     # -----------------------------------------------------------------------------------------------------------------
     def _execute_line(self, line: str) -> bool:
-        self.logger.debug("touch")
+        self.logger.debug("")
 
         line_parsed = LineParsed(line, _prefix_expected=self.SERIAL_CLIENT.PREFIX)
         cmd_result = self._cmd__(line_parsed)
@@ -477,7 +479,7 @@ class SerialServer_Base(QThread):
 
     # CMD - ENTRY POINT -----------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        self.logger.debug("touch")
+        self.logger.debug("")
 
         meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))

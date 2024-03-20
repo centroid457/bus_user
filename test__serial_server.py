@@ -353,6 +353,7 @@ class Test__SerialServer_NoConnection:
             "set", "get",
             "run",
             "hello", "help", "echo",
+            "upper", "lower",
 
             "cmd", "cmd_no_line"
         }

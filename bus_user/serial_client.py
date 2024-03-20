@@ -257,7 +257,7 @@ class SerialClient:
 
             else:
                 if self._SERIAL.is_open:
-                    self.emulator_start(_dont_start_emu)
+                    # self.emulator_start(_dont_start_emu)
                     return True
 
             try:
@@ -405,8 +405,8 @@ class SerialClient:
         """
 
     def address__answer_validation__shorted(self) -> Union[bool, NoReturn]:
-        LOAD = "CHECK_SHORTED"
-        return self.write_read_line_last(LOAD) == LOAD
+        load = "EXPECT_ANSWER__SHORTED"
+        return self.write_read_line_last(load) == load
 
     # DETECT PORTS ====================================================================================================
     pass
@@ -572,7 +572,7 @@ class SerialClient:
             return SerialClient.ADDRESSES__PAIRED
 
         # WORK ----------------------------------------------
-        echo_load = "ECHO_LOAD"
+        load = "EXPECT_ANSWER__PAIRED"
         result = []
         instances_free = []
         for address in cls.addresses_system__detect():
@@ -582,9 +582,9 @@ class SerialClient:
 
         while instances_free:
             main = instances_free.pop(0)
-            main._write_line(echo_load)
+            main._write_line(load)
             for index, slave in enumerate(instances_free):
-                if slave.read_line(_timeout=0.3) == echo_load:
+                if slave.read_line(_timeout=0.3) == load:
                     result.append((main.ADDRESS, slave.ADDRESS))
                     slave.disconnect()
                     instances_free.pop(index)
