@@ -370,6 +370,11 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("echo 123")) == "echo 123"
         assert victim._cmd__(LineParsed("echo HELLO")) == "echo HELLO"
 
+    def test__cmd__upper_lower(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("upper HELLO")) == "UPPER HELLO"
+        assert victim._cmd__(LineParsed("lower HELLO")) == "lower hello"
+
     def test__GET__single(self):
         victim = self.Victim()
         assert victim._cmd__(LineParsed("hello123")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM

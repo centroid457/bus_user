@@ -79,7 +79,13 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialClient] try fix start_emu",
+
+
+
+
+
+
+        "[SerialServer] add cmd__upper/lower",
     ]
 
     # FINALIZE -----------------------------------------------

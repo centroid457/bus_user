@@ -696,6 +696,13 @@ class SerialServer_Example(SerialServer_Base):
         "VARIANT": Value_FromVariants(220, variants=[220, 380]),
     }
 
+    def cmd__upper(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        # usefull for tests
+        return line_parsed.ORIGINAL.upper()
+
+    def cmd__lower(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        return line_parsed.ORIGINAL.lower()
+
     def cmd__cmd(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # NOTE: NONE is equivalent for SUCCESS
         # do smth
