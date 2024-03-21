@@ -71,7 +71,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 16)
+    VERSION: Tuple[int, int, int] = (0, 2, 17)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -79,7 +79,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerialServer] add connect__validation",
+        ["[SerialClient]",
+        "add Exx_SerialAddress_AlreadyOpened_InOtherObject",
+        "ref connect",
+         ]
     ]
 
     # FINALIZE -----------------------------------------------

@@ -11,6 +11,12 @@
 ********************************************************************************
 ## NEWS
 
+0.2.17 (2024/03/21 13:11:14)
+------------------------------
+- [SerialClient]:  
+	- add Exx_SerialAddress_AlreadyOpened_InOtherObject  
+	- ref connect  
+
 0.2.16 (2024/03/21 12:05:32)
 ------------------------------
 - [SerialServer] add connect__validation  
