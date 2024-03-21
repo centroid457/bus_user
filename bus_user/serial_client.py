@@ -159,6 +159,7 @@ class SerialClient:
     _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
+    CONNECTED: Optional[bool] = None
     history: HistoryIO = None
     _SERIAL: Serial
 
@@ -211,6 +212,7 @@ class SerialClient:
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
+        self.CONNECTED = False
         try:
             self._SERIAL.close()
         except:
@@ -271,16 +273,6 @@ class SerialClient:
         if need_open:
             try:
                 self._SERIAL.open()
-
-                self.ADDRESS = self._SERIAL.port
-                if not _soft_connection:
-                    self.emulator_start()
-                    if not self.connect__validation():
-                        self.disconnect()
-                        return False
-
-                self.cmd_prefix__set()
-
             except Exception as _exx:
                 if not _silent:
                     self.msg_log(f"{_exx!r}")
@@ -319,6 +311,15 @@ class SerialClient:
             msg = f"[OK] connected {self._SERIAL}"
             self.msg_log(msg)
 
+        self.ADDRESS = self._SERIAL.port
+        if not _soft_connection:
+            self.emulator_start()
+            if not self.connect__validation():
+                self.disconnect()
+                return False
+
+        self.cmd_prefix__set()
+        self.CONNECTED = True
         return True
 
     def connect__validation(self) -> bool:
