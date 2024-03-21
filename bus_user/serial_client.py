@@ -307,7 +307,13 @@ class SerialClient:
 
         self.emulator_start(_dont_start_emu)
 
-        self._clear_buffer_read()
+        if not self.connect__validation():
+            self.disconnect()
+            return False
+
+        return True
+
+    def connect__validation(self) -> bool:
         return True
 
     def emulator_start(self, _dont_start_emu: bool = None) -> None:
