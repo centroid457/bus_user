@@ -44,6 +44,11 @@ class Exx_SerialAddress_AlreadyOpened(Exception):
     """
     pass
 
+class Exx_SerialAddress_AlreadyOpened_InOtherObject(Exception):
+    """
+    SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
+    """
+    pass
 
 class Exx_SerialAddress_OtherError(Exception):
     """
@@ -225,6 +230,7 @@ class SerialClient:
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
+        result = None
 
         # SETTINGS ---------------------------------
         if _raise is None:
@@ -232,6 +238,7 @@ class SerialClient:
 
         address = address or self.ADDRESS
 
+        # AUTOAPPLY ---------------------------------
         if address is None:
             msg = Exx_SerialAddress_NotConfigured
             exx = Exx_SerialAddress_NotConfigured()
@@ -244,24 +251,30 @@ class SerialClient:
         elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
             return self._address_apply__first_free__paired_for_emu()
 
-        elif isinstance(address, str):
-            # CHANGE PORT OR USE SAME ---------------------------------
-            if self._SERIAL.port != address:
-                if self._SERIAL.is_open:
-                    self._SERIAL.close()
-                self._SERIAL.port = address
-                if self._SERIAL.is_open:
-                    self._SERIAL.port = None
-                    # this is Attempt to connect to already opened port
-                    return False
+        # could_be_open ==========================================================
+        # CHANGE PORT OR USE SAME ---------------------------------
+        need_open = True
+        if self._SERIAL.port != address:
+            if self._SERIAL.is_open:
+                self._SERIAL.close()
+            self._SERIAL.port = address
+            if self._SERIAL.is_open:
+                self._SERIAL.port = None
+                msg = f"[ERROR] Attempt to connect to already opened port IN OTHER OBJECT {self._SERIAL}"
+                exx = Exx_SerialAddress_AlreadyOpened_InOtherObject(msg)
 
-            else:
-                if self._SERIAL.is_open:
-                    # self.emulator_start(_dont_start_emu)
-                    return True
+                need_open = False
+                result = False
+        else:
+            if self._SERIAL.is_open:
+                need_open = False
+                result = True
 
+        # Try OPEN ===================================================================
+        if need_open:
             try:
                 self._SERIAL.open()
+                result = True
             except Exception as _exx:
                 if not _silent:
                     self.msg_log(f"{_exx!r}")
@@ -300,30 +313,27 @@ class SerialClient:
             msg = f"[OK] connected {self._SERIAL}"
             self.msg_log(msg)
 
-        self.cmd_prefix__set()
-        # ObjectInfo(self._SERIAL, log_iter=True).print()
-        # exit()
         self.ADDRESS = self._SERIAL.port
 
-        self.emulator_start(_dont_start_emu)
+        if not _dont_start_emu:
+            self.emulator_start()
+            if not self.connect__validation():
+                self.disconnect()
+                return False
 
-        if not self.connect__validation():
-            self.disconnect()
-            return False
-
+        self.cmd_prefix__set()
         return True
 
     def connect__validation(self) -> bool:
         return True
 
-    def emulator_start(self, _dont_start_emu: bool = None) -> None:
-        if not _dont_start_emu:
-            if self._EMULATOR__INST and self._EMULATOR__START:
-                pair_used = self.addresses_paired__get_used()
-                if pair_used:
-                    self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
-                    self._EMULATOR__INST.connect()
-                    self._clear_buffer_read()
+    def emulator_start(self) -> None:
+        if self._EMULATOR__INST and self._EMULATOR__START:
+            pair_used = self.addresses_paired__get_used()
+            if pair_used:
+                self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
+                self._EMULATOR__INST.connect()
+                self._clear_buffer_read()
 
     # ADDRESS =========================================================================================================
     pass

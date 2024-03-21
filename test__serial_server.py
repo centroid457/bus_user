@@ -561,10 +561,6 @@ class Test_SerialServer_WithConnection:
     Victim: Type[SerialClient] = type("Victim", (SerialClient,), {})
     victim: SerialClient = None
 
-    VictimEmu: Type[SerialServer_Example] = type("Victim", (SerialServer_Example,), {})
-    victim_emu: SerialServer_Example = None
-
-
     @classmethod
     def setup_class(cls):
         if cls.Victim.addresses_paired__count() < 1:
@@ -572,11 +568,8 @@ class Test_SerialServer_WithConnection:
             print(msg)
             raise Exception(msg)
 
-        cls.victim_emu = cls.VictimEmu()
-        cls.victim_emu.HELLO_MSG__SEND_ON_START = False
-
         cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-        cls.Victim._EMULATOR__INST = cls.victim_emu
+        cls.Victim._EMULATOR__CLS = SerialServer_Example
         cls.Victim._EMULATOR__START = True
 
         cls.victim = cls.Victim()
@@ -598,6 +591,48 @@ class Test_SerialServer_WithConnection:
         assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR__INST.HELLO_MSG
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
         assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+        assert self.victim.write_read_line_last("upper hello") == "UPPER HELLO"
+
+
+# =====================================================================================================================
+class Test_SerialServer_WithConnection__CONN_VALIDATION:
+    @classmethod
+    def setup_class(cls):
+        class Victim(SerialClient):
+            def connect__validation(self) -> bool:
+                return self.UPPER("hello") == "UPPER HELLO"
+
+        cls.Victim = Victim
+
+        if cls.Victim.addresses_paired__count() < 1:
+            msg = f"[ERROR] need connect TWO SerialPorts"
+            print(msg)
+            raise Exception(msg)
+
+        cls.Victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        cls.Victim._EMULATOR__CLS = SerialServer_Example
+        cls.Victim._EMULATOR__START = True
+
+        cls.victim = cls.Victim()
+        cls.victim.connect()
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim:
+            cls.victim.disconnect()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__1(self):
+        assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR__INST.HELLO_MSG
+        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+        # assert self.victim.write_read_line_last("upper hello") == "UPPER HELLO"
 
 
 # =====================================================================================================================
