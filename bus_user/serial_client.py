@@ -226,11 +226,10 @@ class SerialClient:
             address: Optional[str] = None,
             _raise: Optional[bool] = None,
             _silent: Optional[bool] = None,
-            _dont_start_emu: bool = None    # specially keep ability to connect without Emu on cls main perpose (search ports)!
+            _soft_connection: bool = None    # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
-        result = None
 
         # SETTINGS ---------------------------------
         if _raise is None:
@@ -251,7 +250,7 @@ class SerialClient:
         elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
             return self._address_apply__first_free__paired_for_emu()
 
-        # could_be_open ==========================================================
+        # need_open ==========================================================
         # CHANGE PORT OR USE SAME ---------------------------------
         need_open = True
         if self._SERIAL.port != address:
@@ -264,17 +263,24 @@ class SerialClient:
                 exx = Exx_SerialAddress_AlreadyOpened_InOtherObject(msg)
 
                 need_open = False
-                result = False
         else:
             if self._SERIAL.is_open:
                 need_open = False
-                result = True
 
         # Try OPEN ===================================================================
         if need_open:
             try:
                 self._SERIAL.open()
-                result = True
+
+                self.ADDRESS = self._SERIAL.port
+                if not _soft_connection:
+                    self.emulator_start()
+                    if not self.connect__validation():
+                        self.disconnect()
+                        return False
+
+                self.cmd_prefix__set()
+
             except Exception as _exx:
                 if not _silent:
                     self.msg_log(f"{_exx!r}")
@@ -313,15 +319,6 @@ class SerialClient:
             msg = f"[OK] connected {self._SERIAL}"
             self.msg_log(msg)
 
-        self.ADDRESS = self._SERIAL.port
-
-        if not _dont_start_emu:
-            self.emulator_start()
-            if not self.connect__validation():
-                self.disconnect()
-                return False
-
-        self.cmd_prefix__set()
         return True
 
     def connect__validation(self) -> bool:
@@ -358,7 +355,7 @@ class SerialClient:
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         for address in self.addresses_shorted__detect():
-            if self.connect(address=address, _raise=False, _dont_start_emu=True):
+            if self.connect(address=address, _raise=False, _soft_connection=True):
                 return True
 
         # FINISH -------------
@@ -435,7 +432,7 @@ class SerialClient:
 
     def address__check_exists(self) -> bool:
         try:
-            self.connect(_raise=True, _silent=True, _dont_start_emu=True)
+            self.connect(_raise=True, _silent=True, _soft_connection=True)
             self.disconnect()
         except Exx_SerialAddress_NotExists:
             return False
@@ -571,7 +568,7 @@ class SerialClient:
         result = []
         for address in cls.addresses_system__detect():
             obj = cls()
-            if obj.connect(address=address, _raise=False, _dont_start_emu=True):
+            if obj.connect(address=address, _raise=False, _soft_connection=True):
                 if obj.address__answer_validation__shorted():
                     result.append(address)
                 obj.disconnect()
@@ -593,7 +590,7 @@ class SerialClient:
         instances_free = []
         for address in cls.addresses_system__detect():
             instance = cls(address)
-            if instance.connect(_raise=False, _dont_start_emu=True):
+            if instance.connect(_raise=False, _soft_connection=True):
                 instances_free.append(instance)
 
         while instances_free:
