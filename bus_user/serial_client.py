@@ -331,6 +331,7 @@ class SerialClient:
             if pair_used:
                 self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
                 self._EMULATOR__INST.connect()
+                # self._EMULATOR__INST.wait__cycle_active()
                 self._clear_buffer_read()
 
     # ADDRESS =========================================================================================================
