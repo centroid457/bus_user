@@ -460,8 +460,8 @@ class SerialServer_Base(QThread):
         # self.CYCLE_ACTIVE = False
 
     def terminate(self):
-        if self.SERIAL_CLIENT.CONNECTED:
-            self.SERIAL_CLIENT.send__(self.ANSWER.EXIT)
+        # if self.SERIAL_CLIENT.CONNECTED:
+        #     self.SERIAL_CLIENT.send__(self.ANSWER.EXIT)
 
         self.SERIAL_CLIENT.disconnect()
 
@@ -654,8 +654,9 @@ class SerialServer_Base(QThread):
         meth_cmd = getattr(self, meth_name__original.VALUE)
         return meth_cmd(line_parsed)
 
-    def cmd__exit(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        self.disconnect()
+    # def cmd__exit(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+    #     self.disconnect()
+    #     exit()
 
 
 # =====================================================================================================================
