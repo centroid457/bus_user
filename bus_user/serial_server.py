@@ -206,6 +206,8 @@ class AnswerVariants:
     ERR__SYNTAX: str = "ERR__SYNTAX"
     ERR__PARAM_CALLING: str = "ERR__PARAM_CALLING"
 
+    EXIT: str = "EXIT"
+
 
 class LineParsed:
     """
@@ -458,6 +460,9 @@ class SerialServer_Base(QThread):
         # self.CYCLE_ACTIVE = False
 
     def terminate(self):
+        if self.SERIAL_CLIENT.CONNECTED:
+            self.SERIAL_CLIENT.send__(self.ANSWER.EXIT)
+
         self.SERIAL_CLIENT.disconnect()
 
         if self.isRunning():
@@ -648,6 +653,9 @@ class SerialServer_Base(QThread):
 
         meth_cmd = getattr(self, meth_name__original.VALUE)
         return meth_cmd(line_parsed)
+
+    def cmd__exit(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        self.disconnect()
 
 
 # =====================================================================================================================
