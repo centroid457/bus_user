@@ -124,7 +124,6 @@ class SerialClient:
         - CP2102
         - CH341T
     """
-    # TODO: use thread!???
     pass
     pass
     pass
