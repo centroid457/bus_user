@@ -347,15 +347,21 @@ class Test__SerialServer_NoConnection:
     # def teardown_method(self, method):
     #     pass
     # -----------------------------------------------------------------------------------------------------------------
+    def test__cmd__script(self):
+        victim = self.Victim()
+        assert victim._cmd__(LineParsed("script1")) == AnswerVariants.ERR__NAME_CMD_OR_PARAM
+        assert victim._cmd__(LineParsed("script script1")) == AnswerVariants.SUCCESS
+
     def test__LISTS(self):
         victim = self.Victim()
         assert set(victim._LIST__CMDS) == {
             "set", "get",
-            "run",
             "hello", "help", "echo",
             "upper", "lower",
 
-            "cmd", "cmd_no_line"
+            "cmd", "cmd_no_line",
+
+            "script",
         }
         assert set(victim._LIST__SCRIPTS) == {
             "script1",
