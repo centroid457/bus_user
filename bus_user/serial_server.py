@@ -291,8 +291,8 @@ class SerialServer_Base(QThread):
     ANSWER: Type[AnswerVariants] = AnswerVariants
 
     # AUX -----------------------------------------------------
-    _GETATTR_STARTSWITH__CMD: str = "cmd__"
-    _GETATTR_STARTSWITH__SCRIPT: str = "script__"
+    _STARTSWITH__CMD: str = "cmd__"
+    _STARTSWITH__SCRIPT: str = "script__"
 
     _LIST__CMDS: List[str]
     _LIST__SCRIPTS: List[str]
@@ -381,10 +381,10 @@ class SerialServer_Base(QThread):
 
         for name in dir(self):
             name = name.lower()
-            if name.startswith(self._GETATTR_STARTSWITH__CMD):
-                self._LIST__CMDS.append(name.replace(self._GETATTR_STARTSWITH__CMD, "", 1))
-            if name.startswith(self._GETATTR_STARTSWITH__SCRIPT):
-                self._LIST__SCRIPTS.append(name.replace(self._GETATTR_STARTSWITH__SCRIPT, "", 1))
+            if name.startswith(self._STARTSWITH__CMD):
+                self._LIST__CMDS.append(name.replace(self._STARTSWITH__CMD, "", 1))
+            if name.startswith(self._STARTSWITH__SCRIPT):
+                self._LIST__SCRIPTS.append(name.replace(self._STARTSWITH__SCRIPT, "", 1))
 
     def _init__logger(self) -> None:
         logger = logging.getLogger()
@@ -488,7 +488,7 @@ class SerialServer_Base(QThread):
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         self.logger.debug("")
 
-        meth_name__expected = f"{self._GETATTR_STARTSWITH__CMD}{line_parsed.CMD}"
+        meth_name__expected = f"{self._STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         # GET METHOD --------------------
         if meth_name__original:
@@ -652,7 +652,7 @@ class SerialServer_Base(QThread):
             return self.ANSWER.ERR__ARGS_VALIDATION
 
         # WORK --------------------------------
-        meth_name__expected = f"{self._GETATTR_STARTSWITH__SCRIPT}{line_parsed.ARGS[0]}"
+        meth_name__expected = f"{self._STARTSWITH__SCRIPT}{line_parsed.ARGS[0]}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
