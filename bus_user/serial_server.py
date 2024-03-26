@@ -492,16 +492,16 @@ class SerialServer_Base(QThread):
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         # GET METHOD --------------------
         if meth_name__original:
-            meth_cmd = getattr(self, meth_name__original.VALUE)
+            meth = getattr(self, meth_name__original.VALUE)
         else:
-            meth_cmd = self._cmd__param_as_cmd
+            meth = self._cmd__param_as_cmd
 
         # EXEC METHOD --------------------
         try:
-            result = meth_cmd(line_parsed)
+            result = meth(line_parsed)
         except TypeError as exx:
             try:
-                result = meth_cmd()
+                result = meth()
             except:
                 result = self.ANSWER.FAIL
         except:
@@ -640,7 +640,13 @@ class SerialServer_Base(QThread):
         return line_parsed.ORIGINAL
 
     # CMDS - SCRIPTS --------------------------------------------------------------------------------------------------
-    def cmd__run(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+    def cmd__script(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
+        """
+        it is as template! you can create/use your awn script-run cmd!
+        """
+        return self._script__(line_parsed)
+
+    def _script__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # ERR__ARGS_VALIDATION --------------------------------
         if line_parsed.ARGS_count() == 0:
             return self.ANSWER.ERR__ARGS_VALIDATION
@@ -651,8 +657,22 @@ class SerialServer_Base(QThread):
         if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
 
-        meth_cmd = getattr(self, meth_name__original.VALUE)
-        return meth_cmd(line_parsed)
+        meth = getattr(self, meth_name__original.VALUE)
+
+        # EXEC METHOD --------------------
+        try:
+            result = meth(line_parsed)
+        except TypeError as exx:
+            try:
+                result = meth()
+            except:
+                result = self.ANSWER.FAIL
+        except:
+            result = self.ANSWER.FAIL
+
+        if result is None:
+            result = self.ANSWER.SUCCESS
+        return result
 
     # def cmd__exit(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
     #     self.disconnect()
