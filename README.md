@@ -4,7 +4,10 @@
 work with equipment over buses like Serial/i2c/... as client and server
 
 ## DESCRIPTION_LONG
-### !. MOST APPROPRIATE COMMAND PROTOCOL
+###
+NOTE: IT SEEMS THIS IS OLD DATA! see tests for actual usage!
+    
+!. MOST APPROPRIATE COMMAND PROTOCOL
 other protocols mot recommended
 
 1. all cmds must be as params (preferred) in equipment or as special command

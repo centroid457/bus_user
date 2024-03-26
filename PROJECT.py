@@ -29,7 +29,10 @@ class PROJECT:
     # add DOUBLE SPACE at the end of all lines! for correct representation in MD-viewers
     DESCRIPTION_SHORT: str = "work with equipment over buses like Serial/i2c/... as client and server"
     DESCRIPTION_LONG: str = """
-    ### !. MOST APPROPRIATE COMMAND PROTOCOL
+    ###
+NOTE: IT SEEMS THIS IS OLD DATA! see tests for actual usage!
+    
+!. MOST APPROPRIATE COMMAND PROTOCOL
 other protocols mot recommended
 
 1. all cmds must be as params (preferred) in equipment or as special command
@@ -71,7 +74,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 19)
+    VERSION: Tuple[int, int, int] = (0, 2, 20)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -79,15 +82,9 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-
-
-
-
-
-
-
         ["[SerialServer]",
             "try add cmd__exit - and finally delete",
+            "create cmd__script instead of cmd__run!!!"
          ]
     ]
 
