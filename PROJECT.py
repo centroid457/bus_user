@@ -74,7 +74,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 21)
+    VERSION: Tuple[int, int, int] = (0, 2, 22)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -82,7 +82,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "just zero increase version"
+        "[linux] fix names returned from detect_system",
     ]
 
     # FINALIZE -----------------------------------------------
