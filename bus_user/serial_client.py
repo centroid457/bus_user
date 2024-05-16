@@ -44,11 +44,13 @@ class Exx_SerialAddress_AlreadyOpened(Exception):
     """
     pass
 
+
 class Exx_SerialAddress_AlreadyOpened_InOtherObject(Exception):
     """
     SerialException("could not open port 'COM7': PermissionError(13, 'Отказано в доступе.', None, 5)")
     """
     pass
+
 
 class Exx_SerialAddress_OtherError(Exception):
     """
