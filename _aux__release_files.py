@@ -9,7 +9,8 @@ from typing import *
 # =====================================================================================================================
 # VERSION = (0, 0, 1)   # keep russian lang by using utf-8
 # VERSION = (0, 0, 2)   # reuse utf8+ del all capitalizing()
-VERSION = (0, 0, 3)   # detach dependence from importing PRJ
+# VERSION = (0, 0, 3)   # detach dependence from importing PRJ
+VERSION = (0, 0, 4)   # use LINE_CODE_QUATATION for examples
 
 
 # =====================================================================================================================
@@ -85,9 +86,7 @@ class ReleaseReadme(ReleaseFileBase):
     dirpath_examples: pathlib.Path = pathlib.Path(DIRNAME_EXAMPLES)
 
     SEPARATOR_PATTERN = r'(\**\n+)*## USAGE EXAMPLES'
-
-    LINE_FILE_HEADER: str = "```python"
-    LINE_FILE_FOOTER: str = "```"
+    LINE_CODE_QUATATION: str = "```"
 
     # GENERATE ========================================================================================================
     def generate(self) -> None:
@@ -173,9 +172,9 @@ class ReleaseReadme(ReleaseFileBase):
             LINES = [
                 self.LINE_SEPARATOR_PART,
                 f"### {index}. {file.name}",
-                self.LINE_FILE_HEADER,
+                self.LINE_CODE_QUATATION + ('python' if file.name.endswith(".py") else ''),
                 file.read_text().strip(),
-                self.LINE_FILE_FOOTER,
+                self.LINE_CODE_QUATATION,
                 f"",
             ]
             self._file_append_lines(LINES)

@@ -1,3 +1,6 @@
+REM # VERSION = (0, 0, 1)   # add --verbose if fail
+REM -----------------------------------------------
+
 echo off
 cls
 echo UPLOAD TO PYPI?

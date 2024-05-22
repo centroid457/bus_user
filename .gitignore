@@ -3,6 +3,7 @@
 # VERSION = (0, 0, 2)#add BACKUPS + start HELP
 # VERSION = (0, 0, 3)#add DrawIo *.dtmp
 # VERSION = (0, 0, 4)#add LOGS
+# VERSION = (0, 0, 5)#add LOG.* for RotatingFileHandler
 
 # HELP ---------------------
 # 1=NESTING
@@ -47,6 +48,7 @@ dist/
 
 # LOGS ---------------------
 *.log
+*.log.*
 
 # some other ---------------
 htmlcov/

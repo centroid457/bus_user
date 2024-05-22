@@ -74,7 +74,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 22)
+    VERSION: Tuple[int, int, int] = (0, 2, 23)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
     ]
@@ -82,7 +82,8 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[linux] fix names returned from detect_system",
+        "[__INIT__.py] fix import",
+        "apply last pypi template",
     ]
 
     # FINALIZE -----------------------------------------------
