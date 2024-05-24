@@ -116,14 +116,14 @@
 
 0.2.1 (2024/03/14 15:03:50)
 ------------------------------
-- [SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!  
+- [SerialClient] place all important lists ADDRESSES__SYSTEM/PAIRED into base class(SerialClient)! so you can use Type__AddressAutoAcceptVariant.FIRST_PAIRED_0/1 in server!!!  
 
 0.2.0 (2024/03/14 14:46:27)
 ------------------------------
 - [SerialClient] BIG REF:  
 	- ref address as TYPE__ADDRESS with autoconnect  
 	- add lists ADDRESSES__SYSTEM/PAIRED  
-	- [AddressAutoAcceptVariant] add FIRST_SHORTED + FIRST_PAIRED_0/1  
+	- [Type__AddressAutoAcceptVariant] add FIRST_SHORTED + FIRST_PAIRED_0/1  
 
 0.1.13 (2024/03/13 16:17:31)
 ------------------------------
@@ -147,7 +147,7 @@
 
 0.1.8 (2024/03/06 15:45:15)
 ------------------------------
-- [SerialClient] separate AddressAutoAcceptVariant inn class +add AUTODETECT by func  
+- [SerialClient] separate Type__AddressAutoAcceptVariant inn class +add AUTODETECT by func  
 
 0.1.7 (2024/03/05 16:59:07)
 ------------------------------

@@ -73,21 +73,25 @@ class Exx_SerialRead_FailPattern(Exception):
 class Exx_SerialRead_FailDecoding(Exception):
     """
     REASON
-    ======
+    ------
     some serial devices (depends on microchips model) not always give correct reading bytes
+
+    SOLVATION
+    ---------
+    1. [BESTandONLY] just use other device on other appropriate microchip!
     """
 
 
 class Exx_SerialPL2303IncorrectDriver(Exception):
     """
     REASON
-    ======
+    ------
     typical for windows
 
     SOLVATION
-    ===========
-    install last drivers
-    manually select other more OLD driver in manager (see from PC)
+    ---------
+    1. [BEST] just use other device on other microchip
+    2. manually select other more OLD driver in driver/device manager
         version 3.3.2.105/27.10.2008 - is good!
         version 3.8.22.0/22.02.2023 - is not good!!!
     """
@@ -98,20 +102,20 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 TYPE__RW_ANSWER = Union[None, str, List[str]]
 
 
-class TypeWrReturn(Enum):
+class Type__WrReturn(Enum):
     ALL_OUTPUT = auto()
     HISTORY_IO = auto()
     DICT = auto()
 
 
-class AddressAutoAcceptVariant(Enum):
+class Type__AddressAutoAcceptVariant(Enum):
     FIRST_FREE = auto()
     FIRST_FREE__SHORTED = auto()
     FIRST_FREE__ANSWER_VALID = auto()
     FIRST_FREE__PAIRED_FOR_EMU = auto()
 
 
-TYPE__ADDRESS = Union[None, AddressAutoAcceptVariant, str]
+TYPE__ADDRESS = Union[None, Type__AddressAutoAcceptVariant, str]
 
 
 # =====================================================================================================================
@@ -267,13 +271,13 @@ class SerialClient:
         if address is None:
             msg = Exx_SerialAddress_NotConfigured
             exx = Exx_SerialAddress_NotConfigured()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE:
+        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE:
             return self._address_apply__first_free()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
+        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
             return self._address_apply__first_free__shorted()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
+        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
             return self._address_apply__first_free__answer_valid()
-        elif address == AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
+        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
             return self._address_apply__first_free__paired_for_emu()
 
         # need_open ==========================================================

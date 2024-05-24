@@ -20,7 +20,7 @@ class Test__Shorted_validateModel_InfinitRW:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
         cls.Victim = Victim
         cls.victim = cls.Victim()

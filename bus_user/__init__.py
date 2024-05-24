@@ -28,8 +28,8 @@ from .serial_client import (
     TYPE__ADDRESS,
     TYPE__RW_ANSWER,
 
-    TypeWrReturn,
-    AddressAutoAcceptVariant,
+    Type__WrReturn,
+    Type__AddressAutoAcceptVariant,
 
     # EXX
     Exx_SerialAddress_NotConfigured,

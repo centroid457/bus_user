@@ -65,7 +65,7 @@ class Test__Emulated:
 
     @pytest.mark.skip
     def test__old(self):
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
         self.victim._EMULATOR__INST = SerialServer_Base()
         self.victim._EMULATOR__START = True
 

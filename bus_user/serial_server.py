@@ -1,4 +1,4 @@
-from .serial_client import SerialClient, AddressAutoAcceptVariant, TYPE__ADDRESS
+from .serial_client import SerialClient, Type__AddressAutoAcceptVariant, TYPE__ADDRESS
 
 from typing import *
 import time
@@ -373,7 +373,7 @@ class SerialServer_Base(QThread):
         if self.ADDRESS:
             self.SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if not self.SERIAL_CLIENT.ADDRESS:
-            self.SERIAL_CLIENT.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU! as default!
+            self.SERIAL_CLIENT.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU! as default!
 
     def _init__lists(self) -> None:
         self._LIST__CMDS = []

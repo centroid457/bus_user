@@ -56,7 +56,7 @@ other protocols mot recommended
 
         ["Serial",
             "Client+Server",
-            "connect with AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID",
+            "connect with Type__AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID",
             "set/get params by SlashOrSpacePath addressing",
             "handle BackSpace send manually from terminal",
          ],

@@ -19,7 +19,7 @@ class Test__Shorted:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 return self.write_read_line_last("echo") == "echo"
@@ -38,7 +38,7 @@ class Test__Shorted:
 
     def setup_method(self, method):
         if not isinstance(self.victim.ADDRESS, str):
-            self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
@@ -53,7 +53,7 @@ class Test__Shorted:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
         assert self.victim.connect(_raise=False)
 
     def test__ADDRESS__FIRST_SHORTED(self):
@@ -62,7 +62,7 @@ class Test__Shorted:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         assert self.victim.connect(_raise=False)
         assert self.victim.addresses_shorted__count() > 0
 
@@ -72,13 +72,13 @@ class Test__Shorted:
         self.victim.ADDRESS = None
         assert not self.victim.connect(_raise=False)
 
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
         assert self.victim.connect(_raise=False)
 
         # ==============
         self.victim.disconnect()
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 raise Exception()
 

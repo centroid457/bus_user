@@ -8,7 +8,7 @@ from object_info import ObjectInfo
 
 class DevEmulator(SerialServer_Example):
     pass
-    ADDRESS = AddressAutoAcceptVariant.FIRST_FREE   # FIXME: NOTE - be careful about connecting with shorted PORT! unplug it!
+    ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE   # FIXME: NOTE - be careful about connecting with shorted PORT! unplug it!
 
 
 emu = DevEmulator()
@@ -16,7 +16,7 @@ emu.start()
 
 
 # victim = SerialClient()
-# victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE
+# victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
 # victim.connect()
 #
 # # ObjectInfo(victim._SERIAL).print()

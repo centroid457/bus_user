@@ -19,7 +19,7 @@ class Test__Paired:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
             # def address__answer_validation(self) -> Union[bool, NoReturn]:
             #     return self.write_read_line_last("echo") == "echo"
 
@@ -36,7 +36,7 @@ class Test__Paired:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        self.victim.ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
         self.victim.connect()
 
     def teardown_method(self, method):
