@@ -85,7 +85,12 @@ other protocols mot recommended
 
 
 
-        "[serial] separate tests",
+
+
+        ["[serialClient]",
+            "separate tests",
+            "add address_paired__get",
+        ]
     ]
 
     # FINALIZE -----------------------------------------------

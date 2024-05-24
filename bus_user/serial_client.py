@@ -193,6 +193,21 @@ class SerialClient:
     def __del__(self):
         self.disconnect()
 
+    def address_paired__get(self) -> TYPE__ADDRESS:
+        if not self.ADDRESSES__PAIRED:
+            self.addresses_paired__detect()
+
+        if not isinstance(self.ADDRESS, str):
+            return
+
+        for pair in self.ADDRESSES__PAIRED:
+            if self.ADDRESS in pair:
+                addr1, addr2 = pair
+                if self.ADDRESS == addr1:
+                    return addr2
+                else:
+                    return addr1
+
     # MSG =============================================================================================================
     def msg_log(self, msg: str = None) -> None:
         msg = f"[{self._SERIAL.port}]{msg}"
@@ -313,6 +328,7 @@ class SerialClient:
             self.msg_log(msg)
 
         self.ADDRESS = self._SERIAL.port
+
         if not _soft_connection:
             self.emulator_start()
             if not self.connect__validation():
@@ -399,9 +415,8 @@ class SerialClient:
             1: (COM3, COM4),
         }
         """
-        for pair in self.addresses_paired__detect():
-            address = pair[0]
-            if self.connect(address=address, _raise=False):
+        for addr1, addr2 in self.addresses_paired__detect():
+            if self.connect(address=addr1, _raise=False):
                 return True
 
         # FINISH -------------
@@ -784,6 +799,8 @@ class SerialClient:
     ) -> bool:
         """
         just send data into bus!
+        usually we dont need just send without reading! so it useful for debugging
+
         :return: result of sent
 
         args/kwargs - used only for single line!!!
