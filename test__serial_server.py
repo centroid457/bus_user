@@ -260,21 +260,22 @@ class Test_SerialServer_WithConnection:
         cls.Victim._EMULATOR__START = True
 
         cls.victim = cls.Victim()
-        cls.victim.connect()
 
     @classmethod
     def teardown_class(cls):
         if cls.victim:
             cls.victim.disconnect()
 
-    def setup_method(self, method):
-        pass
-
-    def teardown_method(self, method):
-        pass
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
+        assert self.victim.connect()
+
         assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR__INST.HELLO_MSG
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
         assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM

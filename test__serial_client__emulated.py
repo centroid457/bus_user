@@ -92,4 +92,6 @@ class Test__Emulated:
         assert self.victim._EMULATOR__INST.isRunning() is True
 
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
+
+
 # =====================================================================================================================

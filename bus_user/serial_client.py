@@ -126,6 +126,8 @@ class SerialClient:
     1. use good COM-port adapters!!!
         some bites may be lost (usually on started byte) or added extra chars (usually to start and end of line)!!!
 
+        DECODING APPROPRIATE MODELS
+        ---------------------------
         =WRONG=
         - PROFILIC - often!
         - FTDI FT232RL - sometimes but less than on Profilic
