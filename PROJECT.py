@@ -82,8 +82,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[__INIT__.py] fix import",
-        "apply last pypi template",
+
+
+
+        "[serial] separate tests",
     ]
 
     # FINALIZE -----------------------------------------------
