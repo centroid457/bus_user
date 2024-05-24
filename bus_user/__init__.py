@@ -18,6 +18,7 @@
 # )
 # ---------------------------------------------------------------------------------------------------------------------
 from .history import HistoryIO
+from .line_parser import LineParsed
 from .values import (
     # BASE
     Value_NotPassed,
@@ -66,7 +67,6 @@ from .serial_server import (
 
     # AUX
     AnswerVariants,
-    LineParsed,
 
     # TYPES
     TYPE__CMD_RESULT,

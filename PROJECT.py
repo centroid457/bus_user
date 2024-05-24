@@ -90,6 +90,7 @@ other protocols mot recommended
         ["[serialClient]",
             "separate tests",
             "separate values+tests",
+            "separate ineParsed+tests",
             "add address_paired__get",
         ]
     ]
