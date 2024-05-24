@@ -12,7 +12,7 @@ from logger_aux import Logger
 from serial import Serial
 from serial.tools import list_ports
 
-from .history import HistoryIO
+from . import HistoryIO
 
 
 # =====================================================================================================================
@@ -112,8 +112,8 @@ class Type__WrReturn(Enum):
 class Type__AddressAutoAcceptVariant(Enum):
     FIRST_FREE = auto()
     FIRST_FREE__SHORTED = auto()
+    FIRST_FREE__PAIRED = auto()
     FIRST_FREE__ANSWER_VALID = auto()
-    FIRST_FREE__PAIRED_FOR_EMU = auto()
 
 
 TYPE__ADDRESS = Union[None, Type__AddressAutoAcceptVariant, str]
@@ -210,32 +210,13 @@ class SerialClient(Logger):
     def __del__(self):
         self.disconnect()
 
-    def address_paired__get(self) -> TYPE__ADDRESS:
-        if not self.ADDRESSES__PAIRED:
-            self.addresses_paired__detect()
-
-        if not isinstance(self.ADDRESS, str):
-            return
-
-        for pair in self.ADDRESSES__PAIRED:
-            if self.ADDRESS in pair:
-                addr1, addr2 = pair
-                if self.ADDRESS == addr1:
-                    return addr2
-                else:
-                    return addr1
-
     def check__connected(self) -> bool:
         try:
             return self._SERIAL.is_open
         except:
             return False
 
-    # MSG =============================================================================================================
-    def msg_log(self, msg: str = None) -> None:
-        msg = f"[{self._SERIAL.port}]{msg}"
-        print(msg)
-
+    # =================================================================================================================
     def cmd_prefix__set(self) -> None:
         """
         OVERWRITE IF NEED/USED!
@@ -265,8 +246,7 @@ class SerialClient(Logger):
             self,
             address: Optional[str] = None,
             _raise: Optional[bool] = None,
-            _silent: Optional[bool] = None,
-            _soft_connection: bool = None    # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
+            _touch_connection: bool | None = None    # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
@@ -275,11 +255,12 @@ class SerialClient(Logger):
         if _raise is None:
             _raise = self.RAISE_CONNECT
 
-        address = address or self.ADDRESS
+        if address is None:
+            address = self.ADDRESS
 
         # AUTOAPPLY ---------------------------------
         if address is None:
-            msg = Exx_SerialAddress_NotConfigured
+            msg = "Exx_SerialAddress_NotConfigured"
             exx = Exx_SerialAddress_NotConfigured()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE:
             return self._address_apply__first_free()
@@ -287,15 +268,18 @@ class SerialClient(Logger):
             return self._address_apply__first_free__shorted()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
             return self._address_apply__first_free__answer_valid()
-        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU:
+        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
             return self._address_apply__first_free__paired_for_emu()
 
         # need_open ==========================================================
         # CHANGE PORT OR USE SAME ---------------------------------
         need_open = True
         if self._SERIAL.port != address:
+            # close old
             if self._SERIAL.is_open:
                 self._SERIAL.close()
+
+            # set new
             self._SERIAL.port = address
             if self._SERIAL.is_open:
                 self._SERIAL.port = None
@@ -312,8 +296,8 @@ class SerialClient(Logger):
             try:
                 self._SERIAL.open()
             except Exception as _exx:
-                if not _silent:
-                    self.msg_log(f"{_exx!r}")
+                if not _touch_connection:
+                    self.LOGGER.error(f"[{self._SERIAL.port}]{_exx!r}")
 
                 if "FileNotFoundError" in str(_exx):
                     msg = f"[ERROR] PORT NOT EXISTS IN SYSTEM {self._SERIAL}"
@@ -336,8 +320,8 @@ class SerialClient(Logger):
         # FINISH -----------------------------------------------
         # FAIL -----------------------------
         if exx:
-            if not _silent:
-                self.msg_log(msg)
+            if not _touch_connection:
+                self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
 
             if _raise:
                 raise exx
@@ -345,13 +329,10 @@ class SerialClient(Logger):
                 return False
 
         # OK -----------------------------
-        if not _silent:
-            msg = f"[OK] connected {self._SERIAL}"
-            self.msg_log(msg)
-
         self.ADDRESS = self._SERIAL.port
 
-        if not _soft_connection:
+        if not _touch_connection:
+            self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected {self._SERIAL}")
             self.emulator_start()
             if not self.connect__validation():
                 self.disconnect()
@@ -361,6 +342,12 @@ class SerialClient(Logger):
         return True
 
     def connect__validation(self) -> bool:
+        """
+        DIFFERENCE
+        ----------
+        connect validation used always!
+        address validation used only in step of detecting address (after execution address would be set to exact string value)
+        """
         return True
 
     def emulator_start(self) -> None:
@@ -373,6 +360,9 @@ class SerialClient(Logger):
                 self._clear_buffer_read()
 
     # ADDRESS =========================================================================================================
+    """
+    THIS IS USED for applying by SIMPLE WAY just exact address! 
+    """
     pass
     pass
     pass
@@ -383,7 +373,7 @@ class SerialClient(Logger):
 
     def _address_apply__first_free(self) -> bool:
         for address in self.addresses_system__detect():
-            if self.connect(address=address, _raise=False):
+            if self.connect(address=address, _raise=False, _touch_connection=True):
                 return True
 
         msg = Exx_SerialAddresses_NoVacant
@@ -395,7 +385,7 @@ class SerialClient(Logger):
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         for address in self.addresses_shorted__detect():
-            if self.connect(address=address, _raise=False, _soft_connection=True):
+            if self.connect(address=address, _raise=False, _touch_connection=True):
                 return True
 
         # FINISH -------------
@@ -408,7 +398,7 @@ class SerialClient(Logger):
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         for address in self.addresses_system__detect():
-            if self.connect(address=address, _raise=False):
+            if self.connect(address=address, _raise=False, _touch_connection=True):
                 try:
                     if self.address__answer_validation():
                         return True
@@ -446,7 +436,7 @@ class SerialClient(Logger):
         print(msg)
 
     # -----------------------------------------------------------------------------------------------------------------
-    def address__answer_validation(self) -> Union[bool, NoReturn]:
+    def address__answer_validation(self) -> bool | None | NoReturn:
         """
         overwrite for you case!
         used to find exact device in all comport by some special logic like IDN/NAME value.
@@ -457,7 +447,7 @@ class SerialClient(Logger):
         3. raiseExx/NoReturn - equivalent as False!
         """
 
-    def address__answer_validation__shorted(self) -> Union[bool, NoReturn]:
+    def address__answer_validation__shorted(self) -> bool | None:
         load = "EXPECT_ANSWER__SHORTED"
         return self.write_read_line_last(load) == load
 
@@ -472,7 +462,7 @@ class SerialClient(Logger):
 
     def address__check_exists(self) -> bool:
         try:
-            self.connect(_raise=True, _silent=True, _soft_connection=True)
+            self.connect(_raise=True, _touch_connection=True)
             self.disconnect()
         except Exx_SerialAddress_NotExists:
             return False
@@ -608,7 +598,7 @@ class SerialClient(Logger):
         result = []
         for address in cls.addresses_system__detect():
             obj = cls()
-            if obj.connect(address=address, _raise=False, _soft_connection=True):
+            if obj.connect(address=address, _raise=False, _touch_connection=True):
                 if obj.address__answer_validation__shorted():
                     result.append(address)
                 obj.disconnect()
@@ -632,7 +622,7 @@ class SerialClient(Logger):
         addresses__system = cls.addresses_system__detect()
         for address in addresses__system:
             instance = cls(address)
-            if instance.connect(_raise=False, _soft_connection=True):
+            if instance.connect(_raise=False, _touch_connection=True):
                 instances_free.append(instance)
 
         while len(instances_free) > 1:
@@ -658,6 +648,21 @@ class SerialClient(Logger):
         for pair in self.addresses_paired__detect():
             if self._SERIAL.port in pair:
                 return pair
+
+    def address_paired__get(self) -> str | None:
+        if not self.ADDRESSES__PAIRED:
+            self.addresses_paired__detect()
+
+        if not isinstance(self.ADDRESS, str):
+            return
+
+        for pair in self.ADDRESSES__PAIRED:
+            if self.ADDRESS in pair:
+                addr1, addr2 = pair
+                if self.ADDRESS == addr1:
+                    return addr2
+                else:
+                    return addr1
 
     # COUNTS -----------------------------------------
     @classmethod
@@ -700,7 +705,7 @@ class SerialClient(Logger):
             if re.search(pattern, data, flags=re.IGNORECASE):
                 if _raise:
                     msg = f"[ERROR] match fail [{pattern=}/{data=}]"
-                    self.msg_log(msg)
+                    self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
                     raise Exx_SerialRead_FailPattern(msg)
                 else:
                     return True
@@ -823,7 +828,7 @@ class SerialClient(Logger):
             msg = f"[WARN]BLANK read_line={data}"
 
         if data:
-            self.msg_log(msg)
+            self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
 
         data = self._bytes_edition__apply(data)
         data = self._bytes_eol__clear(data)
@@ -871,13 +876,13 @@ class SerialClient(Logger):
 
         data_length = self._SERIAL.write(data)
         msg = f"[OK]write_line={data}/{data_length=}"
-        self.msg_log(msg)
+        self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
 
         if data_length > 0:
             return True
         else:
             msg = f"[ERROR] data not write"
-            self.msg_log(msg)
+            self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
             return False
 
     def write_read_line(

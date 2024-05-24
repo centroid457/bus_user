@@ -136,7 +136,7 @@ class SerialServer_Base(QThread):
         if self.ADDRESS:
             self.SERIAL_CLIENT.ADDRESS = self.ADDRESS
         if not self.SERIAL_CLIENT.ADDRESS:
-            self.SERIAL_CLIENT.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU   # here keep only FIRST_FREE__PAIRED_FOR_EMU! as default!
+            self.SERIAL_CLIENT.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED   # here keep only FIRST_FREE__PAIRED! as default!
 
     def _init__lists(self) -> None:
         self._LIST__CMDS = []

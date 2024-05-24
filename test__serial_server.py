@@ -255,7 +255,7 @@ class Test_SerialServer_WithConnection:
             print(msg)
             raise Exception(msg)
 
-        cls.Victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        cls.Victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
         cls.Victim._EMULATOR__CLS = SerialServer_Example
         cls.Victim._EMULATOR__START = True
 
@@ -297,7 +297,7 @@ class Test_SerialServer_WithConnection__CONN_VALIDATION:
             print(msg)
             raise Exception(msg)
 
-        cls.Victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+        cls.Victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
         cls.Victim._EMULATOR__CLS = SerialServer_Example
         cls.Victim._EMULATOR__START = True
 
