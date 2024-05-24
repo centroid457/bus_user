@@ -32,7 +32,7 @@ class Value_WithUnit:
     """
     used to keep separated value and measure unit
     """
-    values: Union[int, float] = 0
+    value: Union[int, float] = 0
     UNIT: str = ""
     SEPARATOR: str = ""
 
