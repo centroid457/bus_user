@@ -135,7 +135,7 @@ class SerialClient:
 
         =GOOD=
         - CH340 - no one error so far!
-        - CH341A (big universal) - no one error so far!
+        - CH341A (big universal) - no one error so far! more then steps about 50 minutes!!! tired of waiting
 
         =NOT TESTED= wait postage from Aliexpress - already get! need tests!!! use Test__Shorted_validateModel_InfinitRW!!!!
         - CH341T
@@ -405,7 +405,8 @@ class SerialClient:
                 try:
                     if self.address__answer_validation():
                         return True
-                except:
+                except Exception as exx:
+                    print(f"finding address {exx!r}")
                     pass
                 self.disconnect()
 
