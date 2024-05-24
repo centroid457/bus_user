@@ -56,6 +56,8 @@ class Test__Shorted:
         self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
         assert self.victim.connect(_raise=False)
 
+        assert isinstance(self.victim.ADDRESS, str)
+
     def test__ADDRESS__FIRST_SHORTED(self):
         self.victim.disconnect()
 

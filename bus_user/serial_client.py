@@ -6,10 +6,11 @@ import time
 from typing import *
 from enum import Enum, auto
 
+from object_info import ObjectInfo
+from logger_aux import Logger
+
 from serial import Serial
 from serial.tools import list_ports
-
-from object_info import ObjectInfo
 
 from .history import HistoryIO
 
@@ -119,7 +120,7 @@ TYPE__ADDRESS = Union[None, Type__AddressAutoAcceptVariant, str]
 
 
 # =====================================================================================================================
-class SerialClient:
+class SerialClient(Logger):
     """
 
     NOTE:
@@ -143,6 +144,9 @@ class SerialClient:
     pass
     pass
     pass
+
+    # LOGGER --------------------------------------------------
+    # LOG_ENABLE = True
 
     # SETTINGS ------------------------------------------------
     ADDRESS: TYPE__ADDRESS = None
@@ -174,7 +178,6 @@ class SerialClient:
     _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
-    CONNECTED: Optional[bool] = None
     history: HistoryIO = None
     _SERIAL: Serial
 
@@ -222,6 +225,12 @@ class SerialClient:
                 else:
                     return addr1
 
+    def check__opened(self) -> bool:
+        try:
+            return self._SERIAL.is_open
+        except:
+            return False
+
     # MSG =============================================================================================================
     def msg_log(self, msg: str = None) -> None:
         msg = f"[{self._SERIAL.port}]{msg}"
@@ -242,7 +251,6 @@ class SerialClient:
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
-        self.CONNECTED = False
         try:
             self._SERIAL.close()
         except:
@@ -350,7 +358,6 @@ class SerialClient:
                 return False
 
         self.cmd_prefix__set()
-        self.CONNECTED = True
         return True
 
     def connect__validation(self) -> bool:
@@ -611,7 +618,7 @@ class SerialClient:
         return result
 
     @classmethod
-    def addresses_paired__detect(cls) -> List[Tuple[str, str]]:
+    def addresses_paired__detect(cls) -> list[tuple[str, str]]:
         # print(f"111111{cls.ADDRESSES__PAIRED=}")
 
         if SerialClient.ADDRESSES__PAIRED:
@@ -621,14 +628,18 @@ class SerialClient:
         load = "EXPECT_ANSWER__PAIRED"
         result = []
         instances_free = []
-        for address in cls.addresses_system__detect():
+
+        addresses__system = cls.addresses_system__detect()
+        for address in addresses__system:
             instance = cls(address)
             if instance.connect(_raise=False, _soft_connection=True):
                 instances_free.append(instance)
 
-        while instances_free:
+        while len(instances_free) > 1:
             main = instances_free.pop(0)
             main._write_line(load)
+            main.disconnect()
+
             for index, slave in enumerate(instances_free):
                 if slave.read_line(_timeout=0.3) == load:
                     result.append((main.ADDRESS, slave.ADDRESS))
@@ -636,12 +647,10 @@ class SerialClient:
                     instances_free.pop(index)
                     break
 
-            main.disconnect()
-
         for remain in instances_free:
             remain.disconnect()
 
-        SerialClient.ADDRESSES__PAIRED = result
+        cls.ADDRESSES__PAIRED = result
         print(f"{cls.ADDRESSES__PAIRED=}")
         return result
 

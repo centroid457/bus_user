@@ -44,21 +44,21 @@ class Test__Emulated:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__reconnect(self):
-        assert self.victim.CONNECTED is True
-        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.CONNECTED is True
+        assert self.victim.check__opened() is True
+        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.check__opened() is True
 
         assert self.victim._EMULATOR__INST.isRunning() is True
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
 
         self.victim.disconnect()
-        assert self.victim.CONNECTED is False
-        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.CONNECTED is False
+        assert self.victim.check__opened() is False
+        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.check__opened() is False
 
         assert self.victim._EMULATOR__INST.isRunning() is False
 
         self.victim.connect()
-        assert self.victim.CONNECTED is True
-        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.CONNECTED is True
+        assert self.victim.check__opened() is True
+        assert self.victim._EMULATOR__INST.SERIAL_CLIENT.check__opened() is True
 
         assert self.victim._EMULATOR__INST.isRunning() is True
         assert self.victim.write_read_line_last("echo 123") == "echo 123"
