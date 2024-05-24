@@ -18,6 +18,20 @@
 # )
 # ---------------------------------------------------------------------------------------------------------------------
 from .history import HistoryIO
+from .values import (
+    # BASE
+    Value_NotPassed,
+    Value_WithUnit,
+    Value_FromVariants,
+
+    # AUX
+
+    # TYPES
+
+    # EXX
+    Exx__ValueNotInVariants,
+    Exx__VariantsIncompatible,
+)
 from .serial_client import (
     # BASE
     SerialClient,
@@ -51,10 +65,6 @@ from .serial_server import (
     SerialServer_Example,
 
     # AUX
-    Value_NotPassed,
-    Value_WithUnit,
-    Value_FromVariants,
-
     AnswerVariants,
     LineParsed,
 
@@ -62,8 +72,6 @@ from .serial_server import (
     TYPE__CMD_RESULT,
 
     # EXX
-    Exx__ValueNotInVariants,
-    Exx__VariantsIncompatible,
 )
 from .serial_derivatives import (
     # BASE
