@@ -21,9 +21,6 @@ class Test__Shorted:
         class Victim(SerialClient):
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
-            def address__answer_validation(self) -> Union[bool, NoReturn]:
-                return self.write_read_line_last("echo") == "echo"
-
         cls.Victim = Victim
         cls.victim = cls.Victim()
         if not cls.victim.connect():
@@ -37,8 +34,7 @@ class Test__Shorted:
             cls.victim.disconnect()
 
     def setup_method(self, method):
-        if not isinstance(self.victim.ADDRESS, str):
-            self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         self.victim.connect(_raise=False)
 
     def teardown_method(self, method):
