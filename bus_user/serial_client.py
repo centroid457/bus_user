@@ -225,7 +225,7 @@ class SerialClient(Logger):
                 else:
                     return addr1
 
-    def check__opened(self) -> bool:
+    def check__connected(self) -> bool:
         try:
             return self._SERIAL.is_open
         except:
