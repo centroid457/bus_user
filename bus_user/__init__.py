@@ -5,14 +5,31 @@
 
 
 # =====================================================================================================================
+# TEMPLATE
+# from .main import (
+#     # BASE
+#     EXACT_OBJECTS,
+#
+#     # AUX
+#
+#     # TYPES
+#
+#     # EXX
+# )
+# ---------------------------------------------------------------------------------------------------------------------
 from .history import HistoryIO
 from .serial_client import (
     # BASE
     SerialClient,
 
     # AUX
-    TYPE__RW_ANSWER, TYPE__ADDRESS,
-    TypeWrReturn, AddressAutoAcceptVariant,
+
+    # TYPES
+    TYPE__ADDRESS,
+    TYPE__RW_ANSWER,
+
+    TypeWrReturn,
+    AddressAutoAcceptVariant,
 
     # EXX
     Exx_SerialAddress_NotConfigured,
@@ -24,6 +41,7 @@ from .serial_client import (
     Exx_SerialAddress_OtherError,
     Exx_SerialRead_NotFullLine,
     Exx_SerialRead_FailPattern,
+    Exx_SerialRead_FailDecoding,
     Exx_SerialPL2303IncorrectDriver,
 )
 from .serial_server import (
@@ -33,9 +51,15 @@ from .serial_server import (
     SerialServer_Example,
 
     # AUX
-    Value_NotPassed, Value_WithUnit, Value_FromVariants,
+    Value_NotPassed,
+    Value_WithUnit,
+    Value_FromVariants,
+
+    AnswerVariants,
+    LineParsed,
+
+    # TYPES
     TYPE__CMD_RESULT,
-    AnswerVariants, LineParsed,
 
     # EXX
     Exx__ValueNotInVariants,
@@ -43,9 +67,12 @@ from .serial_server import (
 )
 from .serial_derivatives import (
     # BASE
-    SerialClient_Shorted, SerialClient_Emulated
+    SerialClient_Shorted,
+    SerialClient_Emulated
 
     # AUX
+
+    # TYPES
 
     # EXX
 )

@@ -70,6 +70,14 @@ class Exx_SerialRead_FailPattern(Exception):
     pass
 
 
+class Exx_SerialRead_FailDecoding(Exception):
+    """
+    REASON
+    ======
+    some serial devices (depends on microchips model) not always give correct reading bytes
+    """
+
+
 class Exx_SerialPL2303IncorrectDriver(Exception):
     """
     REASON
@@ -718,10 +726,28 @@ class SerialClient:
 
     @classmethod
     def _data_ensure__string(cls, data: AnyStr) -> Union[str, NoReturn]:
-        if isinstance(data, bytes):
-            return data.decode(encoding=cls.ENCODING)
-        else:
-            return str(data)
+        """
+        EXCEPTION ORIGINAL VARIANT
+        --------------------------
+            cls = <class 'test__serial_server.Victim'>, data = b'\x85RR__NAME_CMD_OR_PARAM'
+
+                @classmethod
+                def _data_ensure__string(cls, data: AnyStr) -> Union[str, NoReturn]:
+                    if isinstance(data, bytes):
+            >           return data.decode(encoding=cls.ENCODING)
+            E           UnicodeDecodeError: 'utf-8' codec can't decode byte 0x85 in position 0: invalid start byte
+
+            bus_user\serial_client.py:722: UnicodeDecodeError
+        """
+        try:
+            if isinstance(data, bytes):
+                return data.decode(encoding=cls.ENCODING)
+            else:
+                return str(data)
+        except Exception as exx:
+            print(f"{exx!r}")
+            msg = f"[FAIL] decoding {data=}"
+            raise Exx_SerialRead_FailDecoding(msg)
 
     # RW --------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
