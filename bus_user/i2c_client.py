@@ -1,13 +1,13 @@
 # REQUIREMENTS ========================================================================================================
 # decide what to do with it!!!
 from requirements_checker import ReqCheckStr_Os
-ReqCheckStr_Os.check_is__LINUX()
+ReqCheckStr_Os.raise_if__WINDOWS()
 
 
 # IMPORT ==============================================================================================================
-from smbus2 import SMBus
-import re
 from typing import *
+import re
+from smbus2 import SMBus
 
 from object_info import ObjectInfo
 from cli_user import CliUser

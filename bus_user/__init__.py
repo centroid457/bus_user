@@ -85,11 +85,20 @@ from .serial_derivatives import (
     # EXX
 )
 
-# from .bus_i2c import *  # import only Linux supported modul return exx
-try:
-    from .i2c_client import *    # import only Linux supported modul return exx
-except:
-    pass
+from requirements_checker import ReqCheckStr_Os
+if ReqCheckStr_Os.bool_if__LINUX():
+    from .i2c_client import (
+        # BASE
+        BusI2c,
+
+        # AUX
+        Patterns,
+
+        # TYPES
+
+        # EXX
+        Exx_I2cConnection,
+    )
 
 
 # =====================================================================================================================
