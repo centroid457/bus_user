@@ -7,9 +7,6 @@ import logging
 import datetime
 
 from object_info import ObjectInfo
-from PyQt5.QtCore import QThread
-
-import funcs_aux
 
 
 # =====================================================================================================================
