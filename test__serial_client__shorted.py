@@ -26,7 +26,7 @@ class Test__Shorted:
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
-        if not cls.victim.connect(_raise=False):
+        if not cls.victim.connect():
             msg = f"[ERROR] not found PORT shorted by Rx+Tx"
             print(msg)
             raise Exception(msg)
