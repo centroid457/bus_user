@@ -12,7 +12,7 @@ from bus_user import *
 
 
 # =====================================================================================================================
-@pytest.mark.skip
+# @pytest.mark.skip
 class Test__Shorted_validateModel_InfinitRW:
     Victim: Type[SerialClient]
     victim: SerialClient
@@ -42,10 +42,15 @@ class Test__Shorted_validateModel_InfinitRW:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
+        """
+        connect shorted port and start this code!
+        wait for first error and see the step number
+        write as result in SerialClient docstring
+        """
         index = 0
         while True:
             index += 1
-            load = f"echo {index}"
+            load = f"step {index}"
             print(load)
             assert self.victim.write_read_line_last(load) == load
 

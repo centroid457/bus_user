@@ -129,15 +129,15 @@ class SerialClient:
         DECODING APPROPRIATE MODELS
         ---------------------------
         =WRONG=
-        - PROFILIC - often!
-        - FTDI FT232RL - sometimes but less than on Profilic
+        - PROFILIC - often +wrong driver
+        - FTDI FT232RL - sometimes but less than on Profilic=fail on step 0/11/20/3 3/9/95!!!
+        - CP2102 - fail on step 3392/877/1141/!!! sometimes on step 1715 get SerialTimeoutException
 
         =GOOD=
         - CH340 - no one error so far!
         - CH341A (big universal) - no one error so far!
 
-        =NOT TESTED= wait postage from Aliexpress
-        - CP2102
+        =NOT TESTED= wait postage from Aliexpress - already get! need tests!!! use Test__Shorted_validateModel_InfinitRW!!!!
         - CH341T
     """
     pass
