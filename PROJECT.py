@@ -77,7 +77,7 @@ other protocols mot recommended
     VERSION: Tuple[int, int, int] = (0, 3, 0)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
-        "fix all tests! fix server"
+        "fix all tests! fix EMU"
     ]
     FIXME: List[str] = [
         "..."
@@ -89,7 +89,7 @@ other protocols mot recommended
             "separate lineParsed+tests",
             "add address_paired__get",
             "rename all autodetect to address_get__first_free/*",
-            "NEED FINISH FOR ALL!!! work just only "
+            "NEED FINISH FOR ALL!!!"
         ]
     ]
 

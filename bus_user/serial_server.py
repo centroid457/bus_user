@@ -1,4 +1,4 @@
-from . import *
+from bus_user import *
 
 from typing import *
 import time
@@ -86,17 +86,21 @@ class SerialServer_Base(QThread):
 
         # WORK --------------------------------
         result = [
-            "-"*50,
+            "="*50,
             *self.HELLO_MSG,
+            "-" * 50,
             "[PARAMS]:",
             *params_dump,
+            "-" * 50,
             "[CMDS]:",
             *[f"  |{name}" for name in self._LIST__CMDS],
+            "-" * 50,
             "[SCRIPTS]:",
             *[f"  |{name}" for name in self._LIST__SCRIPTS],
+            "-" * 50,
             "[ANSWER_VARIANTS]:",
             *[f"  |{name}" for name in dir(self.ANSWER) if not name.startswith("__")],
-            "-" * 50,
+            "=" * 50,
         ]
         return result
 
@@ -513,6 +517,11 @@ class SerialServer_Example(SerialServer_Base):
     def script__script1(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
         # do smth
         pass
+
+
+# =====================================================================================================================
+if __name__ == "__main__":
+    SerialServer_Example().run()
 
 
 # =====================================================================================================================
