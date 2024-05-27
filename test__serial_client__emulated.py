@@ -33,14 +33,14 @@ class Test__Emulated:
         if cls.victim:
             cls.victim.disconnect()
 
-    def setup_method(self, method):
-        pass
-        # self.victim.connect(_raise=False)
-
-    def teardown_method(self, method):
-        pass
-        # if self.victim:
-        #     self.victim.disconnect()
+    # def setup_method(self, method):
+    #     pass
+    #     # self.victim.connect(_raise=False)
+    #
+    # def teardown_method(self, method):
+    #     pass
+    #     # if self.victim:
+    #     #     self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__reconnect(self):

@@ -190,9 +190,6 @@ class SerialClient(Logger):
         self._SERIAL = Serial()
         self.history = HistoryIO()
 
-        if self._EMULATOR__CLS:
-            self._EMULATOR__INST = self._EMULATOR__CLS()
-
         # set only address!!!
         if address is not None:
             self.ADDRESS = address
@@ -352,13 +349,16 @@ class SerialClient(Logger):
         return True
 
     def emulator_start(self) -> None:
-        if self._EMULATOR__INST and self._EMULATOR__START:
-            pair_used = self.addresses_paired__get_used()
-            if pair_used:
-                self._EMULATOR__INST.SERIAL_CLIENT.ADDRESS = pair_used[1]
-                self._EMULATOR__INST.connect()
-                # self._EMULATOR__INST.wait__cycle_active()
-                self._clear_buffer_read()
+        if not self._EMULATOR__START:
+            return
+
+        if self._EMULATOR__CLS:
+            self._EMULATOR__INST = self._EMULATOR__CLS(self.address_paired__get())
+
+        if self._EMULATOR__INST.connect():
+            self._EMULATOR__INST.start()
+            self._EMULATOR__INST.wait__cycle_active()
+            self._clear_buffer_read()
 
     # ADDRESS =========================================================================================================
     """
