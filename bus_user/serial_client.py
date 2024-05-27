@@ -262,14 +262,15 @@ class SerialClient(Logger):
         if address is None:
             msg = "Exx_SerialAddress_NotConfigured"
             exx = Exx_SerialAddress_NotConfigured()
+
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE:
-            return self._address_apply__first_free()
+            address = self.address_get__first_free()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
-            return self._address_apply__first_free__shorted()
+            address = self.address_get__first_free__shorted()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
-            return self._address_apply__first_free__answer_valid()
+            address = self.address_get__first_free__answer_valid()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
-            return self._address_apply__first_free__paired_for_emu()
+            address = self.address_get__first_free__paired()
 
         # need_open ==========================================================
         # CHANGE PORT OR USE SAME ---------------------------------
@@ -332,11 +333,11 @@ class SerialClient(Logger):
         self.ADDRESS = self._SERIAL.port
 
         if not _touch_connection:
-            self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected {self._SERIAL}")
-            self.emulator_start()
             if not self.connect__validation():
                 self.disconnect()
                 return False
+            self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected {self._SERIAL}")
+            self.emulator_start()
 
         self.cmd_prefix__set()
         return True
@@ -371,47 +372,75 @@ class SerialClient(Logger):
     pass
     pass
 
-    def _address_apply__first_free(self) -> bool:
+    # dont move to CLASSMETHOD!!!
+    def address_get__first_free(self) -> str | None:
+        result = None
         for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False, _touch_connection=True):
-                return True
+                result = address
 
-        msg = Exx_SerialAddresses_NoVacant
-        print(msg)
+            self.disconnect()
+            if result:
+                break
 
-    def _address_apply__first_free__shorted(self) -> bool:
+        msg = f"[{result=}]_address_apply__first_free"
+        if result:
+            self.LOGGER.info(msg)
+        else:
+            self.LOGGER.warn(msg)
+
+        return result
+
+    def address_get__first_free__shorted(self) -> str | None:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
+        result = None
         for address in self.addresses_shorted__detect():
             if self.connect(address=address, _raise=False, _touch_connection=True):
-                return True
+                result = address
 
-        # FINISH -------------
-        msg = Exx_SerialAddresses_NoAutodetected
-        print(msg)
+            self.disconnect()
+            if result:
+                break
 
-    def _address_apply__first_free__answer_valid(self) -> bool:
+        msg = f"[{result=}]_address_apply__first_free__shorted"
+        if result:
+            self.LOGGER.info(msg)
+        else:
+            self.LOGGER.warn(msg)
+
+        return result
+
+    def address_get__first_free__answer_valid(self) -> str | None:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
+        result = None
         for address in self.addresses_system__detect():
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 try:
                     if self.address__answer_validation():
-                        return True
+                        result = address
                 except Exception as exx:
                     print(f"finding address {exx!r}")
                     pass
+
                 self.disconnect()
+                if result:
+                    break
 
-        # FINISH -------------
-        msg = Exx_SerialAddresses_NoAutodetected
-        print(msg)
+        msg = f"[{result=}]_address_apply__first_free__answer_valid"
+        if result:
+            self.LOGGER.info(msg)
+        else:
+            self.LOGGER.warn(msg)
 
-    def _address_apply__first_free__paired_for_emu(self) -> bool:
+        return result
+
+    def address_get__first_free__paired(self) -> str | None:
         """
         # FIXME: exists weakness - you need connect at once whole pair!
             if you would use several pairs and delay connecting secondary devices - it will be incorrect pairing!
@@ -427,13 +456,24 @@ class SerialClient(Logger):
             1: (COM3, COM4),
         }
         """
-        for addr1, addr2 in self.addresses_paired__detect():
-            if self.connect(address=addr1, _raise=False):
-                return True
+        result = None
+        for pair in self.addresses_paired__detect():
+            for address in pair:
+                if self.connect(address=address, _raise=False, _touch_connection=True):
+                    result = address
+
+                self.disconnect()
+                if result:
+                    break
 
         # FINISH -------------
-        msg = Exx_SerialAddresses_NoAutodetected
-        print(msg)
+        msg = f"[{result=}]address_get__first_free__paired"
+        if result:
+            self.LOGGER.info(msg)
+        else:
+            self.LOGGER.warn(msg)
+
+        return result
 
     # -----------------------------------------------------------------------------------------------------------------
     def address__answer_validation(self) -> bool | None | NoReturn:

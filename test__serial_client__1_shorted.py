@@ -21,6 +21,9 @@ class Test__Shorted:
         class Victim(SerialClient):
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
+            def address__answer_validation(self):
+                return self.address__answer_validation__shorted()
+
         cls.Victim = Victim
         cls.victim = cls.Victim()
         if not cls.victim.connect():

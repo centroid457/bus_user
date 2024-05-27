@@ -3,6 +3,7 @@
 ********************************************************************************
 ## TODO
 1. add all other port settings into SerialClient  
+2. fix all tests! fix server  
 
 ********************************************************************************
 ## FIXME
@@ -10,6 +11,16 @@
 
 ********************************************************************************
 ## NEWS
+
+0.3.0 (2024/05/27 17:15:49)
+------------------------------
+- [serialClient] BIG REF:  
+	- separate tests  
+	- separate values+tests  
+	- separate lineParsed+tests  
+	- add address_paired__get  
+	- rename all autodetect to address_get__first_free/*  
+	- NEED FINISH FOR ALL!!! work just only   
 
 0.2.23 (2024/05/22 11:33:00)
 ------------------------------

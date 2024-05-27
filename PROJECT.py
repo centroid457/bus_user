@@ -74,24 +74,22 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 2, 23)
+    VERSION: Tuple[int, int, int] = (0, 3, 0)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
+        "fix all tests! fix server"
     ]
     FIXME: List[str] = [
         "..."
     ]
     NEWS: List[str] = [
-
-
-
-
-
         ["[serialClient] BIG REF",
             "separate tests",
             "separate values+tests",
-            "separate ineParsed+tests",
+            "separate lineParsed+tests",
             "add address_paired__get",
+            "rename all autodetect to address_get__first_free/*",
+            "NEED FINISH FOR ALL!!! work just only "
         ]
     ]
 

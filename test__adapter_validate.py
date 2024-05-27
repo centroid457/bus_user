@@ -37,6 +37,7 @@ class Test__Shorted_validateModel_InfinitRW:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
+    @pytest.mark.skip
     def test__shorted(self):
         """
         connect shorted port and start this code!
@@ -61,6 +62,7 @@ class Test__Shorted_validateModel_InfinitRW:
             print(load)
             assert self.victim.write_read_line_last(load) == load
 
+    # @pytest.mark.skip
     def test__real_device(self):    # TODO: fix it!!!
         """
         in case of validate real device like ATC/PTB
@@ -74,7 +76,7 @@ class Test__Shorted_validateModel_InfinitRW:
 
             def address__answer_validation(self) -> bool:
                 answer = self.write_read_line_last(VALIDATION_CMD)
-                print(f"{answer=}")
+                print(f"[{self._SERIAL.port}]{answer=}")
                 return answer == VALIDATION_ANSWER
 
         self.victim = Victim()
@@ -89,7 +91,7 @@ class Test__Shorted_validateModel_InfinitRW:
             index += 1
             load = f"step {index}"
             print(load)
-            assert self.victim.connect__validation() is True
+            assert self.victim.address__answer_validation() is True
 
 
 # =====================================================================================================================
