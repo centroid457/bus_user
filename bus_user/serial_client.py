@@ -686,6 +686,29 @@ class SerialClient(Logger):
     pass
     pass
 
+    # CMD -------------------------------------------------------------------------------------------------------------
+    def _create_cmd_line(self, cmd: Any, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[str, Any] = None) -> str:
+        result = ""
+
+        cmd = str(cmd)
+
+        if prefix is None:
+            prefix = self.PREFIX
+
+        if prefix and not cmd.startswith(prefix):
+            result += f"{prefix}"
+
+        result += f"{cmd}"
+
+        if args:
+            for arg in args:
+                result += f" {arg}"
+
+        if kwargs:
+            for name, value in kwargs.items():
+                result += f" {name}={value}"
+        return result
+
     # SUCCESS ---------------------------------------------------------------------------------------------------------
     def answer_is_success(self, data: AnyStr) -> bool:
         data = self._data_ensure__string(data)
@@ -712,7 +735,7 @@ class SerialClient(Logger):
 
         return False
 
-    # BYTES -------------------------------------------------------------------------------------------------------
+    # BYTES -----------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> bytes:
         if not data.endswith(cls.EOL__SEND):
@@ -770,7 +793,7 @@ class SerialClient(Logger):
             msg = f"[FAIL] decoding {data=}"
             raise Exx_SerialRead_FailDecoding(msg)
 
-    # RW --------------------------------------------------------------------------------------------------------------
+    # R ---------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
     def read_lines(self, _timeout: Optional[float] = None) -> Union[List[str], NoReturn]:
         result: List[str] = []
@@ -837,6 +860,7 @@ class SerialClient(Logger):
         self.answer_is_fail(data)
         return data
 
+    # W ---------------------------------------------------------------------------------------------------------------
     def _write_line(
             self,
             data: Union[AnyStr, List[AnyStr]],
@@ -934,29 +958,6 @@ class SerialClient(Logger):
         history = self.write_read_line(cmds)
         history.print_io()
         return history
-
-    # CMD =============================================================================================================
-    def _create_cmd_line(self, cmd: Any, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[str, Any] = None) -> str:
-        result = ""
-
-        cmd = str(cmd)
-
-        if prefix is None:
-            prefix = self.PREFIX
-
-        if prefix and not cmd.startswith(prefix):
-            result += f"{prefix}"
-
-        result += f"{cmd}"
-
-        if args:
-            for arg in args:
-                result += f" {arg}"
-
-        if kwargs:
-            for name, value in kwargs.items():
-                result += f" {name}={value}"
-        return result
 
     # =================================================================================================================
     def __getattr__(self, item: str) -> Callable[..., Union[str, NoReturn]]:
