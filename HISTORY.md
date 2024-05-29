@@ -12,6 +12,11 @@
 ********************************************************************************
 ## NEWS
 
+0.3.1 (2024/05/29 11:57:53)
+------------------------------
+- [serialClient] fix address_get__first_free__paired as only for first address!  
+- [serialServer] fix connect  
+
 0.3.0 (2024/05/27 17:27:59)
 ------------------------------
 - [serialClient] BIG REF:  
