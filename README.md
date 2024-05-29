@@ -1,4 +1,4 @@
-# bus_user (v0.3.3)
+# bus_user (v0.3.4)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
