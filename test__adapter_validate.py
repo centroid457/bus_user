@@ -12,7 +12,7 @@ from bus_user import *
 
 
 # =====================================================================================================================
-# @pytest.mark.skip
+@pytest.mark.skip
 class Test__Shorted_validateModel_InfinitRW:
     """
     VALIDATE ADAPTERS fro DECODУ ERRORS

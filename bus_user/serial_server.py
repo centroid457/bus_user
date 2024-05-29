@@ -214,10 +214,12 @@ class SerialServer_Base(QThread):
 
     def connect(self) -> None:
         self.logger.debug("")
-
-        # if not self.isRunning():
         self.start()
-        self.wait__cycle_active()
+
+    def start(self, *args, **kwargs):
+        if not self.isRunning():
+            super().start()
+            self.wait__cycle_active()
 
     def disconnect(self):
         self.logger.debug("")
@@ -450,7 +452,6 @@ class SerialServer_Base(QThread):
 class SerialServer_Echo(SerialServer_Base):
     HELLO_MSG: List[str] = [
         "SerialServer_Echo",
-        "started!",
     ]
 
     def _execute_line(self, line: str) -> bool:

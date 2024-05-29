@@ -74,7 +74,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 0)
+    VERSION: Tuple[int, int, int] = (0, 3, 1)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -83,14 +83,8 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        ["[serialClient] BIG REF",
-            "separate tests",
-            "separate values+tests",
-            "separate lineParsed+tests",
-            "add address_paired__get",
-            "rename all autodetect to address_get__first_free/*",
-            "NEED FINISH FOR ALL!!!"
-        ]
+        "[serialClient] fix address_get__first_free__paired as only for first address!",
+        "[serialServer] fix connect"
     ]
 
     # FINALIZE -----------------------------------------------
