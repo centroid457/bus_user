@@ -10,6 +10,7 @@ from object_info import ObjectInfo
 from PyQt5.QtCore import QThread
 
 import funcs_aux
+from logger_aux import Logger
 
 
 # =====================================================================================================================
@@ -35,7 +36,7 @@ class AnswerVariants:
 
 
 # =====================================================================================================================
-class SerialServer_Base(QThread):
+class SerialServer_Base(Logger, QThread):
     # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
 
@@ -66,7 +67,7 @@ class SerialServer_Base(QThread):
         """
         ALWAYS WAIT IT BEFORE START EXPLUATATION!
         """
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         while not self.CYCLE_ACTIVE:
             time.sleep(0.5)
@@ -122,9 +123,6 @@ class SerialServer_Base(QThread):
         # FIXME: deprecate param params??? used for tests?
         super().__init__()
 
-        self._init__logger()
-        self.logger.debug('init SerialServer')
-
         if params:
             self.PARAMS = params
         elif not self.PARAMS:
@@ -153,28 +151,9 @@ class SerialServer_Base(QThread):
             if name.startswith(self._STARTSWITH__SCRIPT):
                 self._LIST__SCRIPTS.append(name.replace(self._STARTSWITH__SCRIPT, "", 1))
 
-    def _init__logger(self) -> None:
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-        _formatter = logging.Formatter(
-            '%(asctime)s[%(levelname)s/thread%(thread)s]%(name)s(%(filename)s).%(funcName)s(line%(lineno)d)%(msg)s')
-
-        # _handler_file = logging.FileHandler(f"SerialServer_Base{datetime.datetime.now()}.log")
-        _handler_file = logging.FileHandler(f"SerialServer_Base.log")
-        _handler_file.setFormatter(_formatter)
-
-        _handler_std = logging.StreamHandler()
-        _handler_std.setFormatter(_formatter)
-
-        logger.addHandler(_handler_file)
-        logger.addHandler(_handler_std)
-
-        logger.debug('LOGGER INITED')
-        self.logger = logger
-
     # -----------------------------------------------------------------------------------------------------------------
     def run(self) -> None:
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         if self.CYCLE_ACTIVE:
             # just for sure
@@ -199,7 +178,7 @@ class SerialServer_Base(QThread):
         self._cycle__activate()
 
     def _cycle__activate(self) -> Never:
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         while True:
             self.CYCLE_ACTIVE = True
@@ -213,7 +192,7 @@ class SerialServer_Base(QThread):
                 self._execute_line(line)
 
     def connect(self) -> None:
-        self.logger.debug("")
+        self.LOGGER.debug("")
         self.start()
 
     def start(self, *args, **kwargs):
@@ -222,7 +201,7 @@ class SerialServer_Base(QThread):
             self.wait__cycle_active()
 
     def disconnect(self):
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         self.terminate()
         # self.SERIAL_CLIENT.disconnect()
@@ -235,13 +214,13 @@ class SerialServer_Base(QThread):
         self.SERIAL_CLIENT.disconnect()
 
         if self.isRunning():
-            self.logger.debug("")
+            self.LOGGER.debug("")
             super().terminate()
         self.CYCLE_ACTIVE = False
 
     # -----------------------------------------------------------------------------------------------------------------
     def _execute_line(self, line: str) -> bool:
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         line_parsed = LineParsed(line, _prefix_expected=self.SERIAL_CLIENT.PREFIX)
         cmd_result = self._cmd__(line_parsed)
@@ -255,7 +234,7 @@ class SerialServer_Base(QThread):
 
     # CMD - ENTRY POINT -----------------------------------------------------------------------------------------------
     def _cmd__(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:
-        self.logger.debug("")
+        self.LOGGER.debug("")
 
         meth_name__expected = f"{self._STARTSWITH__CMD}{line_parsed.CMD}"
         meth_name__original = funcs_aux.Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))

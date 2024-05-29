@@ -897,8 +897,7 @@ class SerialClient(Logger):
         else:
             msg = f"[WARN]BLANK read_line={data}"
 
-        if data:
-            self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
+        self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
 
         data = self._bytes_edition__apply(data)
         data = self._bytes_eol__clear(data)
@@ -946,13 +945,13 @@ class SerialClient(Logger):
         data = self._bytes_eol__ensure(data)
 
         data_length = self._SERIAL.write(data)
-        msg = f"[OK]write_line={data}/{data_length=}"
-        self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
+        msg = f"[OK]write={data}/{data_length=}"
+        self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
 
         if data_length > 0:
             return True
         else:
-            msg = f"[ERROR] data not write"
+            msg = f"[ERROR] write {data}"
             self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
             return False
 
