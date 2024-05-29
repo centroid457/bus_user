@@ -247,6 +247,7 @@ class SerialClient(Logger):
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
+        need_open = True
 
         # SETTINGS ---------------------------------
         if _raise is None:
@@ -256,11 +257,7 @@ class SerialClient(Logger):
             address = self.ADDRESS
 
         # AUTOAPPLY ---------------------------------
-        if address is None:
-            msg = "Exx_SerialAddress_NotConfigured"
-            exx = Exx_SerialAddress_NotConfigured()
-
-        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE:
+        if address == Type__AddressAutoAcceptVariant.FIRST_FREE:
             address = self.address_get__first_free()
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
             address = self.address_get__first_free__shorted()
@@ -269,25 +266,30 @@ class SerialClient(Logger):
         elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
             address = self.address_get__first_free__paired()
 
+        if address is None or isinstance(address, Type__AddressAutoAcceptVariant):
+            msg = "Exx_SerialAddress_NotConfigured"
+            exx = Exx_SerialAddress_NotConfigured()
+            need_open = False
+
         # need_open ==========================================================
         # CHANGE PORT OR USE SAME ---------------------------------
-        need_open = True
-        if self._SERIAL.port != address:
-            # close old
-            if self._SERIAL.is_open:
-                self._SERIAL.close()
+        if need_open:
+            if self._SERIAL.port != address:
+                # close old
+                if self._SERIAL.is_open:
+                    self._SERIAL.close()
 
-            # set new
-            self._SERIAL.port = address
-            if self._SERIAL.is_open:
-                self._SERIAL.port = None
-                msg = f"[ERROR] Attempt to connect to already opened port IN OTHER OBJECT {self._SERIAL}"
-                exx = Exx_SerialAddress_AlreadyOpened_InOtherObject(msg)
+                # set new
+                self._SERIAL.port = address
+                if self._SERIAL.is_open:
+                    self._SERIAL.port = None
+                    msg = f"[ERROR] Attempt to connect to already opened port IN OTHER OBJECT {self._SERIAL}"
+                    exx = Exx_SerialAddress_AlreadyOpened_InOtherObject(msg)
 
-                need_open = False
-        else:
-            if self._SERIAL.is_open:
-                need_open = False
+                    need_open = False
+            else:
+                if self._SERIAL.is_open:
+                    need_open = False
 
         # Try OPEN ===================================================================
         if need_open:
