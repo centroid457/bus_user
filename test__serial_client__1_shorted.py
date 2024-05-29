@@ -12,6 +12,52 @@ from bus_user import *
 
 
 # =====================================================================================================================
+class Test__AddressResolved:
+    Victim: Type[SerialClient]
+    victim: SerialClient
+
+    @classmethod
+    def setup_class(cls):
+        class Victim(SerialClient):
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            RAISE_CONNECT = False
+
+            def address__answer_validation(self):
+                return self.address__answer_validation__shorted()
+
+        cls.Victim = Victim
+
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
+    #     if self.victim:
+    #         self.victim.disconnect()
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__1(self):
+        victim = self.Victim()
+        assert victim.address_check__resolved() is False
+        assert victim.connect() is True
+        assert victim.address_check__resolved() is True
+        victim.disconnect()
+        assert victim.address_check__resolved() is True
+
+        victim.ADDRESS = None
+        assert victim.address_check__resolved() is False
+
+        victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        assert victim.address_check__resolved() is False
+        assert victim.connect() is True
+        assert victim.address_check__resolved() is True
+
+
+# =====================================================================================================================
 class Test__Shorted:
     Victim: Type[SerialClient]
     victim: SerialClient

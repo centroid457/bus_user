@@ -83,7 +83,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[serialClient] fix connect",
+
+
+
+        "[serialClient] add address_check__resolved",
     ]
 
     # FINALIZE -----------------------------------------------

@@ -213,6 +213,9 @@ class SerialClient(Logger):
         except:
             return False
 
+    def address_check__resolved(self) -> bool:
+        return isinstance(self.ADDRESS, str)
+
     # =================================================================================================================
     def cmd_prefix__set(self) -> None:
         """
@@ -329,13 +332,13 @@ class SerialClient(Logger):
                 return False
 
         # OK -----------------------------
-        self.ADDRESS = self._SERIAL.port
-
         if not _touch_connection:
             if not self.connect__validation():
                 self.disconnect()
                 return False
+
             self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected {self._SERIAL}")
+            self.ADDRESS = self._SERIAL.port
             self.emulator_start()
 
         self.cmd_prefix__set()
@@ -1036,10 +1039,6 @@ class SerialClient(Logger):
 
 # =====================================================================================================================
 if __name__ == "__main__":
-    # see/use tests
-    # ports = SerialClient.detect_available_ports()
-    # obj = SerialClient(address=ports[0])
-    # obj.connect()
     pass
 
 
