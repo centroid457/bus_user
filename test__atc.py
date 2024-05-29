@@ -1,52 +1,60 @@
+import os
+import time
+
+import pytest
+import pathlib
+import shutil
+from tempfile import TemporaryDirectory
 from typing import *
-from testplans import DeviceBase
+from configparser import ConfigParser
+
 from bus_user import *
 
 
 # =====================================================================================================================
-class Atc_SerialClient(SerialClient):
-    RAISE_CONNECT = False
+# @pytest.mark.skip
+class Test__ATC:
+    victim: SerialClient
 
-    # ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-    ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
-    # ADDRESS = "COM24"
-    # ADDRESS = "/dev/ttyUSB0"
-    BAUDRATE = 115200
-    PREFIX = "ATC:03:"
-    EOL__SEND = b"\r"
-
-    def address__answer_validation(self) -> bool:
-        return self.write_read__last_validate("get name", "ATC 03")
-
-
-# =====================================================================================================================
-class Device(DeviceBase):
-    conn = Atc_SerialClient()
-
-
-# =====================================================================================================================
-def test__1():
-    pass
-
-    dev = Atc_SerialClient()
-    assert dev.connect()
-    print(f"{dev.connect()=}")
-    # print(f"{dev.addresses_system__detect()=}")
-    print(f"{dev.ADDRESS=}")
-    assert dev.address_check__resolved()
-
+    # @classmethod
+    # def setup_class(cls):
+    #     pass
     #
-    # print(f"{dev.address__answer_validation()=}")
-    # print(f"{dev.address__answer_validation()=}")
-    # print(f"{dev.address__answer_validation()=}")
+    # @classmethod
+    # def teardown_class(cls):
+    #     if cls.victim:
+    #         cls.victim.disconnect()
     #
-    # print(f"{dev.write_read_line_last('get name')=}")
-    # print(f"{dev.write_read_line_last('get name')=}")
-    # print(f"{dev.write_read_line_last('get name')=}")
-    # print(f"{dev.write_read_line_last('get name')=}")
-    # print(f"{dev.write_read_line_last('get name')=}")
-    # print(f"{dev.disconnect()=}")
-    # print(f"{dev.ADDRESS=}")
+    # def setup_method(self, method):
+    #     pass
+
+    def teardown_method(self, method):
+        pass
+        if self.victim:
+            self.victim.disconnect()
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__1(self):
+        class Atc_SerialClient(SerialClient):
+            RAISE_CONNECT = False
+
+            # ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            # ADDRESS = "COM24"
+            # ADDRESS = "/dev/ttyUSB0"
+            BAUDRATE = 115200
+            PREFIX = "ATC:03:"
+            EOL__SEND = b"\r"
+
+            def address__answer_validation(self) -> bool:
+                return self.write_read__last_validate("get name", "ATC 03")
+
+        self.victim = Atc_SerialClient()
+        assert self.victim.connect()
+        print(f"{self.victim.connect()=}")
+        # print(f"{self.victim.addresses_system__detect()=}")
+        print(f"{self.victim.ADDRESS=}")
+        assert self.victim.address_check__resolved()
 
 
 # =====================================================================================================================
