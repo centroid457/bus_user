@@ -277,14 +277,14 @@ class Test_SerialServer_WithConnection:
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
             def address__answer_validation(self) -> bool | None | NoReturn:
-                return server.HELLO_MSG[0] in self.write_read_line("hello").list_output()
+                return server.HELLO_MSG[0] in self.write_read("hello").list_output()
 
         victim = Victim()
         assert victim.connect()
 
-        assert victim.write_read_line_last("echo 123") == "echo 123"
-        assert victim.write_read_line_last("CMD_NOT_ESISTS") == server.ANSWER.ERR__NAME_CMD_OR_PARAM
-        assert victim.write_read_line_last("upper hello") == "UPPER HELLO"
+        assert victim.write_read__last("echo 123") == "echo 123"
+        assert victim.write_read__last("CMD_NOT_ESISTS") == server.ANSWER.ERR__NAME_CMD_OR_PARAM
+        assert victim.write_read__last("upper hello") == "UPPER HELLO"
 
 
 # =====================================================================================================================

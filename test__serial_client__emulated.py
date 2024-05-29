@@ -49,7 +49,7 @@ class Test__Emulated:
         assert self.victim._EMULATOR__INST.SERIAL_CLIENT.check__connected() is True
 
         assert self.victim._EMULATOR__INST.isRunning() is True
-        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read__last("echo 123") == "echo 123"
 
         self.victim.disconnect()
         assert self.victim.check__connected() is False
@@ -62,7 +62,7 @@ class Test__Emulated:
         assert self.victim._EMULATOR__INST.SERIAL_CLIENT.check__connected() is True
 
         assert self.victim._EMULATOR__INST.isRunning() is True
-        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read__last("echo 123") == "echo 123"
 
     @pytest.mark.skip
     def test__old(self):
@@ -80,9 +80,9 @@ class Test__Emulated:
         assert self.victim._EMULATOR__INST.SERIAL_CLIENT.ADDRESS == self.victim.ADDRESSES__PAIRED[0][1]
         assert self.victim._EMULATOR__INST.SERIAL_CLIENT.ADDRESS == self.victim.addresses_paired__get_used()[1]
 
-        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read__last("echo 123") == "echo 123"
 
-        assert self.victim._write_line("echo 123")
+        assert self.victim._write("echo 123")
         assert self.victim.read_line(_timeout=1) == "echo 123"
 
         # RECONNECT ----------------
@@ -92,7 +92,7 @@ class Test__Emulated:
         assert self.victim.connect(_raise=False)
         assert self.victim._EMULATOR__INST.isRunning() is True
 
-        assert self.victim.write_read_line_last("echo 123") == "echo 123"
+        assert self.victim.write_read__last("echo 123") == "echo 123"
 
 
 # =====================================================================================================================

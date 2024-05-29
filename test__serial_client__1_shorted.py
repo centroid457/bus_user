@@ -140,12 +140,12 @@ class Test__Shorted:
         self.victim.disconnect()
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
-        assert self.victim.write_read_line("hello").last_output == "hello"
+        assert self.victim.write_read("hello").last_output == "hello"
 
         self.victim.disconnect()
         self.victim = self.Victim()
         self.victim.connect(_raise=False)
-        assert self.victim.write_read_line("hello").last_output == "hello"
+        assert self.victim.write_read("hello").last_output == "hello"
         self.victim.disconnect()
 
     def test__detect_available_ports(self):
@@ -174,90 +174,94 @@ class Test__Shorted:
         assert self.Victim._bytes_eol__clear(b"111\n\n") == b"111"
         assert self.Victim._bytes_eol__clear(b"111\n\n\n") == b"111"
 
-    def test__r_w_single(self):
-        assert self.victim._write_line("") is True
+    def test__wr_single(self):
+        assert self.victim._write("") is True
         assert self.victim.read_lines() == []
 
-        assert self.victim._write_line("hello") is True
+        assert self.victim._write("hello") is True
         assert self.victim.read_lines() == ["hello", ]
         assert self.victim.read_lines() == []
 
-    def test__r_w_multy(self):
+    def test__wr_multy(self):
         # RW single ----------------------
         for line in range(3):
-            assert self.victim._write_line(f"hello{line}") is True
+            assert self.victim._write(f"hello{line}") is True
 
         for line in range(3):
             assert self.victim.read_line() == f"hello{line}"
         assert self.victim.read_lines() == []
 
         # W list ----------------------
-        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._write([f"hello{line}" for line in range(3)]) is True
         for line in range(3):
             assert self.victim.read_line() == f"hello{line}"
         assert self.victim.read_lines() == []
 
         # R list ----------------------
-        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._write([f"hello{line}" for line in range(3)]) is True
         assert self.victim.read_lines() == [f"hello{line}" for line in range(3)]
 
-        assert self.victim._write_line([f"hello{line}" for line in range(3)]) is True
+        assert self.victim._write([f"hello{line}" for line in range(3)]) is True
         assert self.victim.read_lines() == [f"hello{line}" for line in range(3)]
 
-    def test__rw(self):
-        assert self.victim.write_read_line("hello").last_output == "hello"
-        assert self.victim.write_read_line([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
+    def test__wr(self):
+        assert self.victim.write_read("hello").last_output == "hello"
+        assert self.victim.write_read([f"hello{line}" for line in range(3)]).list_output() == [f"hello{line}" for line in range(3)]
 
         # params -----------------------
-        assert self.victim.write_read_line("hello").as_dict() == {"hello": ["hello", ], }
+        assert self.victim.write_read("hello").as_dict() == {"hello": ["hello", ], }
 
-        assert self.victim.write_read_line(["11", "22"]).list_input() == ["11", "22"]
-        assert self.victim.write_read_line(["11", "22"]).as_dict() == {"11": ["11", ], "22": ["22", ], }
+        assert self.victim.write_read(["11", "22"]).list_input() == ["11", "22"]
+        assert self.victim.write_read(["11", "22"]).as_dict() == {"11": ["11", ], "22": ["22", ], }
 
         history = HistoryIO()
         history.add_io("hello", "hello")
-        assert self.victim.write_read_line("hello").as_dict() == history.as_dict()
+        assert self.victim.write_read("hello").as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
         history = HistoryIO()
         history.add_io("11", "11")
         history.add_io("22", "22")
-        assert self.victim.write_read_line(["11", "22"]).as_dict() == history.as_dict()
+        assert self.victim.write_read(["11", "22"]).as_dict() == history.as_dict()
         assert history.check_equal_io() is True
 
-    def test__rw_last(self):
-        assert self.victim.write_read_line_last("hello") == "hello"
-        assert self.victim.write_read_line_last(["hello1", "hello2"]) == "hello2"
+    def test__wr_last(self):
+        assert self.victim.write_read__last("hello") == "hello"
+        assert self.victim.write_read__last(["hello1", "hello2"]) == "hello2"
 
-    def test__rw_ReadFailPattern(self):
+    def test__wr_last_validate(self):
+        assert self.victim.write_read__last_validate("hello", "hello")
+        assert self.victim.write_read__last_validate(["hello1", "hello2"],  "hello2")
+
+    def test__wr_ReadFailPattern(self):
         self.victim.RAISE_READ_FAIL_PATTERN = True
         try:
-            self.victim.write_read_line("123 FAil 123")
+            self.victim.write_read("123 FAil 123")
         except:
             assert True
         else:
             assert False
 
         self.victim.RAISE_READ_FAIL_PATTERN = False
-        assert self.victim.write_read_line("123 FAil 123").last_output == "123 FAil 123"
+        assert self.victim.write_read("123 FAil 123").last_output == "123 FAil 123"
 
     def test__r_all(self):
-        assert self.victim._write_line([f"hello{i}" for i in range(3)]) is True
+        assert self.victim._write([f"hello{i}" for i in range(3)]) is True
         assert self.victim.read_lines() == [f"hello{i}" for i in range(3)]
 
     def test__write_args_kwargs(self):
-        assert self.victim.write_read_line("hello").last_output == "hello"
-        assert self.victim.write_read_line("hello", args=[1, 2]).last_output == "hello 1 2"
-        assert self.victim.write_read_line("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
-        assert self.victim.write_read_line("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
+        assert self.victim.write_read("hello").last_output == "hello"
+        assert self.victim.write_read("hello", args=[1, 2]).last_output == "hello 1 2"
+        assert self.victim.write_read("hello", kwargs={"CH1": 1}).last_output == "hello CH1=1"
+        assert self.victim.write_read("hello", args=[1, 2], kwargs={"CH1": 1}).last_output == "hello 1 2 CH1=1"
 
     def test__CMD_PREFIX(self):
         self.victim.PREFIX = "DEV:01:"
-        assert self.victim.write_read_line("hello").last_output == f"{self.victim.PREFIX}hello"
-        assert self.victim.write_read_line("hello 12").last_output == f"{self.victim.PREFIX}hello 12"
+        assert self.victim.write_read("hello").last_output == f"{self.victim.PREFIX}hello"
+        assert self.victim.write_read("hello 12").last_output == f"{self.victim.PREFIX}hello 12"
 
         self.victim.PREFIX = ""
-        assert self.victim.write_read_line("hello").last_output == "hello"
+        assert self.victim.write_read("hello").last_output == "hello"
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!

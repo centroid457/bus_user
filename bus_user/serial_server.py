@@ -191,10 +191,10 @@ class SerialServer_Base(QThread):
             additional_line = f"Started on [{self.SERIAL_CLIENT._SERIAL.port}]"
             if additional_line not in self.HELLO_MSG:
                 self.HELLO_MSG.append(additional_line)
-            self.SERIAL_CLIENT._write_line("")
-            self.SERIAL_CLIENT._write_line("="*50)
+            self.SERIAL_CLIENT._write("")
+            self.SERIAL_CLIENT._write("=" * 50)
             # self._execute_line("hello")
-            self.SERIAL_CLIENT._write_line(self.HELLO_MSG)
+            self.SERIAL_CLIENT._write(self.HELLO_MSG)
 
         self._cycle__activate()
 
@@ -207,7 +207,7 @@ class SerialServer_Base(QThread):
             try:
                 line = self.SERIAL_CLIENT.read_line()
             except:
-                self.SERIAL_CLIENT._write_line(self.ANSWER.ERR__ENCODING_OR_DEVICE)
+                self.SERIAL_CLIENT._write(self.ANSWER.ERR__ENCODING_OR_DEVICE)
 
             if line:
                 self._execute_line(line)
@@ -250,7 +250,7 @@ class SerialServer_Base(QThread):
         # if not cmd_result:
         #     return True
 
-        write_result = self.SERIAL_CLIENT._write_line(cmd_result)
+        write_result = self.SERIAL_CLIENT._write(cmd_result)
         return write_result
 
     # CMD - ENTRY POINT -----------------------------------------------------------------------------------------------
@@ -455,7 +455,7 @@ class SerialServer_Echo(SerialServer_Base):
     ]
 
     def _execute_line(self, line: str) -> bool:
-        write_result = self.SERIAL_CLIENT._write_line(line)
+        write_result = self.SERIAL_CLIENT._write(line)
         return write_result
 
 

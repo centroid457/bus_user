@@ -60,7 +60,7 @@ class Test__Shorted_validateModel_InfinitRW:
             index += 1
             load = f"step {index}"
             print(load)
-            assert self.victim.write_read_line_last(load) == load
+            assert self.victim.write_read__last(load) == load
 
     # @pytest.mark.skip
     def test__real_device(self):    # TODO: fix it!!!
@@ -75,9 +75,7 @@ class Test__Shorted_validateModel_InfinitRW:
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
             def address__answer_validation(self) -> bool:
-                answer = self.write_read_line_last(VALIDATION_CMD)
-                print(f"[{self._SERIAL.port}]{answer=}")
-                return answer == VALIDATION_ANSWER
+                return self.write_read__last_validate(*VALIDATION_CMD)
 
         self.victim = Victim()
         if not self.victim.connect():

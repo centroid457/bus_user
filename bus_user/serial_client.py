@@ -213,9 +213,6 @@ class SerialClient(Logger):
         except:
             return False
 
-    def address_check__resolved(self) -> bool:
-        return isinstance(self.ADDRESS, str)
-
     # =================================================================================================================
     def cmd_prefix__set(self) -> None:
         """
@@ -494,8 +491,8 @@ class SerialClient(Logger):
         """
 
     def address__answer_validation__shorted(self) -> bool | None:
-        load = "EXPECT_ANSWER__SHORTED"
-        return self.write_read_line_last(load) == load
+        load = "FIND__SHORTED"
+        return self.write_read__last_validate(load, load)
 
     # DETECT PORTS ====================================================================================================
     pass
@@ -506,6 +503,10 @@ class SerialClient(Logger):
     pass
     pass
 
+    def address_check__resolved(self) -> bool:
+        return isinstance(self.ADDRESS, str)
+
+    # -----------------------------------------------------------------------------------------------------------------
     def address__check_exists(self) -> bool:
         try:
             self.connect(_raise=True, _touch_connection=True)
@@ -673,7 +674,7 @@ class SerialClient(Logger):
 
         while len(instances_free) > 1:
             main = instances_free.pop(0)
-            main._write_line(load)
+            main._write(load)
             main.disconnect()
 
             for index, slave in enumerate(instances_free):
@@ -907,7 +908,7 @@ class SerialClient(Logger):
         return data
 
     # W ---------------------------------------------------------------------------------------------------------------
-    def _write_line(
+    def _write(
             self,
             data: Union[AnyStr, List[AnyStr]],
             prefix: Optional[str] = None,
@@ -931,7 +932,7 @@ class SerialClient(Logger):
         if isinstance(data, (list, tuple, )):
             if len(data) > 1:
                 for data_i in data:
-                    if not self._write_line(data=data_i, prefix=prefix, args=args, kwargs=kwargs):
+                    if not self._write(data=data_i, prefix=prefix, args=args, kwargs=kwargs):
                         return False
                 return True
             else:
@@ -955,7 +956,7 @@ class SerialClient(Logger):
             self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
             return False
 
-    def write_read_line(
+    def write_read(
             self,
             data: Union[AnyStr, List[AnyStr]],
             prefix: Optional[str] = None,
@@ -970,19 +971,19 @@ class SerialClient(Logger):
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
             for data_i in data:
-                history_i = self.write_read_line(data_i, prefix=prefix, args=args, kwargs=kwargs)
+                history_i = self.write_read(data_i, prefix=prefix, args=args, kwargs=kwargs)
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
             data_o = ""
-            if self._write_line(data=data, prefix=prefix, args=args, kwargs=kwargs):
+            if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
                 data_o = self.read_lines()
             history.add_io(self._data_ensure__string(data), data_o)
 
         # RESULT ----------------------------
         return history
 
-    def write_read_line_last(
+    def write_read__last(
             self,
             data: Union[AnyStr, List[AnyStr]],
             prefix: Optional[str] = None,
@@ -993,7 +994,24 @@ class SerialClient(Logger):
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
         """
-        return self.write_read_line(data=data, prefix=prefix, args=args, kwargs=kwargs).last_output
+        return self.write_read(data=data, prefix=prefix, args=args, kwargs=kwargs).last_output
+
+    def write_read__last_validate(
+            self,
+            input: Union[AnyStr, list[AnyStr]] | None,
+            expect: Union[str, list[str]],
+            prefix: Optional[str] = None,
+            args: Optional[List] = None,
+            kwargs: Optional[Dict] = None,
+    ) -> bool:
+        if input:
+            return self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs) == expect
+        else:
+            outputs = self.read_lines()
+            output_last = None
+            if outputs:
+                output_last = outputs[-1]
+            return output_last == expect
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
@@ -1001,7 +1019,7 @@ class SerialClient(Logger):
         if you need to read all params from device!
         """
         cmds = cmds or self.CMDS_DUMP
-        history = self.write_read_line(cmds)
+        history = self.write_read(cmds)
         history.print_io()
         return history
 
@@ -1034,7 +1052,7 @@ class SerialClient(Logger):
         """
         if self._GETATTR_STARTSWITH__SEND and item.startswith(self._GETATTR_STARTSWITH__SEND):
             item = item.replace(self._GETATTR_STARTSWITH__SEND, "")
-        return lambda *args, **kwargs: self.write_read_line_last(data=self._create_cmd_line(cmd=item, args=args, kwargs=kwargs))
+        return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=args, kwargs=kwargs))
 
 
 # =====================================================================================================================

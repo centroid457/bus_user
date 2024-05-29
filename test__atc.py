@@ -15,12 +15,8 @@ class Atc_SerialClient(SerialClient):
     PREFIX = "ATC:03:"
     EOL__SEND = b"\r"
 
-    # EMULATOR ------------------------
-    # _EMULATOR__CLS = Atc_Emulator
-    # _EMULATOR__START = True
-
     def address__answer_validation(self) -> bool:
-        return self.write_read_line_last("get name") == "ATC 03"
+        return self.write_read__last_validate("get name", "ATC 03")
 
 
 # =====================================================================================================================
@@ -31,9 +27,6 @@ class Device(DeviceBase):
 # =====================================================================================================================
 def test__1():
     pass
-    # emu = Atc_Emulator()
-    # emu.start()
-    # emu.wait()
 
     dev = Atc_SerialClient()
     assert dev.connect()

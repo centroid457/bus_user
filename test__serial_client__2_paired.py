@@ -63,10 +63,10 @@ class Test__Paired:
         victim_pair = SerialClient(addr_paired)
         assert victim_pair.connect()
 
-        assert self.victim._write_line("LOAD1")
+        assert self.victim._write("LOAD1")
         assert victim_pair.read_line() == "LOAD1"
 
-        assert victim_pair._write_line("LOAD2")
+        assert victim_pair._write("LOAD2")
         assert self.victim.read_line() == "LOAD2"
 
 
