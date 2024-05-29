@@ -442,10 +442,12 @@ class SerialClient(Logger):
 
     def address_get__first_free__paired(self) -> str | None:
         """
-        # FIXME: exists weakness - you need connect at once whole pair!
-            if you would use several pairs and delay connecting secondary devices - it will be incorrect pairing!
-            may be need using naming pairs! and set pair name with connecting first
-            first connects on free port, second connect by pair name??? feels good
+        connect only for first address!
+        need for occupy addresses by several servers before starting main process!!!
+        in case of any address we could occupy by two servers whole pair!
+
+        secondary address you should get by special methods for pair or by address_validating
+
         cls.pairs = {
             0: (COM1, COM2),
             1: (COM3, COM4),
@@ -457,14 +459,13 @@ class SerialClient(Logger):
         }
         """
         result = None
-        for pair in self.addresses_paired__detect():
-            for address in pair:
-                if self.connect(address=address, _raise=False, _touch_connection=True):
-                    result = address
+        for address, _ in self.addresses_paired__detect():
+            if self.connect(address=address, _raise=False, _touch_connection=True):
+                result = address
 
-                self.disconnect()
-                if result:
-                    break
+            self.disconnect()
+            if result:
+                break
 
         # FINISH -------------
         msg = f"[{result=}]address_get__first_free__paired"

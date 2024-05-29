@@ -255,14 +255,9 @@ class Test_SerialServer_WithConnection:
             print(msg)
             raise Exception(msg)
 
-        cls.Victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
-        cls.Victim._EMULATOR__CLS = SerialServer_Example
-        cls.Victim._EMULATOR__START = True
-
-        cls.victim = cls.Victim()
-
     @classmethod
     def teardown_class(cls):
+        pass
         if cls.victim:
             cls.victim.disconnect()
 
@@ -274,12 +269,22 @@ class Test_SerialServer_WithConnection:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        assert self.victim.connect()
+        # server start
+        server = SerialServer_Example()
+        server.connect()
 
-        assert self.victim.write_read_line("hello").list_output() == self.victim._EMULATOR__INST.HELLO_MSG
-        assert self.victim.write_read_line_last("echo 123") == "echo 123"
-        assert self.victim.write_read_line_last("CMD_NOT_ESISTS") == AnswerVariants.ERR__NAME_CMD_OR_PARAM
-        assert self.victim.write_read_line_last("upper hello") == "UPPER HELLO"
+        class Victim(SerialClient):
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+
+            def address__answer_validation(self) -> bool | None | NoReturn:
+                return server.HELLO_MSG[0] in self.write_read_line("hello").list_output()
+
+        victim = Victim()
+        assert victim.connect()
+
+        assert victim.write_read_line_last("echo 123") == "echo 123"
+        assert victim.write_read_line_last("CMD_NOT_ESISTS") == server.ANSWER.ERR__NAME_CMD_OR_PARAM
+        assert victim.write_read_line_last("upper hello") == "UPPER HELLO"
 
 
 # =====================================================================================================================
