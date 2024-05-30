@@ -36,6 +36,7 @@ class Test__ATC:
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
         class Atc_SerialClient(SerialClient):
+            LOG_ENABLE = True
             RAISE_CONNECT = False
 
             # ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU

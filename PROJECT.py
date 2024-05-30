@@ -83,7 +83,10 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[SerServer]fix logger"
+
+
+
+        "[serialClient] add write_eol + add it in write_read__last_validate"
     ]
 
     # FINALIZE -----------------------------------------------

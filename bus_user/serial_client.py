@@ -955,6 +955,13 @@ class SerialClient(Logger):
             self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
             return False
 
+    def write_eol(self) -> bool:
+        """useful to drop old incorrect sending msg! in other words it is clear/reinit write buffer!
+
+        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
+        """
+        return self._write(data=self.EOL__SEND, prefix="")
+
     def write_read(
             self,
             data: Union[AnyStr, List[AnyStr]],
@@ -1003,6 +1010,10 @@ class SerialClient(Logger):
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
     ) -> bool:
+        """
+        created specially for address__answer_validation
+        """
+        self.write_eol()
         if input:
             return self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs) == expect
         else:
