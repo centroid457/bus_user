@@ -16,10 +16,25 @@ from bus_user import *
 class Test__ATC:
     victim: SerialClient
 
-    # @classmethod
-    # def setup_class(cls):
-    #     pass
-    #
+    @classmethod
+    def setup_class(cls):
+        pass
+
+        class Atc_SerialClient(SerialClient):
+            LOG_ENABLE = True
+            RAISE_CONNECT = False
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            BAUDRATE = 115200
+
+            # # ATC ----------------------------
+            PREFIX = "ATC:03:"
+            EOL__SEND = b"\r"
+
+            def address__answer_validation(self) -> bool:
+                return self.write_read__last_validate("get name", "ATC 03")
+
+        cls.victim = Atc_SerialClient()
+
     # @classmethod
     # def teardown_class(cls):
     #     if cls.victim:
@@ -35,27 +50,40 @@ class Test__ATC:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        class Atc_SerialClient(SerialClient):
-            LOG_ENABLE = True
-            RAISE_CONNECT = False
+        # PTB ----------------------------
+        PREFIX = "PTB:01:"
+        EOL__SEND = b"\n"
+        def address__answer_validation(self) -> bool:
+            return self.write_read__last_validate("get name", "PTB")
 
-            # ADDRESS = AddressAutoAcceptVariant.FIRST_FREE__PAIRED_FOR_EMU
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
-            # ADDRESS = "COM24"
-            # ADDRESS = "/dev/ttyUSB0"
-            BAUDRATE = 115200
-            PREFIX = "ATC:03:"
-            EOL__SEND = b"\r"
-
-            def address__answer_validation(self) -> bool:
-                return self.write_read__last_validate("get name", "ATC 03")
-
-        self.victim = Atc_SerialClient()
         assert self.victim.connect()
         print(f"{self.victim.connect()=}")
         # print(f"{self.victim.addresses_system__detect()=}")
         print(f"{self.victim.ADDRESS=}")
         assert self.victim.address_check__resolved()
+
+
+# =====================================================================================================================
+# @pytest.mark.skip
+class Test__PTB(Test__ATC):
+    @classmethod
+    def setup_class(cls):
+        pass
+
+        class Ptb_SerialClient(SerialClient):
+            LOG_ENABLE = True
+            RAISE_CONNECT = False
+            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            BAUDRATE = 115200
+
+            # PTB ----------------------------
+            PREFIX = "PTB:01:"
+            EOL__SEND = b"\n"
+
+            def address__answer_validation(self) -> bool:
+                return self.write_read__last_validate("get name", "PTB")
+
+        cls.victim = Ptb_SerialClient()
 
 
 # =====================================================================================================================
