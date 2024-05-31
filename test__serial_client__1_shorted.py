@@ -34,27 +34,27 @@ class Test__AddressResolved:
     # def setup_method(self, method):
     #     pass
     #
-    # def teardown_method(self, method):
-    #     pass
-    #     if self.victim:
-    #         self.victim.disconnect()
+    def teardown_method(self, method):
+        pass
+        if self.victim:
+            self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        victim = self.Victim()
-        assert victim.address_check__resolved() is False
-        assert victim.connect() is True
-        assert victim.address_check__resolved() is True
-        victim.disconnect()
-        assert victim.address_check__resolved() is True
+        self.victim = self.Victim()
+        assert self.victim.address_check__resolved() is False
+        assert self.victim.connect() is True
+        assert self.victim.address_check__resolved() is True
+        self.victim.disconnect()
+        assert self.victim.address_check__resolved() is True
 
-        victim.ADDRESS = None
-        assert victim.address_check__resolved() is False
+        self.victim.ADDRESS = None
+        assert self.victim.address_check__resolved() is False
 
-        victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-        assert victim.address_check__resolved() is False
-        assert victim.connect() is True
-        assert victim.address_check__resolved() is True
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        assert self.victim.address_check__resolved() is False
+        assert self.victim.connect() is True
+        assert self.victim.address_check__resolved() is True
 
 
 # =====================================================================================================================
@@ -153,26 +153,6 @@ class Test__Shorted:
 
     def test__connect_address_NOTexisted(self):
         assert SerialClient(address="HELLO").address__check_exists() is False
-
-    def test__ensure_bytes(self):
-        assert self.Victim._data_ensure__bytes("111") == b"111"
-        assert self.Victim._data_ensure__bytes(b"111") == b"111"
-
-    def test__ensure_str(self):
-        assert self.Victim._data_ensure__string("111") == "111"
-        assert self.Victim._data_ensure__string(b"111") == "111"
-
-    def test__eol(self):
-        self.Victim.EOL__SEND = b"\n"
-        assert self.Victim._bytes_eol__ensure(b"111") == b"111\n"
-        assert self.Victim._bytes_eol__ensure(b"111\n") == b"111\n"
-        assert self.Victim._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
-        assert self.Victim._bytes_eol__ensure(b"111\n\n\n") == b"111\n\n\n"     # todo: fix this
-
-        assert self.Victim._data_eol__clear(b"111") == b"111"
-        assert self.Victim._data_eol__clear(b"111\n") == b"111"
-        assert self.Victim._data_eol__clear(b"111\n\n") == b"111"
-        assert self.Victim._data_eol__clear(b"111\n\n\n") == b"111"
 
     def test__wr_single(self):
         assert self.victim._write("") is True

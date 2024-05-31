@@ -237,6 +237,14 @@ class SerialClient(Logger):
         except:
             pass
 
+    def clear_buffers(self) -> None:
+        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
+
+        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
+        """
+        self._clear_buffer__write()
+        self._clear_buffer__read()
+
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
         try:
@@ -1024,15 +1032,16 @@ class SerialClient(Logger):
         """
         created specially for address__answer_validation
         """
-        self._clear_buffer__write()
+        self.clear_buffers()
+        time.sleep(1)
         if input:
-            return self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs) == expect
+            output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
         else:
             outputs = self.read_lines()
             output_last = None
             if outputs:
                 output_last = outputs[-1]
-            return output_last == expect
+        return output_last == expect
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """

@@ -9,6 +9,7 @@ from typing import *
 from configparser import ConfigParser
 
 from bus_user import *
+from funcs_aux import *
 
 
 # =====================================================================================================================

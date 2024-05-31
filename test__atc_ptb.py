@@ -50,12 +50,6 @@ class Test__ATC:
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__1(self):
-        # PTB ----------------------------
-        PREFIX = "PTB:01:"
-        EOL__SEND = b"\n"
-        def address__answer_validation(self) -> bool:
-            return self.write_read__last_validate("get name", "PTB")
-
         assert self.victim.connect()
         print(f"{self.victim.connect()=}")
         # print(f"{self.victim.addresses_system__detect()=}")
