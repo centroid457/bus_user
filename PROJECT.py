@@ -87,6 +87,7 @@ other protocols mot recommended
 
 
         "[serialClient] add write_eol + add it in write_read__last_validate"
+        "[values.py] move into funcs_aux!"
     ]
 
     # FINALIZE -----------------------------------------------
