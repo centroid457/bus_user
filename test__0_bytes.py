@@ -19,11 +19,17 @@ from pytest_aux import *
         (str, Exception),
 
         ("", b""),
+        ("\r", b"\r"),
+        ("\r\n", b"\r\n"),
+        ("\n", b"\n"),
         ("str", b"str"),
         ("str\n", b"str\n"),
         ("str\r\n", b"str\r\n"),
 
         (b"", b""),
+        (b"\r", b"\r"),
+        (b"\r\n", b"\r\n"),
+        (b"\n", b"\n"),
         (b"str", b"str"),
         (b"str\n", b"str\n"),
         (b"str\r\n", b"str\r\n"),
