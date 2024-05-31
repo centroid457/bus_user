@@ -19,20 +19,6 @@
 # ---------------------------------------------------------------------------------------------------------------------
 from .history import HistoryIO
 from .line_parser import LineParsed
-from .values import (
-    # BASE
-    Value_NotPassed,
-    Value_WithUnit,
-    Value_FromVariants,
-
-    # AUX
-
-    # TYPES
-
-    # EXX
-    Exx__ValueNotInVariants,
-    Exx__VariantsIncompatible,
-)
 from .serial_client import (
     # BASE
     SerialClient,
