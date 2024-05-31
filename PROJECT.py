@@ -86,8 +86,12 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
+
+
+
         ["[serialClient]",
-            "ensure keep all found ports in base class",
+            "add ADDRESSES__SYSTEM_FREE",
+            "apply dict in ADDRESSES__SYSTEM",
          ],
     ]
 

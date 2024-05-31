@@ -181,9 +181,9 @@ class SerialClient(Logger):
     history: HistoryIO = None
     _SERIAL: Serial
 
-    ADDRESSES__SYSTEM: List[str] = []
-    ADDRESSES__SHORTED: List[str] = []
-    ADDRESSES__PAIRED: List[Tuple[str, str]] = []
+    ADDRESSES__SYSTEM: dict[str, Any] = {}
+    ADDRESSES__SHORTED: list[str] = []
+    ADDRESSES__PAIRED: list[tuple[str, str]] = []
 
     def __init__(self, address: TYPE__ADDRESS = None):
         super().__init__()
@@ -206,6 +206,14 @@ class SerialClient(Logger):
 
     def __del__(self):
         self.disconnect()
+
+    @property
+    def ADDRESSES__SYSTEM_FREE(self) -> list[str]:
+        result = []
+        for port_name, port_owner in self.ADDRESSES__SYSTEM.items():
+            if port_owner is not None:
+                result.append(port_name)
+        return result
 
     def check__connected(self) -> bool:
         try:
@@ -352,12 +360,25 @@ class SerialClient(Logger):
                 self.disconnect()
                 return False
 
-            self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected {self._SERIAL}")
-            self.ADDRESS = self._SERIAL.port
+            self.address_occupy()
             self.emulator_start()
 
         self.cmd_prefix__set()
         return True
+
+    def address_occupy(self) -> None:
+        if not self._SERIAL.port:
+            return
+
+        # clear old lock -------------
+        for port_name, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
+            if port_inst is self:
+                SerialClient.ADDRESSES__SYSTEM[port_name] = None
+
+        # set new lock -------------
+        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
+        self.ADDRESS = self._SERIAL.port
+        self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked {self._SERIAL}")
 
     def connect__validation(self) -> bool:
         """
@@ -536,9 +557,9 @@ class SerialClient(Logger):
         return True
 
     @classmethod
-    def addresses_system__detect(cls) -> List[str]:
+    def addresses_system__detect(cls) -> list[str]:
         if SerialClient.ADDRESSES__SYSTEM:
-            return SerialClient.ADDRESSES__SYSTEM
+            return list(SerialClient.ADDRESSES__SYSTEM)
 
         # WORK -------------------------------------------------------
         result = cls._addresses_system__detect_1__standard_method()
@@ -552,7 +573,7 @@ class SerialClient(Logger):
         else:
             print("[WARN] detected no serial ports")
 
-        SerialClient.ADDRESSES__SYSTEM = result
+        SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(result, None)
         return result
 
     @staticmethod
