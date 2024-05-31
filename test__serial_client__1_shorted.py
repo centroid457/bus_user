@@ -169,10 +169,10 @@ class Test__Shorted:
         assert self.Victim._bytes_eol__ensure(b"111\n\n") == b"111\n\n"
         assert self.Victim._bytes_eol__ensure(b"111\n\n\n") == b"111\n\n\n"     # todo: fix this
 
-        assert self.Victim._bytes_eol__clear(b"111") == b"111"
-        assert self.Victim._bytes_eol__clear(b"111\n") == b"111"
-        assert self.Victim._bytes_eol__clear(b"111\n\n") == b"111"
-        assert self.Victim._bytes_eol__clear(b"111\n\n\n") == b"111"
+        assert self.Victim._data_eol__clear(b"111") == b"111"
+        assert self.Victim._data_eol__clear(b"111\n") == b"111"
+        assert self.Victim._data_eol__clear(b"111\n\n") == b"111"
+        assert self.Victim._data_eol__clear(b"111\n\n\n") == b"111"
 
     def test__wr_single(self):
         assert self.victim._write("") is True

@@ -221,9 +221,19 @@ class SerialClient(Logger):
         # self.PREFIX = ""
         return
 
-    def _clear_buffer_read(self) -> None:
+    def _clear_buffer__read(self) -> None:
         try:
             self.read_lines(_timeout=0.3)
+        except:
+            pass
+
+    def _clear_buffer__write(self) -> None:
+        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
+
+        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
+        """
+        try:
+            self.write_eol()
         except:
             pass
 
@@ -360,7 +370,7 @@ class SerialClient(Logger):
         if self._EMULATOR__INST.connect():
             self._EMULATOR__INST.start()
             self._EMULATOR__INST.wait__cycle_active()
-            self._clear_buffer_read()
+            self._clear_buffer__read()
 
     # ADDRESS =========================================================================================================
     """
@@ -734,10 +744,11 @@ class SerialClient(Logger):
     pass
 
     # CMD -------------------------------------------------------------------------------------------------------------
-    def _create_cmd_line(self, cmd: Any, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[str, Any] = None) -> str:
+    def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[Any, Any] = None) -> str:
         result = ""
 
-        cmd = str(cmd)
+        cmd = self._data_ensure__string(cmd)
+        cmd = self._data_eol__clear(cmd)
 
         if prefix is None:
             prefix = self.PREFIX or ""
@@ -752,8 +763,8 @@ class SerialClient(Logger):
                 result += f" {arg}"
 
         if kwargs:
-            for name, value in kwargs.items():
-                result += f" {name}={value}"
+            for key, value in kwargs.items():
+                result += f" {key}={value}"
         return result
 
     # SUCCESS ---------------------------------------------------------------------------------------------------------
@@ -785,18 +796,23 @@ class SerialClient(Logger):
     # BYTES -----------------------------------------------------------------------------------------------------------
     @classmethod
     def _bytes_eol__ensure(cls, data: bytes) -> Union[bytes, NoReturn]:
-        data = cls._bytes_eol__clear(data) + cls.EOL__SEND
+        data = cls._data_eol__clear(data) + cls.EOL__SEND
         return data
 
     @classmethod
-    def _bytes_eol__clear(cls, data: bytes) -> Union[bytes, NoReturn]:
+    def _data_eol__clear(cls, data: AnyStr) -> Union[AnyStr, NoReturn]:
+        result: bytes = cls._data_ensure__bytes(data)
         while True:
-            data_new = data.strip()
+            data_new = result.strip()
             data_new = data_new.strip(cls.EOL__UNI_SET)
-            if not data or data == data_new:
+            if not result or result == data_new:
                 break
-            data = data_new
-        return data
+            result = data_new
+
+        if isinstance(data, str):
+            return cls._data_ensure__string(result)
+
+        return result
 
     @classmethod
     def _bytes_edition__apply(cls, data: bytes) -> bytes:
@@ -899,7 +915,7 @@ class SerialClient(Logger):
         self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
 
         data = self._bytes_edition__apply(data)
-        data = self._bytes_eol__clear(data)
+        data = self._data_eol__clear(data)
         data = self._data_ensure__string(data)
         self.history.add_output(data)
         self.answer_is_fail(data)
@@ -955,10 +971,6 @@ class SerialClient(Logger):
             return False
 
     def write_eol(self) -> bool:
-        """useful to drop old incorrect sending msg! in other words it is clear/reinit write buffer!
-
-        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
-        """
         return self._write(data=self.EOL__SEND, prefix="")
 
     def write_read(
@@ -1012,7 +1024,7 @@ class SerialClient(Logger):
         """
         created specially for address__answer_validation
         """
-        self.write_eol()
+        self._clear_buffer__write()
         if input:
             return self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs) == expect
         else:
