@@ -740,7 +740,7 @@ class SerialClient(Logger):
         cmd = str(cmd)
 
         if prefix is None:
-            prefix = self.PREFIX
+            prefix = self.PREFIX or ""
 
         if prefix and not cmd.startswith(prefix):
             result += f"{prefix}"
@@ -784,13 +784,12 @@ class SerialClient(Logger):
 
     # BYTES -----------------------------------------------------------------------------------------------------------
     @classmethod
-    def _bytes_eol__ensure(cls, data: bytes) -> bytes:
-        if not data.endswith(cls.EOL__SEND):
-            data = data + cls.EOL__SEND
+    def _bytes_eol__ensure(cls, data: bytes) -> Union[bytes, NoReturn]:
+        data = cls._bytes_eol__clear(data) + cls.EOL__SEND
         return data
 
     @classmethod
-    def _bytes_eol__clear(cls, data: bytes) -> bytes:
+    def _bytes_eol__clear(cls, data: bytes) -> Union[bytes, NoReturn]:
         while True:
             data_new = data.strip()
             data_new = data_new.strip(cls.EOL__UNI_SET)
