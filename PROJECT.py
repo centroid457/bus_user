@@ -54,6 +54,9 @@ other protocols mot recommended
         # "feat1",
         # ["feat2", "block1", "block2"],
 
+        ["[SerialClient]",
+            "keep all found ports in base class!",
+        ],
         ["Serial",
             "Client+Server",
             "connect with Type__AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID",
@@ -74,7 +77,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 5)
+    VERSION: Tuple[int, int, int] = (0, 3, 6)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -83,11 +86,9 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[values.py] move into funcs_aux!",
         ["[serialClient]",
-            "add _clear_buffer__write/clear_buffers/write_eol",
-            "add+finish tests for client data processing",
-         ]
+            "ensure keep all found ports in base class",
+         ],
     ]
 
     # FINALIZE -----------------------------------------------

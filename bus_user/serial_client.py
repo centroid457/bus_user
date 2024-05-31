@@ -632,9 +632,6 @@ class SerialClient(Logger):
         """Определяет список портов (НЕОТКРЫТЫХ+ОТКРЫТЫХ!!!) - способом 2 (слепым тестом подключения и анализом исключений)
         Всегда срабатывает!
         """
-        _lock_port = None
-        # _lock_port = Serial(port="COM7", timeout=5)   # test reason! finding exx already opened!
-
         if sys.platform.startswith('win'):
             attempt_list = ['COM%s' % (i + 1) for i in range(256)]
         elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
@@ -650,8 +647,6 @@ class SerialClient(Logger):
             if SerialClient(address=name).address__check_exists():
                 result.append(name)
 
-        if _lock_port:
-            _lock_port.close()
         return result
 
     @classmethod
@@ -669,13 +664,11 @@ class SerialClient(Logger):
                 obj.disconnect()
 
         SerialClient.ADDRESSES__SHORTED = result
-        print(f"{cls.ADDRESSES__SHORTED=}")
+        print(f"{SerialClient.ADDRESSES__SHORTED=}")
         return result
 
     @classmethod
     def addresses_paired__detect(cls) -> list[tuple[str, str]]:
-        # print(f"111111{cls.ADDRESSES__PAIRED=}")
-
         if SerialClient.ADDRESSES__PAIRED:
             return SerialClient.ADDRESSES__PAIRED
 
@@ -705,8 +698,8 @@ class SerialClient(Logger):
         for remain in instances_free:
             remain.disconnect()
 
-        cls.ADDRESSES__PAIRED = result
-        print(f"{cls.ADDRESSES__PAIRED=}")
+        SerialClient.ADDRESSES__PAIRED = result
+        print(f"{SerialClient.ADDRESSES__PAIRED=}")
         return result
 
     def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:
@@ -715,13 +708,13 @@ class SerialClient(Logger):
                 return pair
 
     def address_paired__get(self) -> str | None:
-        if not self.ADDRESSES__PAIRED:
-            self.addresses_paired__detect()
+        if not SerialClient.ADDRESSES__PAIRED:
+            SerialClient.addresses_paired__detect()
 
-        if not isinstance(self.ADDRESS, str):
+        if not self.address_check__resolved():
             return
 
-        for pair in self.ADDRESSES__PAIRED:
+        for pair in SerialClient.ADDRESSES__PAIRED:
             if self.ADDRESS in pair:
                 addr1, addr2 = pair
                 if self.ADDRESS == addr1:
@@ -1024,7 +1017,7 @@ class SerialClient(Logger):
     def write_read__last_validate(
             self,
             input: Union[AnyStr, list[AnyStr]] | None,
-            expect: Union[str, list[str]],
+            expect: str,
             prefix: Optional[str] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
@@ -1032,16 +1025,17 @@ class SerialClient(Logger):
         """
         created specially for address__answer_validation
         """
-        self.clear_buffers()
-        time.sleep(1)
         if input:
+            self.clear_buffers()
             output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
         else:
             outputs = self.read_lines()
-            output_last = None
             if outputs:
                 output_last = outputs[-1]
-        return output_last == expect
+            else:
+                output_last = ""
+
+        return output_last.lower() == expect.lower()
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """

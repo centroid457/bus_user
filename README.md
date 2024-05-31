@@ -1,4 +1,4 @@
-# bus_user (v0.3.5)
+# bus_user (v0.3.6)
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -27,17 +27,19 @@ other protocols mot recommended
 
 
 ## Features
-1. Serial:  
+1. [SerialClient]:  
+	- keep all found ports in base class!  
+2. Serial:  
 	- Client+Server  
 	- connect with Type__AddressAutoAcceptVariant FIRST_FREE/FIRST_FREE__ANSWER_VALID  
 	- set/get params by SlashOrSpacePath addressing  
 	- handle BackSpace send manually from terminal  
-2. SerialServer values:  
+3. SerialServer values:  
 	- as Callable  
 	- Value_WithUnit  
 	- Value_FromVariants  
 	- list_results  
-3. SerialServer cmd:  
+4. SerialServer cmd:  
 	- NONE is equivalent for SUCCESS  
 	- no need params (like line_parsed as before)  
 	- help - for show all variants (Units/Variants/Callables)!  
