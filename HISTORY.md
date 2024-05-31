@@ -12,6 +12,13 @@
 ********************************************************************************
 ## NEWS
 
+0.3.5 (2024/05/31 14:59:33)
+------------------------------
+- [values.py] move into funcs_aux!  
+- [serialClient]:  
+	- add _clear_buffer__write/clear_buffers/write_eol  
+	- add+finish tests for client data processing  
+
 0.3.4 (2024/05/29 17:44:03)
 ------------------------------
 - [SerServer]fix logger  

@@ -74,7 +74,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 4)
+    VERSION: Tuple[int, int, int] = (0, 3, 5)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -83,11 +83,11 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-
-
-
-        "[serialClient] add write_eol + add it in write_read__last_validate"
-        "[values.py] move into funcs_aux!"
+        "[values.py] move into funcs_aux!",
+        ["[serialClient]",
+            "add _clear_buffer__write/clear_buffers/write_eol",
+            "add+finish tests for client data processing",
+         ]
     ]
 
     # FINALIZE -----------------------------------------------
