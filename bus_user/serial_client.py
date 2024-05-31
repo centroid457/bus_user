@@ -181,7 +181,7 @@ class SerialClient(Logger):
     history: HistoryIO = None
     _SERIAL: Serial
 
-    ADDRESSES__SYSTEM: dict[str, Any] = {}
+    ADDRESSES__SYSTEM: dict[str, Union[None, Self]] = {}
     ADDRESSES__SHORTED: list[str] = []
     ADDRESSES__PAIRED: list[tuple[str, str]] = []
 
@@ -207,11 +207,13 @@ class SerialClient(Logger):
     def __del__(self):
         self.disconnect()
 
+    @classmethod
     @property
-    def ADDRESSES__SYSTEM_FREE(self) -> list[str]:
+    def ADDRESSES__SYSTEM_FREE(cls) -> list[str]:
+        cls.addresses_system__detect()
         result = []
-        for port_name, port_owner in self.ADDRESSES__SYSTEM.items():
-            if port_owner is not None:
+        for port_name, port_owner in cls.ADDRESSES__SYSTEM.items():
+            if port_owner is None:
                 result.append(port_name)
         return result
 
@@ -360,20 +362,20 @@ class SerialClient(Logger):
                 self.disconnect()
                 return False
 
-            self.address_occupy()
+            self._address__occupy()
             self.emulator_start()
 
         self.cmd_prefix__set()
         return True
 
-    def address_occupy(self) -> None:
+    def _address__occupy(self) -> None:
         if not self._SERIAL.port:
             return
 
         # clear old lock -------------
-        for port_name, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
-            if port_inst is self:
-                SerialClient.ADDRESSES__SYSTEM[port_name] = None
+        for port_i, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
+            if port_inst is self and port_i != self._SERIAL.port:
+                SerialClient.ADDRESSES__SYSTEM[port_i] = None
 
         # set new lock -------------
         SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
@@ -416,7 +418,10 @@ class SerialClient(Logger):
     # dont move to CLASSMETHOD!!!
     def address_get__first_free(self) -> str | None:
         result = None
-        for address in self.addresses_system__detect():
+        for address, owner in self.ADDRESSES__SYSTEM.items():
+            if owner is not None:
+                continue
+
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 result = address
 
@@ -428,7 +433,7 @@ class SerialClient(Logger):
         if result:
             self.LOGGER.info(msg)
         else:
-            self.LOGGER.warn(msg)
+            self.LOGGER.warning(msg)
 
         return result
 
@@ -460,7 +465,10 @@ class SerialClient(Logger):
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         result = None
-        for address in self.addresses_system__detect():
+        for address, owner in self.ADDRESSES__SYSTEM.items():
+            if owner is not None:
+                continue
+
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 try:
                     if self.address__answer_validation():
@@ -545,6 +553,10 @@ class SerialClient(Logger):
     def address_check__resolved(self) -> bool:
         return isinstance(self.ADDRESS, str)
 
+    def address_check__occupied(self, address: str) -> bool:
+        owner = self.ADDRESSES__SYSTEM[address]
+        return owner is not None
+
     # -----------------------------------------------------------------------------------------------------------------
     def address__check_exists(self) -> bool:
         try:
@@ -557,9 +569,9 @@ class SerialClient(Logger):
         return True
 
     @classmethod
-    def addresses_system__detect(cls) -> list[str]:
+    def addresses_system__detect(cls) -> dict[str, Union[None, Self]]:
         if SerialClient.ADDRESSES__SYSTEM:
-            return list(SerialClient.ADDRESSES__SYSTEM)
+            return SerialClient.ADDRESSES__SYSTEM
 
         # WORK -------------------------------------------------------
         result = cls._addresses_system__detect_1__standard_method()
@@ -574,7 +586,7 @@ class SerialClient(Logger):
             print("[WARN] detected no serial ports")
 
         SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(result, None)
-        return result
+        return SerialClient.ADDRESSES__SYSTEM
 
     @staticmethod
     def _addresses_system__detect_1__standard_method() -> Union[List[str], NoReturn]:
@@ -698,10 +710,9 @@ class SerialClient(Logger):
         result = []
         instances_free = []
 
-        addresses__system = cls.addresses_system__detect()
-        for address in addresses__system:
-            instance = cls(address)
-            if instance.connect(_raise=False, _touch_connection=True):
+        for address in cls.addresses_system__detect():
+            instance = cls()
+            if instance.connect(address=address, _raise=False, _touch_connection=True):
                 instances_free.append(instance)
 
         while len(instances_free) > 1:
