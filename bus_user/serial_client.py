@@ -447,7 +447,7 @@ class SerialClient(Logger):
 
     def address_get__first_free(self) -> str | None:
         result = None
-        for address, owner in self.ADDRESSES__SYSTEM.items():
+        for address, owner in self.addresses_system__detect().items():
             if owner is not None and owner is not self:
                 continue
 
@@ -498,7 +498,7 @@ class SerialClient(Logger):
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         result = None
-        for address, owner in self.ADDRESSES__SYSTEM.items():
+        for address, owner in self.addresses_system__detect().items():
             if owner is not None and owner is not self:
                 continue
 
