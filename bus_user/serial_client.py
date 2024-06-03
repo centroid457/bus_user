@@ -455,7 +455,7 @@ class SerialClient(Logger):
         if result:
             self.LOGGER.info(msg)
         else:
-            self.LOGGER.warn(msg)
+            self.LOGGER.warning(msg)
 
         return result
 
@@ -485,7 +485,7 @@ class SerialClient(Logger):
         if result:
             self.LOGGER.info(msg)
         else:
-            self.LOGGER.warn(msg)
+            self.LOGGER.warning(msg)
 
         return result
 
@@ -521,7 +521,7 @@ class SerialClient(Logger):
         if result:
             self.LOGGER.info(msg)
         else:
-            self.LOGGER.warn(msg)
+            self.LOGGER.warning(msg)
 
         return result
 
