@@ -77,7 +77,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 9)
+    VERSION: Tuple[int, int, int] = (0, 3, 10)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -87,7 +87,7 @@ other protocols mot recommended
     ]
     NEWS: List[str] = [
         ["[serialClient]",
-            "extend write_read__last_validate for compare with list variants",
+            "fix detects over base class!",
          ],
     ]
 

@@ -717,7 +717,7 @@ class SerialClient(Logger):
         # WORK ----------------------------------------------
         result = []
         for address in cls.addresses_system__detect():
-            obj = cls()
+            obj = SerialClient()
             if obj.connect(address=address, _raise=False, _touch_connection=True):
                 if obj._address__answer_validation__shorted():
                     result.append(address)
@@ -740,7 +740,7 @@ class SerialClient(Logger):
         system_ports = cls.addresses_system__detect()
 
         for address in system_ports:
-            instance = cls()
+            instance = SerialClient()
             if instance.connect(address=address, _raise=False, _touch_connection=True):
                 instances_free_remain.append(instance)
 
