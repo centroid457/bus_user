@@ -34,14 +34,14 @@ class Test__Paired:
             print(msg)
             raise Exception(msg)
 
-    @classmethod
-    def teardown_class(cls):
-        if cls.victim:
-            cls.victim.disconnect()
-
-    def setup_method(self, method):
-        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
-        self.victim.connect()
+    # @classmethod
+    # def teardown_class(cls):
+    #     if cls.victim:
+    #         cls.victim.disconnect()
+    #
+    # def setup_method(self, method):
+    #     self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+    #     self.victim.connect()
 
     def teardown_method(self, method):
         pass

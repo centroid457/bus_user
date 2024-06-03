@@ -744,26 +744,29 @@ class SerialClient(Logger):
         # WORK ----------------------------------------------
         load = "EXPECT_ANSWER__PAIRED"
         result = []
-        instances_free = []
+        instances_free_remain = []
 
-        for address in cls.addresses_system__detect():
+        system_ports = cls.addresses_system__detect()
+
+        for address in system_ports:
             instance = cls()
             if instance.connect(address=address, _raise=False, _touch_connection=True):
-                instances_free.append(instance)
+                instances_free_remain.append(instance)
 
-        while len(instances_free) > 1:
-            main = instances_free.pop(0)
+        while len(instances_free_remain) > 1:
+            main = instances_free_remain.pop(0)
             main._write(load)
             main.disconnect()
 
-            for index, slave in enumerate(instances_free):
-                if slave.read_line(_timeout=0.3) == load:
-                    result.append((main.ADDRESS, slave.ADDRESS))
+            for index, slave in enumerate(instances_free_remain):
+                read_lines = slave.read_lines(_timeout=0.3)
+                if read_lines and read_lines[-1] == load:
+                    result.append((main._SERIAL.port, slave._SERIAL.port))
                     slave.disconnect()
-                    instances_free.pop(index)
+                    instances_free_remain.pop(index)
                     break
 
-        for remain in instances_free:
+        for remain in instances_free_remain:
             remain.disconnect()
 
         SerialClient.ADDRESSES__PAIRED = result
