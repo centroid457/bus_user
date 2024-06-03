@@ -22,6 +22,10 @@ from .line_parser import LineParsed
 from .serial_client import (
     # BASE
     SerialClient,
+    SerialClient_FirstFree,
+    SerialClient_FirstFree_Shorted,
+    SerialClient_FirstFree_Paired,
+    SerialClient_FirstFree_AnswerValid,
 
     # AUX
 

@@ -77,7 +77,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 7)
+    VERSION: Tuple[int, int, int] = (0, 3, 8)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -87,12 +87,7 @@ other protocols mot recommended
     ]
     NEWS: List[str] = [
         ["[serialClient]",
-            "add ADDRESSES__SYSTEM_FREE",
-            "apply dict in ADDRESSES__SYSTEM",
-            "add addresses__release/address__release",
-            "rename buffers_clear*",
-            "apply ADDRESS as property! and setter with address_release",
-            "separate derivatives SerialClient_FirstFree/*"
+            "add derivatives into INIT",
          ],
     ]
 
