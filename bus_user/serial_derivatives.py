@@ -7,11 +7,11 @@ from .serial_server import SerialServer_Base, SerialServer_Example
 
 # =====================================================================================================================
 class SerialClient_Shorted(SerialClient):
-    ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+    address = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
 
 class SerialClient_Emulated(SerialClient):
-    ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+    address = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
     _EMULATOR__CLS = SerialServer_Example
     _EMULATOR__START = True
 

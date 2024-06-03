@@ -23,7 +23,7 @@ class Test__AddressResolved:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
             RAISE_CONNECT = False
 
         cls.Victim = Victim
@@ -66,14 +66,14 @@ class Test__Shorted:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient):
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
             def address__answer_validation(self):       # this is only for FIRST_FREE__ANSWER_VALID! not for FIRST_FREE__SHORTED and etc!
                 return self._address__answer_validation__shorted()
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
-        cls.victim.addresses__release()
+        cls.victim._addresses__release()
         if not cls.victim.connect():
             msg = f"[ERROR] not found PORT shorted by Rx+Tx"
             print(msg)
@@ -91,6 +91,7 @@ class Test__Shorted:
     def teardown_method(self, method):
         pass
         if self.victim:
+            # self.victim.address__release()
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
@@ -101,6 +102,7 @@ class Test__Shorted:
         assert not self.victim.connect(_raise=False)
 
         self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
+        self.victim._address__release()
         assert self.victim.connect(_raise=False)
 
         assert isinstance(self.victim.ADDRESS, str)
@@ -127,7 +129,7 @@ class Test__Shorted:
         # ==============
         self.victim.disconnect()
         class Victim(SerialClient):
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             def address__answer_validation(self) -> Union[bool, NoReturn]:
                 raise Exception()
 
@@ -140,11 +142,14 @@ class Test__Shorted:
 
     def test__recreate_object(self):
         self.victim.disconnect()
+        self.victim._address__release()
+
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
 
         self.victim.disconnect()
+        self.victim._address__release()
         self.victim = self.Victim()
         self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
@@ -157,6 +162,7 @@ class Test__Shorted:
         assert SerialClient(address="HELLO").address__check_exists() is False
 
     def test__wr_single(self):
+        assert self.victim.connect(_raise=False)
         assert self.victim._write("") is True
         assert self.victim.read_lines() == []
 

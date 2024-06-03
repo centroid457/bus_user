@@ -149,7 +149,7 @@ class SerialClient(Logger):
     # LOG_ENABLE = True
 
     # SETTINGS ------------------------------------------------
-    ADDRESS: TYPE__ADDRESS = None
+    _ADDRESS: TYPE__ADDRESS = None
 
     TIMEOUT__READ: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
@@ -175,7 +175,7 @@ class SerialClient(Logger):
     # test purpose EMULATOR -----------------
     _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR__INST could be used for test reason and check values in realtime!!
     _EMULATOR__INST: 'SerialServer_Base' = None
-    _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of ADDRESS replaced after disconnecting by exact str after PAIRED*
+    _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of address replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -205,8 +205,17 @@ class SerialClient(Logger):
         # self.addresses_paired__detect()   # DONT USE in init!!!
 
     def __del__(self):
-        self.address__release()
+        self._address__release()
         self.disconnect()
+
+    @property
+    def ADDRESS(self) -> TYPE__ADDRESS:
+        return self._ADDRESS
+
+    @ADDRESS.setter
+    def ADDRESS(self, value: TYPE__ADDRESS) -> None:
+        self._address__release()
+        self._ADDRESS = value
 
     @classmethod
     @property
@@ -390,7 +399,7 @@ class SerialClient(Logger):
             self._EMULATOR__INST.wait__cycle_active()
             self._buffers_clear__read()
 
-    # ADDRESS =========================================================================================================
+    # address =========================================================================================================
     """
     THIS IS USED for applying by SIMPLE WAY just exact address! 
     """
@@ -408,26 +417,26 @@ class SerialClient(Logger):
             return
 
         # clear old lock -------------
-        for port_i, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
-            if port_inst is self and port_i != self._SERIAL.port:
-                SerialClient.ADDRESSES__SYSTEM[port_i] = None
+        # for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
+        #     if owner is self and address != self._SERIAL.port:
+        #         SerialClient.ADDRESSES__SYSTEM[address] = None
+
+        self._address__release()
 
         # set new lock -------------
         SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
         self.ADDRESS = self._SERIAL.port
-        self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked {self._SERIAL}")
+        self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked/occupy {self._SERIAL}")
 
-    def address__release(self) -> None:
-        """
-        make all ports vacant for autodetect
-        """
+    def _address__release(self) -> None:
         if self in SerialClient.ADDRESSES__SYSTEM.values():
             for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
                 if owner is self:
                     SerialClient.ADDRESSES__SYSTEM[address] = None
+                    break
 
     @classmethod
-    def addresses__release(cls) -> None:
+    def _addresses__release(cls) -> None:
         """
         make all ports vacant for autodetect
         """
@@ -439,7 +448,7 @@ class SerialClient(Logger):
     def address_get__first_free(self) -> str | None:
         result = None
         for address, owner in self.ADDRESSES__SYSTEM.items():
-            if owner not in [None, self]:
+            if owner is not None and owner is not self:
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):
@@ -465,7 +474,7 @@ class SerialClient(Logger):
         result = None
         for address in self.addresses_shorted__detect():
             owner = self.ADDRESSES__SYSTEM[address]
-            if owner not in [None, self]:
+            if owner is not None and owner is not self:
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):
@@ -490,7 +499,7 @@ class SerialClient(Logger):
         """
         result = None
         for address, owner in self.ADDRESSES__SYSTEM.items():
-            if owner not in [None, self]:
+            if owner is not None and owner is not self:
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):

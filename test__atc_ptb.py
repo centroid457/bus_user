@@ -23,7 +23,7 @@ class Test__ATC:
         class Atc_SerialClient(SerialClient):
             LOG_ENABLE = True
             RAISE_CONNECT = False
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             BAUDRATE = 115200
 
             # # ATC ----------------------------
@@ -67,7 +67,7 @@ class Test__PTB(Test__ATC):
         class Ptb_SerialClient(SerialClient):
             LOG_ENABLE = True
             RAISE_CONNECT = False
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             BAUDRATE = 115200
 
             # PTB ----------------------------

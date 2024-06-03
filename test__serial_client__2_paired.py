@@ -23,7 +23,7 @@ class Test__Paired:
         class Victim(SerialClient):
             LOG_ENABLE = True
 
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
             # def address__answer_validation(self) -> Union[bool, NoReturn]:
             #     return self.write_read_line_last("echo") == "echo"
 

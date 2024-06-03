@@ -46,7 +46,7 @@ class Test__Shorted_validateModel_InfinitRW:
         """
         # PREPARE ------------------------
         class Victim(SerialClient):
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
         self.victim = Victim()
         if not self.victim.connect():
@@ -72,7 +72,7 @@ class Test__Shorted_validateModel_InfinitRW:
         VALIDATION_CMD, VALIDATION_ANSWER = ("GET NAME", "ATC 03")
 
         class Victim(SerialClient):
-            ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
             def address__answer_validation(self) -> bool:
                 return self.write_read__last_validate(*VALIDATION_CMD)
