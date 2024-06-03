@@ -22,9 +22,6 @@ class Test__AddressResolved:
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
             RAISE_CONNECT = False
 
-            def address__answer_validation(self):
-                return self.address__answer_validation__shorted()
-
         cls.Victim = Victim
 
     # @classmethod
@@ -66,9 +63,8 @@ class Test__Shorted:
     def setup_class(cls):
         class Victim(SerialClient):
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-
-            def address__answer_validation(self):
-                return self.address__answer_validation__shorted()
+            # def address__answer_validation(self):
+            #     return self.address__answer_validation__shorted()
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
