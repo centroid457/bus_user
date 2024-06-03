@@ -33,7 +33,7 @@ from .serial_client import (
     Type__AddressAutoAcceptVariant,
 
     # EXX
-    Exx_SerialAddress_NotConfigured,
+    Exx_SerialAddress_NotApplyed,
     Exx_SerialAddress_NotExists,
     Exx_SerialAddresses_NoVacant,
     Exx_SerialAddresses_NoAutodetected,

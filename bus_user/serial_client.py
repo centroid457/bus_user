@@ -16,7 +16,7 @@ from . import HistoryIO
 
 
 # =====================================================================================================================
-class Exx_SerialAddress_NotConfigured(Exception):
+class Exx_SerialAddress_NotApplyed(Exception):
     """
         raise SerialException("Port must be configured before it can be used.")
     serial.serialutil.SerialException: Port must be configured before it can be used.
@@ -295,8 +295,8 @@ class SerialClient(Logger):
             address = self.address_get__first_free__paired()
 
         if address is None or isinstance(address, Type__AddressAutoAcceptVariant):
-            msg = "Exx_SerialAddress_NotConfigured"
-            exx = Exx_SerialAddress_NotConfigured()
+            msg = "Exx_SerialAddress_NotApplyed"
+            exx = Exx_SerialAddress_NotApplyed()
             need_open = False
 
         # need_open ==========================================================
@@ -335,7 +335,7 @@ class SerialClient(Logger):
 
                 elif "Port must be configured before" in str(_exx):
                     msg = f"[ERROR] PORT NOT CONFIGURED {self._SERIAL}"
-                    exx = Exx_SerialAddress_NotConfigured(repr(_exx))
+                    exx = Exx_SerialAddress_NotApplyed(repr(_exx))
 
                 elif "PermissionError" in str(_exx):
                     msg = f"[ERROR] PORT ALREADY OPENED {self._SERIAL}"
@@ -419,7 +419,7 @@ class SerialClient(Logger):
     def address_get__first_free(self) -> str | None:
         result = None
         for address, owner in self.ADDRESSES__SYSTEM.items():
-            if owner is not None:
+            if owner not in [None, self]:
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):
@@ -444,6 +444,10 @@ class SerialClient(Logger):
         """
         result = None
         for address in self.addresses_shorted__detect():
+            owner = self.ADDRESSES__SYSTEM[address]
+            if owner not in [None, self]:
+                continue
+
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 result = address
 
@@ -466,7 +470,7 @@ class SerialClient(Logger):
         """
         result = None
         for address, owner in self.ADDRESSES__SYSTEM.items():
-            if owner is not None:
+            if owner not in [None, self]:
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):
