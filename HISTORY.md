@@ -12,6 +12,16 @@
 ********************************************************************************
 ## NEWS
 
+0.3.7 (2024/06/03 12:53:46)
+------------------------------
+- [serialClient]:  
+	- add ADDRESSES__SYSTEM_FREE  
+	- apply dict in ADDRESSES__SYSTEM  
+	- add addresses__release/address__release  
+	- rename buffers_clear*  
+	- apply ADDRESS as property! and setter with address_release  
+	- separate derivatives SerialClient_FirstFree/*  
+
 0.3.6 (2024/05/31 15:27:27)
 ------------------------------
 - [serialClient]:  
