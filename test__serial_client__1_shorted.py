@@ -102,7 +102,6 @@ class Test__Shorted:
         assert not self.victim.connect(_raise=False)
 
         self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
-        self.victim._address__release()
         assert self.victim.connect(_raise=False)
 
         assert isinstance(self.victim.ADDRESS, str)
@@ -142,14 +141,12 @@ class Test__Shorted:
 
     def test__recreate_object(self):
         self.victim.disconnect()
-        self.victim._address__release()
 
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
 
         self.victim.disconnect()
-        self.victim._address__release()
         self.victim = self.Victim()
         self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
