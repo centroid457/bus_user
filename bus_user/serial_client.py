@@ -205,6 +205,7 @@ class SerialClient(Logger):
         # self.addresses_paired__detect()   # DONT USE in init!!!
 
     def __del__(self):
+        self.address__release()
         self.disconnect()
 
     @classmethod
@@ -416,6 +417,15 @@ class SerialClient(Logger):
         self.ADDRESS = self._SERIAL.port
         self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked {self._SERIAL}")
 
+    def address__release(self) -> None:
+        """
+        make all ports vacant for autodetect
+        """
+        if self in SerialClient.ADDRESSES__SYSTEM.values():
+            for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
+                if owner is self:
+                    SerialClient.ADDRESSES__SYSTEM[address] = None
+
     @classmethod
     def addresses__release(cls) -> None:
         """
@@ -424,7 +434,8 @@ class SerialClient(Logger):
         SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
 
     # AUTODETECT ------------------------------------------------------------------------------------------------------
-    # dont move to CLASSMETHOD!!!
+    pass    # dont move this all to CLASSMETHOD!!!
+
     def address_get__first_free(self) -> str | None:
         result = None
         for address, owner in self.ADDRESSES__SYSTEM.items():
@@ -538,7 +549,7 @@ class SerialClient(Logger):
 
         return result
 
-    # -----------------------------------------------------------------------------------------------------------------
+    # VALIDATION ------------------------------------------------------------------------------------------------------
     def address__answer_validation(self) -> bool | None | NoReturn:
         """
         overwrite for you case!
