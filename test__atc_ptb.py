@@ -75,7 +75,7 @@ class Test__PTB(Test__ATC):
             EOL__SEND = b"\n"
 
             def address__answer_validation(self) -> bool:
-                return self.write_read__last_validate("get name", "PTB")
+                return self.write_read__last_validate("get name", "PTB") and self.write_read__last_validate("get addr", "01")
 
         cls.victim = Ptb_SerialClient()
 
