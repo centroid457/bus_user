@@ -89,9 +89,12 @@ other protocols mot recommended
 
 
 
+
+
         ["[serialClient]",
             "add ADDRESSES__SYSTEM_FREE",
             "apply dict in ADDRESSES__SYSTEM",
+            "add addresses__release",
          ],
     ]
 

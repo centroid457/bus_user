@@ -63,11 +63,13 @@ class Test__Shorted:
     def setup_class(cls):
         class Victim(SerialClient):
             ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-            # def address__answer_validation(self):
-            #     return self.address__answer_validation__shorted()
+
+            def address__answer_validation(self):       # this is only for FIRST_FREE__ANSWER_VALID! not for FIRST_FREE__SHORTED and etc!
+                return self._address__answer_validation__shorted()
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
+        cls.victim.addresses__release()
         if not cls.victim.connect():
             msg = f"[ERROR] not found PORT shorted by Rx+Tx"
             print(msg)

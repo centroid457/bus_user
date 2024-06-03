@@ -368,20 +368,6 @@ class SerialClient(Logger):
         self.cmd_prefix__set()
         return True
 
-    def _address__occupy(self) -> None:
-        if not self._SERIAL.port:
-            return
-
-        # clear old lock -------------
-        for port_i, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
-            if port_inst is self and port_i != self._SERIAL.port:
-                SerialClient.ADDRESSES__SYSTEM[port_i] = None
-
-        # set new lock -------------
-        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
-        self.ADDRESS = self._SERIAL.port
-        self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked {self._SERIAL}")
-
     def connect__validation(self) -> bool:
         """
         DIFFERENCE
@@ -415,6 +401,29 @@ class SerialClient(Logger):
     pass
     pass
 
+    # OCCUPATION ------------------------------------------------------------------------------------------------------
+    def _address__occupy(self) -> None:
+        if not self._SERIAL.port:
+            return
+
+        # clear old lock -------------
+        for port_i, port_inst in SerialClient.ADDRESSES__SYSTEM.items():
+            if port_inst is self and port_i != self._SERIAL.port:
+                SerialClient.ADDRESSES__SYSTEM[port_i] = None
+
+        # set new lock -------------
+        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
+        self.ADDRESS = self._SERIAL.port
+        self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked {self._SERIAL}")
+
+    @classmethod
+    def addresses__release(cls) -> None:
+        """
+        make all ports vacant for autodetect
+        """
+        SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
+
+    # AUTODETECT ------------------------------------------------------------------------------------------------------
     # dont move to CLASSMETHOD!!!
     def address_get__first_free(self) -> str | None:
         result = None
@@ -541,7 +550,10 @@ class SerialClient(Logger):
         3. raiseExx/NoReturn - equivalent as False!
         """
 
-    def address__answer_validation__shorted(self) -> bool | None:
+    def _address__answer_validation__shorted(self) -> bool | None:
+        """
+        this is the internal method! for autodetect shorted address
+        """
         load = "FIND__SHORTED"
         return self.write_read__last_validate(load, load)
 
@@ -696,7 +708,7 @@ class SerialClient(Logger):
         for address in cls.addresses_system__detect():
             obj = cls()
             if obj.connect(address=address, _raise=False, _touch_connection=True):
-                if obj.address__answer_validation__shorted():
+                if obj._address__answer_validation__shorted():
                     result.append(address)
                 obj.disconnect()
 
