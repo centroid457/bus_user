@@ -1079,7 +1079,7 @@ class SerialClient(Logger):
     def write_read__last_validate(
             self,
             input: Union[AnyStr, list[AnyStr]] | None,
-            expect: str,
+            expect: Union[str, list[str]],
             prefix: Optional[str] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
@@ -1088,7 +1088,6 @@ class SerialClient(Logger):
         created specially for address__answer_validation
         """
         if input:
-            self.buffers_clear()
             output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
         else:
             outputs = self.read_lines()
@@ -1097,7 +1096,17 @@ class SerialClient(Logger):
             else:
                 output_last = ""
 
-        return output_last.lower() == expect.lower()
+        if isinstance(expect, (str, bytes)):
+            expect_list = [expect, ]
+        else:
+            expect_list = expect
+
+        for expect_var in expect_list:
+            expect_var = self._data_ensure__string(expect_var)
+            if output_last.lower() == expect_var.lower():
+                return True
+
+        return False
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """

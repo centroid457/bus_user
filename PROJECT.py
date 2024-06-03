@@ -86,8 +86,11 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
+
+
+
         ["[serialClient]",
-            "add derivatives into INIT",
+            "extend write_read__last_validate for compare with list variants",
          ],
     ]
 

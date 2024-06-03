@@ -217,6 +217,13 @@ class Test__Shorted:
     def test__wr_last_validate(self):
         assert self.victim.write_read__last_validate("hello", "hello")
         assert self.victim.write_read__last_validate(["hello1", "hello2"],  "hello2")
+        assert self.victim.write_read__last_validate(["hello1", "hello2"],  "HELLO2")   # CASE
+
+        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  "hello333")
+
+        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", ])
+        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello1'])
+        assert self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello2'])
 
     def test__wr_ReadFailPattern(self):
         self.victim.RAISE_READ_FAIL_PATTERN = True
