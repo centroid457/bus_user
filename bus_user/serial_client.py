@@ -231,13 +231,13 @@ class SerialClient(Logger):
         # self.PREFIX = ""
         return
 
-    def _clear_buffer__read(self) -> None:
+    def _buffers_clear__read(self) -> None:
         try:
             self.read_lines(_timeout=0.3)
         except:
             pass
 
-    def _clear_buffer__write(self) -> None:
+    def _buffers_clear__write(self) -> None:
         """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
 
         here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
@@ -247,13 +247,13 @@ class SerialClient(Logger):
         except:
             pass
 
-    def clear_buffers(self) -> None:
+    def buffers_clear(self) -> None:
         """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
 
         here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
         """
-        self._clear_buffer__write()
-        self._clear_buffer__read()
+        self._buffers_clear__write()
+        self._buffers_clear__read()
 
     # CONNECT =========================================================================================================
     def disconnect(self) -> None:
@@ -387,7 +387,7 @@ class SerialClient(Logger):
         if self._EMULATOR__INST.connect():
             self._EMULATOR__INST.start()
             self._EMULATOR__INST.wait__cycle_active()
-            self._clear_buffer__read()
+            self._buffers_clear__read()
 
     # ADDRESS =========================================================================================================
     """
@@ -1074,7 +1074,7 @@ class SerialClient(Logger):
         created specially for address__answer_validation
         """
         if input:
-            self.clear_buffers()
+            self.buffers_clear()
             output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
         else:
             outputs = self.read_lines()

@@ -95,6 +95,7 @@ other protocols mot recommended
             "add ADDRESSES__SYSTEM_FREE",
             "apply dict in ADDRESSES__SYSTEM",
             "add addresses__release",
+            "rename buffers_clear*",
          ],
     ]
 

@@ -12,6 +12,10 @@ from bus_user import *
 
 
 # =====================================================================================================================
+JUST_LOAD = "JUST_LOAD"
+
+
+# =====================================================================================================================
 class Test__AddressResolved:
     Victim: Type[SerialClient]
     victim: SerialClient
@@ -138,12 +142,12 @@ class Test__Shorted:
         self.victim.disconnect()
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
-        assert self.victim.write_read("hello").last_output == "hello"
+        assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
 
         self.victim.disconnect()
         self.victim = self.Victim()
         self.victim.connect(_raise=False)
-        assert self.victim.write_read("hello").last_output == "hello"
+        assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
         self.victim.disconnect()
 
     def test__detect_available_ports(self):
