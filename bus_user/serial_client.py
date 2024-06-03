@@ -442,6 +442,13 @@ class SerialClient(Logger):
         """
         SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
 
+    def address_check__resolved(self) -> bool:
+        return isinstance(self.ADDRESS, str)
+
+    def address_check__occupied(self, address: str) -> bool:
+        owner = self.ADDRESSES__SYSTEM[address]
+        return owner is not None\
+
     # AUTODETECT ------------------------------------------------------------------------------------------------------
     pass    # dont move this all to CLASSMETHOD!!!
 
@@ -577,23 +584,7 @@ class SerialClient(Logger):
         load = "FIND__SHORTED"
         return self.write_read__last_validate(load, load)
 
-    # DETECT PORTS ====================================================================================================
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-
-    def address_check__resolved(self) -> bool:
-        return isinstance(self.ADDRESS, str)
-
-    def address_check__occupied(self, address: str) -> bool:
-        owner = self.ADDRESSES__SYSTEM[address]
-        return owner is not None
-
-    # -----------------------------------------------------------------------------------------------------------------
+    # DETECT ----------------------------------------------------------------------------------------------------------
     def address__check_exists(self) -> bool:
         try:
             self.connect(_raise=True, _touch_connection=True)
@@ -1148,6 +1139,23 @@ class SerialClient(Logger):
         if self._GETATTR_STARTSWITH__SEND and item.startswith(self._GETATTR_STARTSWITH__SEND):
             item = item.replace(self._GETATTR_STARTSWITH__SEND, "")
         return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=args, kwargs=kwargs))
+
+
+# =====================================================================================================================
+class SerialClient_FirstFree(SerialClient):
+    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
+
+
+class SerialClient_FirstFree_Shorted(SerialClient):
+    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+
+
+class SerialClient_FirstFree_Paired(SerialClient):
+    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+
+
+class SerialClient_FirstFree_AnswerValid(SerialClient):
+    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
 
 # =====================================================================================================================

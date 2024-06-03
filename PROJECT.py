@@ -96,7 +96,8 @@ other protocols mot recommended
             "apply dict in ADDRESSES__SYSTEM",
             "add addresses__release/address__release",
             "rename buffers_clear*",
-            "apply ADDRESS as property! and setter with address_release"
+            "apply ADDRESS as property! and setter with address_release",
+            "separate derivatives SerialClient_FirstFree/*"
          ],
     ]
 
