@@ -156,7 +156,7 @@ class Test__Shorted:
         assert self.Victim.addresses_system__count() > 0
 
     def test__connect_address_NOTexisted(self):
-        assert SerialClient(address="HELLO").address__check_exists() is False
+        assert SerialClient.address__check_exists(address="HELLO") is False
 
     def test__wr_single(self):
         assert self.victim.connect(_raise=False)

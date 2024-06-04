@@ -146,7 +146,7 @@ class SerialClient(Logger):
     pass
 
     # LOGGER --------------------------------------------------
-    # LOG_ENABLE = True
+    LOG_ENABLE = True
 
     # SETTINGS ------------------------------------------------
     _ADDRESS: TYPE__ADDRESS = None
@@ -185,14 +185,10 @@ class SerialClient(Logger):
     ADDRESSES__SHORTED: list[str] = []
     ADDRESSES__PAIRED: list[tuple[str, str]] = []
 
-    def __init__(self, address: TYPE__ADDRESS = None, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._SERIAL = Serial()
         self.history = HistoryIO()
-
-        # set only address!!!
-        if address is not None:
-            self.ADDRESS = address
 
         # apply settings
         # self._SERIAL.interCharTimeout = 0.8
@@ -585,10 +581,12 @@ class SerialClient(Logger):
         return self.write_read__last_validate(load, load)
 
     # DETECT ----------------------------------------------------------------------------------------------------------
-    def address__check_exists(self) -> bool:
+    @staticmethod
+    def address__check_exists(address: str) -> bool:
         try:
-            self.connect(_raise=True, _touch_connection=True)
-            self.disconnect()
+            inst = SerialClient()
+            inst.connect(address=address, _raise=True, _touch_connection=True)
+            inst.disconnect()
         except Exx_SerialAddress_NotExists:
             return False
         except:
@@ -704,7 +702,7 @@ class SerialClient(Logger):
 
         result: List[str] = []
         for name in attempt_list:
-            if SerialClient(address=name).address__check_exists():
+            if SerialClient.address__check_exists(address=name):
                 result.append(name)
 
         return result
