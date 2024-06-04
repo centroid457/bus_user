@@ -225,6 +225,15 @@ class Test__Shorted:
         assert not self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello1'])
         assert self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello2'])
 
+    def test__wr_last_validate_regexp(self):
+        assert self.victim.write_read__last_validate_regexp("hello", "hello") is True
+        assert self.victim.write_read__last_validate_regexp("hello", "he.*") is True
+        assert self.victim.write_read__last_validate_regexp("hello", ["he.*", ]) is True
+        assert self.victim.write_read__last_validate_regexp("hello", ["HE.*", ]) is True
+        assert self.victim.write_read__last_validate_regexp("hello", ["hello123", ]) is False
+        assert self.victim.write_read__last_validate_regexp("hello", ["hello123", "HELLO"]) is True
+
+
     def test__wr_ReadFailPattern(self):
         self.victim.RAISE_READ_FAIL_PATTERN = True
         try:

@@ -1078,11 +1078,12 @@ class SerialClient(Logger):
 
     def write_read__last_validate(
             self,
-            input: Union[AnyStr, list[AnyStr]] | None,
+            input: Union[str, list[str]] | None,
             expect: Union[str, list[str]],
             prefix: Optional[str] = None,
             args: Optional[List] = None,
             kwargs: Optional[Dict] = None,
+            _as_regexp: Optional[bool] = None,
     ) -> bool:
         """
         created specially for address__answer_validation
@@ -1102,11 +1103,19 @@ class SerialClient(Logger):
             expect_list = expect
 
         for expect_var in expect_list:
-            expect_var = self._data_ensure__string(expect_var)
-            if output_last.lower() == expect_var.lower():
-                return True
-
+            if not _as_regexp:
+                if output_last.lower() == expect_var.lower():
+                    return True
+            else:
+                if re.fullmatch(expect_var, output_last, flags=re.IGNORECASE):
+                    return True
         return False
+
+    def write_read__last_validate_regexp(self, *args, **kwargs) -> bool:
+        """
+        created specially for address__answer_validation
+        """
+        return self.write_read__last_validate(*args, **kwargs, _as_regexp=True)
 
     def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
         """
