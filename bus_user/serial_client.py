@@ -185,8 +185,8 @@ class SerialClient(Logger):
     ADDRESSES__SHORTED: list[str] = []
     ADDRESSES__PAIRED: list[tuple[str, str]] = []
 
-    def __init__(self, address: TYPE__ADDRESS = None):
-        super().__init__()
+    def __init__(self, address: TYPE__ADDRESS = None, **kwargs):
+        super().__init__(**kwargs)
         self._SERIAL = Serial()
         self.history = HistoryIO()
 

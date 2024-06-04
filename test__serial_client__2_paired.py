@@ -60,8 +60,8 @@ class Test__Paired:
         addr_paired = self.victim.address_paired__get()
         assert addr_paired is not None
 
-        victim_pair = SerialClient(addr_paired)
-        assert victim_pair.connect()
+        victim_pair = SerialClient()
+        assert victim_pair.connect(address=addr_paired)
 
         assert self.victim._write("LOAD1")
         assert victim_pair.read_line() == "LOAD1"

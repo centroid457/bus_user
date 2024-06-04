@@ -20,10 +20,9 @@ class Test__ATC:
     def setup_class(cls):
         pass
 
-        class Atc_SerialClient(SerialClient):
+        class Atc_SerialClient(SerialClient_FirstFree_AnswerValid):
             LOG_ENABLE = True
             RAISE_CONNECT = False
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             BAUDRATE = 115200
 
             # # ATC ----------------------------
@@ -64,10 +63,9 @@ class Test__PTB(Test__ATC):
     def setup_class(cls):
         pass
 
-        class Ptb_SerialClient(SerialClient):
+        class Ptb_SerialClient(SerialClient_FirstFree_AnswerValid):
             LOG_ENABLE = True
             RAISE_CONNECT = False
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
             BAUDRATE = 115200
 
             # PTB ----------------------------
