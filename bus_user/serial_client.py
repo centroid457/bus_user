@@ -421,7 +421,7 @@ class SerialClient(Logger):
         #     if owner is self and address != self._SERIAL.port:
         #         SerialClient.ADDRESSES__SYSTEM[address] = None
 
-        self._address__release()
+        # self._address__release()          # DONT USE HERE!!!!
 
         # set new lock -------------
         SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
