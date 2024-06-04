@@ -364,14 +364,14 @@ class SerialClient(Logger):
 
         # OK -----------------------------
         if not _touch_connection:
+            self._address__occupy()
             if not self.connect__validation():
                 self.disconnect()
                 return False
 
-            self._address__occupy()
             self.emulator_start()
+            self.cmd_prefix__set()
 
-        self.cmd_prefix__set()
         return True
 
     def connect__validation(self) -> bool:

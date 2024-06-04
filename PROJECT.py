@@ -77,7 +77,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 14)
+    VERSION: Tuple[int, int, int] = (0, 3, 15)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -86,9 +86,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        ["[serialClient]",
-            "use only kwargs in init!!!",
-         ],
+        "[serialClient] zero fix connect",
     ]
 
     # FINALIZE -----------------------------------------------
