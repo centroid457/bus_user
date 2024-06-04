@@ -4,11 +4,10 @@
 from bus_user import *
 
 
-class Dev(SerialClient):
+class Dev(SerialClient_FirstFree):
     LOG_ENABLE = True
     EOL__SEND: bytes = b"\n"
     BAUDRATE = 115200
-    ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
 
 
 dev = Dev()
