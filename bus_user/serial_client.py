@@ -1155,6 +1155,7 @@ class SerialClient(Logger):
 
             # ALL VARIANTS
             dev.VIN(11, CH2=13)
+            dev.VIN__11(22, CH2=13)
             dev.send__VIN(11, CH2=13)
             dev.send__VIN__11(22, CH2=13)
         """
