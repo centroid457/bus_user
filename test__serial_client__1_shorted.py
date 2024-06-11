@@ -94,7 +94,14 @@ class Test__Shorted:
             # self.victim.address__release()
             self.victim.disconnect()
 
-    # -----------------------------------------------------------------------------------------------------------------
+    # ADDRESS ---------------------------------------------------------------------------------------------------------
+    def test__addresses_detect_available(self):
+        assert self.Victim.addresses_system__count() > 0
+
+    def test__address_NOTexisted(self):
+        assert SerialClient.address__check_exists(address="HELLO") is False
+
+    # AUTOCONNECT -----------------------------------------------------------------------------------------------------
     def test__ADDRESS__FIRST_VACANT(self):
         self.victim.disconnect()
 
@@ -134,6 +141,7 @@ class Test__Shorted:
 
         assert not Victim().connect(_raise=False)
 
+    # CONNECT ---------------------------------------------------------------------------------------------------------
     def test__connect_multy(self):
         assert self.victim.connect(_raise=False)
         assert self.victim.connect(_raise=False)
@@ -152,12 +160,22 @@ class Test__Shorted:
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
         self.victim.disconnect()
 
-    def test__detect_available_ports(self):
-        assert self.Victim.addresses_system__count() > 0
+    def test__connect_if_addr_resolved(self):
+        self.victim.disconnect()
 
-    def test__connect_address_NOTexisted(self):
-        assert SerialClient.address__check_exists(address="HELLO") is False
+        assert self.victim.connect() is True
+        assert self.victim.connect__only_if_address_resolved() is True
 
+        self.victim.ADDRESS = None
+        assert self.victim.connect(_raise=False) is False
+        assert self.victim.connect__only_if_address_resolved() is None
+
+        self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        assert self.victim.connect__only_if_address_resolved() is None
+        assert self.victim.connect() is True
+        assert self.victim.connect__only_if_address_resolved() is True
+
+    # WR --------------------------------------------------------------------------------------------------------------
     def test__wr_single(self):
         assert self.victim.connect(_raise=False)
         assert self.victim._write("") is True
@@ -233,7 +251,6 @@ class Test__Shorted:
         assert self.victim.write_read__last_validate_regexp("hello", ["hello123", ]) is False
         assert self.victim.write_read__last_validate_regexp("hello", ["hello123", "HELLO"]) is True
 
-
     def test__wr_ReadFailPattern(self):
         self.victim.RAISE_READ_FAIL_PATTERN = True
         try:
@@ -264,8 +281,7 @@ class Test__Shorted:
         self.victim.PREFIX = ""
         assert self.victim.write_read("hello").last_output == "hello"
 
-    # -----------------------------------------------------------------------------------------------------------------
-    # FIX WORK IN FULL PIPELINE!!!!
+    # GETATTR ---------------------------------------------------------------------------------------------------------
     def test__getattr__1_STARTSWITH(self):
         assert self.victim.send__hello() == "hello"
 
@@ -288,7 +304,7 @@ class Test__Shorted:
 
         assert self.victim.send__hello__11__22(33, 44, kwarg1=1, kwarg2=2) == "hello 11 22 33 44 kwarg1=1 kwarg2=2"
 
-    def test__getattr_CMD_PREFIX(self):
+    def test__getattr__0_PREFIX(self):
         self.victim.PREFIX = "DEV:01:"
         assert self.victim.hello() == f"{self.victim.PREFIX}hello"
         assert self.victim.hello(12) == f"{self.victim.PREFIX}hello 12"

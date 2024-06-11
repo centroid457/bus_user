@@ -274,11 +274,9 @@ class SerialClient(Logger):
         except:
             pass
 
-    def connect__only_if_address_resolved(self) -> Union[bool, NoReturn]:
+    def connect__only_if_address_resolved(self) -> Union[None, bool, NoReturn]:
         if self.address_check__resolved():
             return self.connect()
-        else:
-            return False
 
     def connect(
             self,
@@ -436,6 +434,7 @@ class SerialClient(Logger):
             for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
                 if owner is self:
                     SerialClient.ADDRESSES__SYSTEM[address] = None
+                    # self.disconnect()
                     break
 
     @classmethod
