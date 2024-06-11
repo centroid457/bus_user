@@ -266,17 +266,27 @@ class Test__Shorted:
 
     # -----------------------------------------------------------------------------------------------------------------
     # FIX WORK IN FULL PIPELINE!!!!
-    def test__getattr(self):
+    def test__getattr__1_STARTSWITH(self):
+        assert self.victim.send__hello() == "hello"
+
+    def test__getattr__2_cmd_direct(self):
         assert self.victim.hello() == "hello"
         assert self.victim.hello(12) == "hello 12"
         assert self.victim.hello(12, 13) == "hello 12 13"
         assert self.victim.hello("12 13") == "hello 12 13"
         assert self.victim.hello(CH1=12, CH2=13) == "hello CH1=12 CH2=13"
-        assert self.victim.hello(12, CH2=13) == "hello 12 CH2=13"
         assert self.victim.hello("?") == "hello ?"
 
-    def test__getattr__SEND_STARTSWITH(self):
-        assert self.victim.send__hello() == "hello"
+        assert self.victim.hello(12, kwarg1=1) == "hello 12 kwarg1=1"
+        assert self.victim.send__hello(12, kwarg1=1) == "hello 12 kwarg1=1"
+
+    def test__getattr__3_cmd_w_args(self):
+        assert self.victim.hello__11() == "hello 11"
+        assert self.victim.hello__11__22() == "hello 11 22"
+        assert self.victim.hello__11__22(33) == "hello 11 22 33"
+        assert self.victim.hello__11__22(33, 44, kwarg1=1, kwarg2=2) == "hello 11 22 33 44 kwarg1=1 kwarg2=2"
+
+        assert self.victim.send__hello__11__22(33, 44, kwarg1=1, kwarg2=2) == "hello 11 22 33 44 kwarg1=1 kwarg2=2"
 
     def test__getattr_CMD_PREFIX(self):
         self.victim.PREFIX = "DEV:01:"

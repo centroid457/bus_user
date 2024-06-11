@@ -171,6 +171,7 @@ class SerialClient(Logger):
     EOL__UNI_SET: bytes = b"\r\n"
 
     _GETATTR_STARTSWITH__SEND: str = "send__"
+    _GETATTR_SPLITTER__ARGS: str = "__"
 
     # test purpose EMULATOR -----------------
     _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR__INST could be used for test reason and check values in realtime!!
@@ -805,7 +806,7 @@ class SerialClient(Logger):
     pass
 
     # CMD -------------------------------------------------------------------------------------------------------------
-    def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: List[Any] = None, kwargs: Dict[Any, Any] = None) -> str:
+    def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: list[Any] = None, kwargs: dict[Any, Any] = None) -> str:
         result = ""
 
         cmd = self._data_ensure__string(cmd)
@@ -1151,10 +1152,26 @@ class SerialClient(Logger):
             dev.VIN(12, 13)   # return answer for sent string in port "VIN 12 13" by args
             dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
             dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
+
+            # ALL VARIANTS
+            dev.VIN(11, CH2=13)
+            dev.send__VIN(11, CH2=13)
+            dev.send__VIN__11(22, CH2=13)
         """
+        item_args = []  # args in getattr name
+
+        # 1=apply _GETATTR_STARTSWITH__SEND
         if self._GETATTR_STARTSWITH__SEND and item.startswith(self._GETATTR_STARTSWITH__SEND):
             item = item.replace(self._GETATTR_STARTSWITH__SEND, "")
-        return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=args, kwargs=kwargs))
+
+        # 2=apply args in getattrs name
+        if "__" in item:
+            item_splited = item.split(self._GETATTR_SPLITTER__ARGS)
+            item = item_splited[0]
+            item_args = item_splited[1:]
+
+        # 3=apply direct cmd
+        return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=[*item_args, *args], kwargs=kwargs))
 
 
 # =====================================================================================================================
