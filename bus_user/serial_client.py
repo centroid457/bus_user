@@ -274,6 +274,12 @@ class SerialClient(Logger):
         except:
             pass
 
+    def connect__only_if_address_resolved(self) -> Union[bool, NoReturn]:
+        if self.address_check__resolved():
+            return self.connect()
+        else:
+            return False
+
     def connect(
             self,
             address: Optional[str] = None,
@@ -444,7 +450,7 @@ class SerialClient(Logger):
 
     def address_check__occupied(self, address: str) -> bool:
         owner = self.ADDRESSES__SYSTEM[address]
-        return owner is not None\
+        return owner is not None
 
     # AUTODETECT ------------------------------------------------------------------------------------------------------
     pass    # dont move this all to CLASSMETHOD!!!
