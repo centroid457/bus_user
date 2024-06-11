@@ -77,7 +77,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 16)
+    VERSION: Tuple[int, int, int] = (0, 3, 17)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -86,7 +86,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[serialClient] add ability to use args in getattr name",
+        "[serialClient] add connect__only_if_address_resolved",
     ]
 
     # FINALIZE -----------------------------------------------
