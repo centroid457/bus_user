@@ -16,14 +16,13 @@ JUST_LOAD = "JUST_LOAD"
 
 
 # =====================================================================================================================
-class Test__AddressResolved:
+class Test__Shorted_AddressResolved:
     Victim: Type[SerialClient]
     victim: SerialClient
 
     @classmethod
     def setup_class(cls):
-        class Victim(SerialClient):
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        class Victim(SerialClient_FirstFree_Shorted):
             RAISE_CONNECT = False
 
         cls.Victim = Victim
@@ -59,15 +58,13 @@ class Test__AddressResolved:
 
 
 # =====================================================================================================================
-class Test__Shorted:
+class Test__Shorted_Connect:
     Victim: Type[SerialClient]
     victim: SerialClient
 
     @classmethod
     def setup_class(cls):
-        class Victim(SerialClient):
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-
+        class Victim(SerialClient_FirstFree_Shorted):
             def address__answer_validation(self):       # this is only for FIRST_FREE__ANSWER_VALID! not for FIRST_FREE__SHORTED and etc!
                 return self._address__answer_validation__shorted()
 
@@ -175,7 +172,35 @@ class Test__Shorted:
         assert self.victim.connect() is True
         assert self.victim.connect__only_if_address_resolved() is True
 
-    # WR --------------------------------------------------------------------------------------------------------------
+
+# =====================================================================================================================
+class Test__Shorted_Base:
+    Victim: Type[SerialClient_FirstFree_Shorted]
+    victim: SerialClient_FirstFree_Shorted
+
+    @classmethod
+    def setup_class(cls):
+        cls.Victim = SerialClient_FirstFree_Shorted
+        cls.victim = cls.Victim()
+        if not cls.victim.connect():
+            msg = f"[ERROR] not found PORT shorted by Rx+Tx"
+            print(msg)
+            raise Exception(msg)
+
+    @classmethod
+    def teardown_class(cls):
+        if cls.victim:
+            cls.victim.disconnect()
+
+    # def setup_method(self, method):
+    #     pass
+    #
+    # def teardown_method(self, method):
+    #     pass
+
+
+# =====================================================================================================================
+class Test__Shorted_WR(Test__Shorted_Base):
     def test__wr_single(self):
         assert self.victim.connect(_raise=False)
         assert self.victim._write("") is True
@@ -281,7 +306,9 @@ class Test__Shorted:
         self.victim.PREFIX = ""
         assert self.victim.write_read("hello").last_output == "hello"
 
-    # GETATTR ---------------------------------------------------------------------------------------------------------
+
+# =====================================================================================================================
+class Test__Shorted_WR_Getattr(Test__Shorted_Base):
     def test__getattr__1_STARTSWITH(self):
         assert self.victim.send__hello() == "hello"
 

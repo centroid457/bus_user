@@ -9,6 +9,7 @@ from logger_aux import Logger
 from serial import Serial
 from serial.tools import list_ports
 from . import HistoryIO
+from funcs_aux import *
 
 
 # =====================================================================================================================
@@ -96,7 +97,8 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 
 
 # =====================================================================================================================
-TYPE__RW_ANSWER = Union[None, str, List[str]]
+TYPE__RW_ANSWER_SINGLE = Union[None, str, Value_WithUnit]
+TYPE__RW_ANSWER = Union[TYPE__RW_ANSWER_SINGLE, list[TYPE__RW_ANSWER_SINGLE]]
 
 
 class Type__WrReturn(Enum):
@@ -132,7 +134,7 @@ class SerialClient(Logger):
         =GOOD=
         - driver CH340(pcb UsbToTtl) - no one error so far!
         - driver CH341A(pcb AllInOne/big universal) - no one error so far! more then steps about 50 minutes!!! tired of waiting
-        - driver CH341A(pcb CH341T_V3) -
+        - driver CH341A(pcb CH341T_V3) - no one error so far! more then steps about 35 minutes!!! tired of waiting
     """
     pass
     pass
@@ -917,7 +919,7 @@ class SerialClient(Logger):
 
     # R ---------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
-    def read_lines(self, _timeout: Optional[float] = None) -> Union[List[str], NoReturn]:
+    def read_lines(self, _timeout: Optional[float] = None) -> Union[list[TYPE__RW_ANSWER_SINGLE], NoReturn]:
         result: List[str] = []
         while True:
             line = self.read_line(_timeout)
@@ -979,6 +981,12 @@ class SerialClient(Logger):
         data = self._data_ensure__string(data)
         self.history.add_output(data)
         self.answer_is_fail(data)
+
+        try:
+            data = Value_WithUnit(data)
+        except:
+            pass
+
         return data
 
     # W ---------------------------------------------------------------------------------------------------------------

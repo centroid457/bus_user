@@ -25,6 +25,7 @@ from .serial_client import (
     # AUX
     # TYPES
     TYPE__ADDRESS,
+    TYPE__RW_ANSWER_SINGLE,
     TYPE__RW_ANSWER,
     Type__WrReturn,
     Type__AddressAutoAcceptVariant,
