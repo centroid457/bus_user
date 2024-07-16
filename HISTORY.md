@@ -12,6 +12,11 @@
 ********************************************************************************
 ## NEWS
 
+0.4.0 (2024/07/16 15:39:10)
+------------------------------
+- [serialClient] apply ValueUnit in Answers  
+- [pypiTemplate] apply latest  
+
 0.3.17 (2024/06/11 15:03:01)
 ------------------------------
 - [serialClient] add connect__only_if_address_resolved  
