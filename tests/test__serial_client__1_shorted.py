@@ -340,3 +340,15 @@ class Test__Shorted_WR_Getattr(Test__Shorted_Base):
 
 
 # =====================================================================================================================
+class Test__Shorted_WR_ValueUnit(Test__Shorted_Base):
+    def test__1(self):
+        assert self.victim.send__123() == "123"
+        assert self.victim.send__123() == 123
+        assert self.victim.send__123() > 122
+        assert self.victim.send__123() < 123.1
+
+        assert self.victim.send__123v() > 122
+        assert self.victim.send__123v() + 1 == 124
+
+
+# =====================================================================================================================

@@ -3,7 +3,8 @@ from _aux__release_files import release_files_update
 
 
 # =====================================================================================================================
-VERSION = (0, 0, 3)   # 1/deprecate _VERSION_TEMPLATE from PRJ object +2/place update_prj here in __main__ +3/separate finalize attrs
+# VERSION = (0, 0, 3)   # 1/deprecate _VERSION_TEMPLATE from PRJ object +2/place update_prj here in __main__ +3/separate finalize attrs
+VERSION = (0, 0, 4)     # add AUTHOR_NICKNAME_GITHUB for badges
 
 
 # =====================================================================================================================
@@ -12,6 +13,7 @@ class PROJECT:
     AUTHOR_NAME: str = "Andrei Starichenko"
     AUTHOR_EMAIL: str = "centroid@mail.ru"
     AUTHOR_HOMEPAGE: str = "https://github.com/centroid457/"
+    AUTHOR_NICKNAME_GITHUB: str = "centroid457"
 
     # PROJECT ----------------------------------------------
     NAME_IMPORT: str = "bus_user"
@@ -77,7 +79,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 3, 17)
+    VERSION: Tuple[int, int, int] = (0, 4, 0)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -86,7 +88,8 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
-        "[serialClient] add connect__only_if_address_resolved",
+        "[serialClient] apply ValueUnit in Answers",
+        "[pypiTemplate] apply latest"
     ]
 
     # FINALIZE -----------------------------------------------
