@@ -14,7 +14,8 @@ from cli_user import *
 
 # =====================================================================================================================
 # VERSION = (0, 0, 1)   # first attempt
-VERSION = (0, 0, 2)   # add commented testPypi
+# VERSION = (0, 0, 2)   # add commented testPypi
+VERSION = (0, 0, 3)   # fix --Verbose!
 
 
 # =====================================================================================================================
@@ -29,8 +30,9 @@ cmds_timeout = [
     ("python -m build --wheel", 60),
 
     # share ------------
-    # ("twine upload dist/* -r testpypi --verbose", 90),
-    ("twine upload dist/* --verbose", 90),
+    # ("twine upload dist/* -r testpypi", 90),  # TESTPYPI
+    # ("twine upload dist/* --verbose", 90),    # DONT USE --VERBOSE!!!!
+    ("twine upload dist/*", 90),
 ]
 result = cli.send(cmds_timeout) and Packages().upgrade_prj(PROJECT)
 
