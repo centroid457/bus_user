@@ -1,17 +1,13 @@
-import pathlib
 import re
 import sys
 import glob
-import time
 from typing import *
 from enum import Enum, auto
 
-from object_info import ObjectInfo
 from logger_aux import Logger
 
 from serial import Serial
 from serial.tools import list_ports
-
 from . import HistoryIO
 
 
@@ -122,7 +118,6 @@ TYPE__ADDRESS = Union[None, Type__AddressAutoAcceptVariant, str]
 # =====================================================================================================================
 class SerialClient(Logger):
     """
-
     NOTE:
     1. use good COM-port adapters!!!
         some bites may be lost (usually on started byte) or added extra chars (usually to start and end of line)!!!
@@ -130,16 +125,14 @@ class SerialClient(Logger):
         DECODING APPROPRIATE MODELS
         ---------------------------
         =WRONG=
-        - PROFILIC - often +wrong driver
-        - FTDI FT232RL - sometimes but less than on Profilic=fail on step 0/11/20/3 3/9/95!!!
-        - CP2102 - fail on step 3392/877/1141/!!! sometimes on step 1715 get SerialTimeoutException
+        - driver PROFILIC PL2303(pcb SBT5329) - often +wrong driver
+        - driver FTDI FT232RL(pcb msc-73lv) - sometimes but less than on Profilic=fail on step 0/11/20/3 3/9/95!!!
+        - driver CP2102(pcb MostDense) - fail on step 3392/877/1141/!!! sometimes on step 1715 get SerialTimeoutException
 
         =GOOD=
-        - CH340 - no one error so far!
-        - CH341A (big universal) - no one error so far! more then steps about 50 minutes!!! tired of waiting
-
-        =NOT TESTED= wait postage from Aliexpress - already get! need tests!!! use Test__Shorted_validateModel_InfinitRW!!!!
-        - CH341T
+        - driver CH340(pcb UsbToTtl) - no one error so far!
+        - driver CH341A(pcb AllInOne/big universal) - no one error so far! more then steps about 50 minutes!!! tired of waiting
+        - driver CH341A(pcb CH341T_V3) -
     """
     pass
     pass
@@ -1178,28 +1171,6 @@ class SerialClient(Logger):
 
         # 3=apply direct cmd
         return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=[*item_args, *args], kwargs=kwargs))
-
-
-# =====================================================================================================================
-class SerialClient_FirstFree(SerialClient):
-    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
-
-
-class SerialClient_FirstFree_Shorted(SerialClient):
-    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-
-
-class SerialClient_FirstFree_Paired(SerialClient):
-    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
-
-
-class SerialClient_FirstFree_AnswerValid(SerialClient):
-    _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
-
-
-# =====================================================================================================================
-if __name__ == "__main__":
-    pass
 
 
 # =====================================================================================================================

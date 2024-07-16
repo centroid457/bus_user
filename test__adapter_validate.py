@@ -17,7 +17,7 @@ class Test__Shorted_validateModel_InfinitRW:
     """
     VALIDATE ADAPTERS fro DECODУ ERRORS
     """
-    victim: SerialClient
+    victim: SerialClient_FirstFree_Shorted
 
     # @classmethod
     # def setup_class(cls):
@@ -37,7 +37,7 @@ class Test__Shorted_validateModel_InfinitRW:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
-    @pytest.mark.skip
+    # @pytest.mark.skip
     def test__shorted(self):
         """
         connect shorted port and start this code!
@@ -45,10 +45,7 @@ class Test__Shorted_validateModel_InfinitRW:
         write as result in SerialClient docstring
         """
         # PREPARE ------------------------
-        class Victim(SerialClient):
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
-
-        self.victim = Victim()
+        self.victim = SerialClient_FirstFree_Shorted()
         if not self.victim.connect():
             msg = f"[ERROR] not found PORT shorted by Rx+Tx"
             print(msg)
@@ -62,7 +59,7 @@ class Test__Shorted_validateModel_InfinitRW:
             print(load)
             assert self.victim.write_read__last(load) == load
 
-    # @pytest.mark.skip
+    @pytest.mark.skip
     def test__real_device(self):    # TODO: fix it!!!
         """
         in case of validate real device like ATC/PTB
@@ -71,9 +68,7 @@ class Test__Shorted_validateModel_InfinitRW:
         # PREPARE ------------------------
         VALIDATION_CMD, VALIDATION_ANSWER = ("GET NAME", "ATC 03")
 
-        class Victim(SerialClient):
-            _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
-
+        class Victim(SerialClient_FirstFree_Shorted):
             def address__answer_validation(self) -> bool:
                 return self.write_read__last_validate(*VALIDATION_CMD)
 
