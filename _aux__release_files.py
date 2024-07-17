@@ -2,6 +2,7 @@ import pathlib
 import re
 import time
 from typing import *
+from cli_user import *
 
 # from PROJECT import PROJECT
 
@@ -14,7 +15,8 @@ from typing import *
 # VERSION = (0, 0, 5)   # add BADGES block
 # VERSION = (0, 0, 6)   # [BADGES] improve
 # VERSION = (0, 0, 7)   # [BADGES] separate TestLinWin
-VERSION = (0, 0, 8)   # examples string add docstrings
+# VERSION = (0, 0, 8)   # examples string add docstrings
+VERSION = (0, 0, 9)   # add gen requirements_release_freezed
 
 
 # =====================================================================================================================
@@ -315,6 +317,7 @@ class ReleaseHistory(ReleaseFileBase):
 
 # =====================================================================================================================
 def release_files_update(project: Type['PROJECT']):
+    CliUser().send("python -m pip freeze > requirements_release_freezed.txt")
     ReleaseReadme(project).generate()
     ReleaseHistory(project).generate()
 
