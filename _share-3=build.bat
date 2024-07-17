@@ -1,6 +1,7 @@
 rem ====================================
 rem VERSION = (0, 0, 1)  # use new build
 rem VERSION = (0, 0, 2)  # separate build/dist cmds
+rem VERSION = (0, 0, 3)  # fix param Noisolation! used to be able build with any modules in root PyFiles
 
 rem ====================================
 echo off
@@ -24,13 +25,13 @@ echo ------------------------------------
 echo ------------------------------------
 echo ------------------------------------
 echo --------- create [DIST/*] ----------
-python -m build --sdist
+python -m build --sdist -n
 
 echo ------------------------------------
 echo ------------------------------------
 echo ------------------------------------
 echo --------- create [BUILD/*] ---------
-python -m build --wheel
+python -m build --wheel -n
 
 rem FINISH =============================
 pause
