@@ -1,11 +1,5 @@
 import pytest
 from typing import *
-
-import time
-import pathlib
-import shutil
-from tempfile import TemporaryDirectory
-
 from bus_user import *
 from pytest_aux import *
 
