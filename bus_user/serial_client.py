@@ -920,13 +920,14 @@ class SerialClient(Logger):
     # R ---------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!
     def read_lines(self, _timeout: Optional[float] = None) -> Union[list[TYPE__RW_ANSWER_SINGLE], NoReturn]:
-        result: List[str] = []
+        result: list[str] = []
         while True:
             line = self.read_line(_timeout)
-            if line:
-                result.append(line)
-            else:
+            if line is None or str(line) == "":
                 break
+            else:
+                result.append(line)
+
         return result
 
     def read_line(self, _timeout: Optional[float] = None) -> Union[str, NoReturn]:
@@ -1109,10 +1110,10 @@ class SerialClient(Logger):
 
         for expect_var in expect_list:
             if not _as_regexp:
-                if output_last.lower() == expect_var.lower():
+                if str(output_last).lower() == str(expect_var).lower():
                     return True
             else:
-                if re.fullmatch(expect_var, output_last, flags=re.IGNORECASE):
+                if re.fullmatch(expect_var, str(output_last), flags=re.IGNORECASE):
                     return True
         return False
 
