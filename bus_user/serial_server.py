@@ -80,7 +80,7 @@ class SerialServer_Base(Logger, QThread):
                 params_dump.append(" "*2 + f"|{name}={{")
                 for name_, value_ in value.items():
                     params_dump.append(" "*4 + f"|{name_}={value_}")
-            elif isinstance(value, (Value_WithUnit, Value_FromVariants)):
+            elif isinstance(value, (ValueUnit, ValueVariants)):
                 params_dump.append(" "*2 + f"|{name}={repr(value)}")
             else:
                 params_dump.append(" "*2 + f"|{name}={value}")
@@ -298,8 +298,8 @@ class SerialServer_Base(Logger, QThread):
         param_value = param_value.VALUE
 
         # VARIANTS ------------------------------------------------------------------
-        # Value_WithUnit -------------------------------
-        if isinstance(param_value, (Value_FromVariants, Value_FromVariants)):
+        # ValueUnit -------------------------------
+        if isinstance(param_value, (ValueUnit, ValueVariants)):
             return str(param_value)
 
         # CALLABLE -------------------------------
@@ -337,10 +337,10 @@ class SerialServer_Base(Logger, QThread):
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
             value_old = Iterables().value_by_path__get(path, self.PARAMS).VALUE
-            if isinstance(value_old, Value_WithUnit):
+            if isinstance(value_old, ValueUnit):
                 # NOTE: ALL CLASSES/INSTANCES ARE CALLABLE!!!
                 pass
-            elif isinstance(value_old, Value_FromVariants):
+            elif isinstance(value_old, ValueVariants):
                 if value_new not in value_old:
                     return self.ANSWER.ERR__VALUE_INCOMPATIBLE
             elif callable(value_old):
@@ -351,7 +351,7 @@ class SerialServer_Base(Logger, QThread):
             value_new = Strings().try_convert_to__elementary(value_new)
             value_old = Iterables().value_by_path__get(path, self.PARAMS).VALUE
             # SET ----------
-            if isinstance(value_old, (Value_WithUnit, Value_FromVariants)):
+            if isinstance(value_old, (ValueUnit, ValueVariants)):
                 try:
                     value_old.value = value_new
                     result = True
@@ -472,8 +472,8 @@ class SerialServer_Example(SerialServer_Base):
                 2: 32,
             },
         },
-        "UNIT": Value_WithUnit(1, unit="V"),
-        "VARIANT": Value_FromVariants(220, variants=[220, 380]),
+        "UNIT": ValueUnit(1, unit="V"),
+        "VARIANT": ValueVariants(220, variants=[220, 380]),
     }
 
     def cmd__upper(self, line_parsed: LineParsed) -> TYPE__CMD_RESULT:

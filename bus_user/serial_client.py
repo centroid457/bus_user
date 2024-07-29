@@ -97,7 +97,7 @@ class Exx_SerialPL2303IncorrectDriver(Exception):
 
 
 # =====================================================================================================================
-TYPE__RW_ANSWER_SINGLE = Union[None, str, Value_WithUnit]
+TYPE__RW_ANSWER_SINGLE = Union[None, str, ValueUnit]
 TYPE__RW_ANSWER = Union[TYPE__RW_ANSWER_SINGLE, list[TYPE__RW_ANSWER_SINGLE]]
 
 
@@ -984,7 +984,7 @@ class SerialClient(Logger):
         self.answer_is_fail(data)
 
         try:
-            data = Value_WithUnit(data)
+            data = ValueUnit(data)
         except:
             pass
 

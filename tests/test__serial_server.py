@@ -199,10 +199,10 @@ class Test__SerialServer_NoConnection:
         assert victim.PARAMS["VAR"] == 11
         assert victim.PARAMS["INT"] == 16
 
-    def test__Value_WithUnit(self):
+    def test__ValueUnit(self):
         victim = self.Victim()
-        victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
-        assert victim.PARAMS["UNIT123"] == Value_WithUnit(1, unit="V")
+        victim.PARAMS["UNIT123"] = ValueUnit(1, unit="V")
+        assert victim.PARAMS["UNIT123"] == ValueUnit(1, unit="V")
         assert victim._cmd__(LineParsed("unit123")) == "1V"
 
         assert victim._cmd__(LineParsed("unit123=11")) == AnswerVariants.SUCCESS
@@ -211,12 +211,12 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("unit123=1.00")) == AnswerVariants.SUCCESS
         assert victim._cmd__(LineParsed("unit123")) == "1.0V"
 
-        assert victim.PARAMS["UNIT123"] == Value_WithUnit(1.0, unit="V")
+        assert victim.PARAMS["UNIT123"] == ValueUnit(1.0, unit="V")
 
-    def test__Value_FromVariants(self):
+    def test__ValueVariants(self):
         victim = self.Victim()
 
-        victim.PARAMS["VARIANT"] = Value_FromVariants(220, variants=[220, 380])
+        victim.PARAMS["VARIANT"] = ValueVariants(220, variants=[220, 380])
         assert victim._cmd__(LineParsed("variant")) == "220"
 
         assert victim._cmd__(LineParsed("variant=11")) == AnswerVariants.ERR__VALUE_INCOMPATIBLE
@@ -225,12 +225,12 @@ class Test__SerialServer_NoConnection:
         assert victim._cmd__(LineParsed("variant=380")) == AnswerVariants.SUCCESS
         assert victim._cmd__(LineParsed("variant")) == "380"
 
-        assert victim.PARAMS["VARIANT"] == Value_FromVariants(380, variants=[220, 380])
+        assert victim.PARAMS["VARIANT"] == ValueVariants(380, variants=[220, 380])
 
     def test__list_results(self):
         victim = self.Victim()
-        victim.PARAMS["VARIANT"] = Value_FromVariants(220, variants=[220, 380])
-        victim.PARAMS["UNIT123"] = Value_WithUnit(1, unit="V")
+        victim.PARAMS["VARIANT"] = ValueVariants(220, variants=[220, 380])
+        victim.PARAMS["UNIT123"] = ValueUnit(1, unit="V")
 
         assert victim.list_param_results(["VARIANT", "UNIT123"]) == ["VARIANT=220", "UNIT123=1V"]
         assert victim.list_param_results(["cmd", "unit123"]) == [f"cmd={AnswerVariants.SUCCESS}", "unit123=1V"]
