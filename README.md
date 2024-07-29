@@ -9,7 +9,7 @@
 ![Commit/Count/y](https://img.shields.io/github/commit-activity/y/centroid457/bus_user)
 ![Commit/Count/m](https://img.shields.io/github/commit-activity/m/centroid457/bus_user)
 
-# bus_user (current v0.4.1/![Ver/Pypi Latest](https://img.shields.io/pypi/v/bus_user?label=pypi%20latest))
+# bus_user (current v0.4.2/![Ver/Pypi Latest](https://img.shields.io/pypi/v/bus_user?label=pypi%20latest))
 
 ## DESCRIPTION_SHORT
 work with equipment over buses like Serial/i2c/... as client and server
@@ -47,8 +47,8 @@ other protocols mot recommended
 	- handle BackSpace send manually from terminal  
 3. SerialServer values:  
 	- as Callable  
-	- Value_WithUnit  
-	- Value_FromVariants  
+	- ValueUnit  
+	- ValueVariants  
 	- list_results  
 4. SerialServer cmd:  
 	- NONE is equivalent for SUCCESS  
