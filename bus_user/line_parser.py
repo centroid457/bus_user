@@ -61,6 +61,8 @@ class LineParsed:
             self.CMD = self.ARGS[0]
             self.ARGS = self.ARGS[1:]
 
+        pass
+
     def ARGS_count(self) -> int:
         return len(self.ARGS)
 
