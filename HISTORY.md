@@ -12,6 +12,11 @@
 ********************************************************************************
 ## NEWS
 
+0.4.4 (2024/07/30 14:42:01)
+------------------------------
+- [SerialServer] mark tests/comments for VlueUnit/Variants are not working  
+- [SerialClient] fix ADDRESSES__SYSTEM owners  
+
 0.4.3 (2024/07/30 13:06:55)
 ------------------------------
 - [SerialClient] fix ADDRESSES__SYSTEM owners  

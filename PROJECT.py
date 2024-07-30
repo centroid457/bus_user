@@ -79,7 +79,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 4, 3)
+    VERSION: Tuple[int, int, int] = (0, 4, 4)
     TODO: List[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -88,6 +88,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: List[str] = [
+        "[SerialServer] mark tests/comments for VlueUnit/Variants are not working",
         "[SerialClient] fix ADDRESSES__SYSTEM owners",
     ]
 
