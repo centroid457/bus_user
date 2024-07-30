@@ -13,7 +13,7 @@ bdist-wheel-name==0.1.0
 beautifulsoup4==4.12.3
 bs4==0.0.2
 build==1.2.1
-bus_user==0.4.1
+bus_user==0.4.2
 certifi==2024.2.2
 cffi==1.15.1
 charset-normalizer==2.1.0
@@ -28,7 +28,7 @@ dummy_module==0.0.2
 fastapi==0.110.0
 freezegun==1.2.2
 frozenlist==1.4.1
-funcs_aux==0.4.1
+funcs_aux==0.4.4
 greenlet==3.0.3
 h11==0.14.0
 httptools==0.6.1
@@ -94,7 +94,7 @@ soupsieve==2.5
 SQLAlchemy==2.0.25
 starlette==0.36.3
 telebot==0.0.5
-testplans==0.3.21
+testplans==0.4.2
 threading_manager==0.0.8
 tomli==2.0.1
 twine==5.1.1
