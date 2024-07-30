@@ -37,6 +37,7 @@ class AnswerVariants:
 
 # =====================================================================================================================
 class SerialServer_Base(Logger, QThread):
+    # FIXME: PARAMS like ValueUniit/Variants is not Work/Broken!!!
     # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
     # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
 
