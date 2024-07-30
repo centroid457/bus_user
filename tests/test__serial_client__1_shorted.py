@@ -32,7 +32,7 @@ class Test__Shorted_AddressResolved:
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
-    def test__1(self):
+    def test__address_check__resolved(self):
         self.victim = self.Victim()
         assert self.victim.address_check__resolved() is False
         assert self.victim.connect() is True
@@ -47,6 +47,23 @@ class Test__Shorted_AddressResolved:
         assert self.victim.address_check__resolved() is False
         assert self.victim.connect() is True
         assert self.victim.address_check__resolved() is True
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__ADDRESSES(self):
+        self.victim = self.Victim()
+        print(self.victim.addresses_system__detect())
+        assert self.victim.address_check__resolved() is False
+        assert len(set(self.victim.addresses_system__detect().values())) == 1
+        assert self.victim.connect() is True
+        assert self.victim.connect() is True
+        print(self.victim.addresses_system__detect())
+        assert self.victim.address_check__resolved() is True
+        ports_owners_set = set(self.victim.addresses_system__detect().values())
+        if len(ports_owners_set) == 2:
+            assert True
+        else:
+            assert None not in ports_owners_set
+        self.victim.disconnect()
 
 
 # =====================================================================================================================

@@ -420,8 +420,8 @@ class SerialClient(Logger):
         # self._address__release()          # DONT USE HERE!!!!
 
         # set new lock -------------
-        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
         self.ADDRESS = self._SERIAL.port
+        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
         self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked/occupy {self._SERIAL}")
 
     def _address__release(self) -> None:
@@ -611,7 +611,8 @@ class SerialClient(Logger):
         else:
             print("[WARN] detected no serial ports")
 
-        SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(result, None)
+        SerialClient.ADDRESSES__SYSTEM.clear()
+        SerialClient.ADDRESSES__SYSTEM.update(**dict.fromkeys(result, None))
         return SerialClient.ADDRESSES__SYSTEM
 
     @staticmethod
