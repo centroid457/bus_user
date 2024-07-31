@@ -211,7 +211,7 @@ class SerialClient(Logger):
 
     @classmethod
     @property
-    def ADDRESSES__SYSTEM_FREE(cls) -> list[str]:
+    def ADDRESSES__FREE(cls) -> list[str]:
         cls.addresses_system__detect()
         result = []
         for port_name, port_owner in cls.ADDRESSES__SYSTEM.items():
@@ -258,8 +258,12 @@ class SerialClient(Logger):
         self._buffers_clear__read()
 
     # CONNECT =========================================================================================================
-    def disconnect(self) -> None:
-        self._address__release()
+    def disconnect(self, release: bool = None) -> None:
+        """
+        for release - its better to use direct cls._addresses__release()
+        """
+        if release:
+            self._address__release()
 
         try:
             self._SERIAL.close()
@@ -411,6 +415,13 @@ class SerialClient(Logger):
 
     # OCCUPATION ------------------------------------------------------------------------------------------------------
     def _address__occupy(self) -> None:
+        """
+        USAGE
+        -----
+        usually when start module we have exact and only one set of UartDevices!
+        ones we connect exact device - it would occupy the port.
+        port must be occupied even if Serial is not open!
+        """
         if not self._SERIAL.port:
             return
 
@@ -427,6 +438,9 @@ class SerialClient(Logger):
         self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked/occupy {self._SERIAL}")
 
     def _address__release(self) -> None:
+        """
+        USE ONLY when change address!
+        """
         if self in SerialClient.ADDRESSES__SYSTEM.values():
             for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
                 if owner is self:
@@ -438,6 +452,11 @@ class SerialClient(Logger):
     def _addresses__release(cls) -> None:
         """
         make all ports vacant for autodetect
+
+        CREATED SPECIALLY FOR
+        ---------------------
+        test issues (testing this module!)
+        when set of tests is finished for one connection schema - release all
         """
         SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
 
@@ -766,7 +785,7 @@ class SerialClient(Logger):
         print(f"{SerialClient.ADDRESSES__PAIRED=}")
         return result
 
-    def addresses_paired__get_used(self) -> Optional[Tuple[str, str]]:
+    def addresses_paired__get_used(self) -> Optional[tuple[str, str]]:
         for pair in self.addresses_paired__detect():
             if self._SERIAL.port in pair:
                 return pair

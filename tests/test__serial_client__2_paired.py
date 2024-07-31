@@ -38,6 +38,7 @@ class Test__Paired:
     def teardown_method(self, method):
         pass
         if self.victim:
+            self.victim._addresses__release()
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------

@@ -3,7 +3,7 @@ from typing import *
 
 # =====================================================================================================================
 class HistoryIO:
-    history: list[Tuple[str, list[str]]] = None
+    history: list[tuple[str, list[str]]] = None
 
     def __init__(self):
         self.history = []

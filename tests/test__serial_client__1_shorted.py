@@ -29,6 +29,7 @@ class Test__Shorted_AddressResolved:
     def teardown_method(self, method):
         pass
         if self.victim:
+            self.victim._addresses__release()
             self.victim.disconnect()
 
     # -----------------------------------------------------------------------------------------------------------------
@@ -51,18 +52,16 @@ class Test__Shorted_AddressResolved:
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESSES(self):
         self.victim = self.Victim()
-        print(self.victim.addresses_system__detect())
+        system_ports = self.victim.addresses_system__detect()
+        print(system_ports)
+        ports_owners__started = set(system_ports.values())
         assert self.victim.address_check__resolved() is False
-        assert len(set(self.victim.addresses_system__detect().values())) == 1
+        assert len(set(self.victim.addresses_system__detect().values())) == len(ports_owners__started)
         assert self.victim.connect() is True
         assert self.victim.connect() is True
         print(self.victim.addresses_system__detect())
         assert self.victim.address_check__resolved() is True
-        ports_owners_set = set(self.victim.addresses_system__detect().values())
-        if len(ports_owners_set) == 2:
-            assert True
-        else:
-            assert None not in ports_owners_set
+        assert len(set(self.victim.addresses_system__detect().values())) == len(ports_owners__started) + 1
         self.victim.disconnect()
 
 
@@ -88,6 +87,7 @@ class Test__Shorted_Connect:
     @classmethod
     def teardown_class(cls):
         if cls.victim:
+            cls.victim._addresses__release()
             cls.victim.disconnect()
 
     def setup_method(self, method):
@@ -97,7 +97,7 @@ class Test__Shorted_Connect:
     def teardown_method(self, method):
         pass
         if self.victim:
-            # self.victim.address__release()
+            self.victim._addresses__release()
             self.victim.disconnect()
 
     # ADDRESS ---------------------------------------------------------------------------------------------------------
@@ -155,12 +155,15 @@ class Test__Shorted_Connect:
 
     def test__recreate_object(self):
         self.victim.disconnect()
+        self.victim._address__release()
 
         self.victim = self.Victim()
         assert self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
 
         self.victim.disconnect()
+        self.victim._addresses__release()
+
         self.victim = self.Victim()
         self.victim.connect(_raise=False)
         assert self.victim.write_read__last_validate(JUST_LOAD, JUST_LOAD)
@@ -199,6 +202,7 @@ class Test__Shorted_Base:
     @classmethod
     def teardown_class(cls):
         if cls.victim:
+            cls.victim._addresses__release()
             cls.victim.disconnect()
 
     # def setup_method(self, method):
