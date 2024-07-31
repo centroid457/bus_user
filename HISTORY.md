@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.4.5 (2024/07/31 12:23:34)
+------------------------------
+- [SerialClient] [SerialClient] make occupation as forever! not released on disconnection  
+
 0.4.4 (2024/07/30 14:42:01)
 ------------------------------
 - [SerialServer] mark tests/comments for VlueUnit/Variants are not working  
