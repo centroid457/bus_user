@@ -13,7 +13,7 @@ bdist-wheel-name==0.1.0
 beautifulsoup4==4.12.3
 bs4==0.0.2
 build==1.2.1
-bus_user==0.4.5
+bus_user==0.4.7
 certifi==2024.2.2
 cffi==1.15.1
 charset-normalizer==2.1.0

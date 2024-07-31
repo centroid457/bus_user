@@ -210,7 +210,7 @@ class SerialClient(Logger):
     @ADDRESS.setter
     def ADDRESS(self, value: TYPE__ADDRESS) -> None:
         self._address__release()
-        self.disconnect()
+        # self.disconnect()     # dont place here! incorrect logic!
         self._ADDRESS = value
 
     @classmethod
