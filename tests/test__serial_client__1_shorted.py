@@ -42,12 +42,29 @@ class Test__Shorted_AddressResolved:
         assert self.victim.address_check__resolved() is True
 
         self.victim.ADDRESS = None
+        assert self.victim.connect() is False
         assert self.victim.address_check__resolved() is False
 
         self.victim.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
         assert self.victim.address_check__resolved() is False
         assert self.victim.connect() is True
         assert self.victim.address_check__resolved() is True
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__address_forget(self):
+        self.victim = self.Victim()
+        assert self.victim.ADDRESS == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        assert self.victim.address_check__resolved() is False
+        assert self.victim.connect() is True
+        assert self.victim.address_check__resolved() is True
+        assert self.victim.ADDRESS != Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+
+        self.victim.address_forget()
+        assert self.victim.ADDRESS == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        assert self.victim.address_check__resolved() is False
+        assert self.victim.connect() is True
+        assert self.victim.address_check__resolved() is True
+        assert self.victim.ADDRESS != Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
 
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESSES(self):

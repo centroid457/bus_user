@@ -88,7 +88,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        
+
         "[SerialClient] add address_forget",
     ]
 
