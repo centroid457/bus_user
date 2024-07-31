@@ -88,7 +88,9 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        "[SerialClient] zero regrouping methods",
+
+
+        "[SerialClient] fix _addresses__release",
     ]
 
     # FINALIZE -----------------------------------------------

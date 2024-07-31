@@ -447,14 +447,16 @@ class SerialClient(Logger):
     @classmethod
     def _addresses__release(cls) -> None:
         """
-        make all ports vacant for autodetect
+        make all ports vacant for autodetect.
+        use direct Clear() if need reinit items.
 
         CREATED SPECIALLY FOR
         ---------------------
         test issues (testing this module!)
         when set of tests is finished for one connection schema - release all
         """
-        SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
+        for key in cls.ADDRESSES__SYSTEM:
+            cls.ADDRESSES__SYSTEM[key] = None
 
     def address_forget(self) -> None:
         """
