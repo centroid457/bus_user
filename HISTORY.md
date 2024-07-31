@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.4.6 (2024/07/31 15:16:09)
+------------------------------
+- [SerialClient] add RELEASE_ON_DISCONNECT  
+
 0.4.5 (2024/07/31 12:23:34)
 ------------------------------
 - [SerialClient] [SerialClient] make occupation as forever! not released on disconnection  
