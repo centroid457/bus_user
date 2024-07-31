@@ -474,10 +474,7 @@ class SerialClient(Logger):
 
     def address_get__first_free(self) -> str | None:
         result = None
-        for address, owner in self.addresses_system__detect().items():
-            if owner is not None and owner is not self:
-                continue
-
+        for address in self.ADDRESSES__FREE:
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 result = address
 
@@ -500,8 +497,7 @@ class SerialClient(Logger):
         """
         result = None
         for address in self.addresses_shorted__detect():
-            owner = self.ADDRESSES__SYSTEM[address]
-            if owner is not None and owner is not self:
+            if self.address_check__occupied(address):
                 continue
 
             if self.connect(address=address, _raise=False, _touch_connection=True):
@@ -525,10 +521,7 @@ class SerialClient(Logger):
         used to find exact device in all comport by some special logic like IDN/NAME value
         """
         result = None
-        for address, owner in self.addresses_system__detect().items():
-            if owner is not None and owner is not self:
-                continue
-
+        for address in self.ADDRESSES__FREE:
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 try:
                     if self.address__answer_validation():
