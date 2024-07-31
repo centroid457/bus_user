@@ -184,6 +184,15 @@ class SerialClient(Logger):
     ADDRESSES__SHORTED: list[str] = []
     ADDRESSES__PAIRED: list[tuple[str, str]] = []
 
+    # INIT ============================================================================================================
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._SERIAL = Serial()
@@ -203,33 +212,6 @@ class SerialClient(Logger):
         self._address__release()
         self.disconnect()
 
-    @property
-    def ADDRESS(self) -> TYPE__ADDRESS:
-        return self._ADDRESS
-
-    @ADDRESS.setter
-    def ADDRESS(self, value: TYPE__ADDRESS) -> None:
-        self._address__release()
-        # self.disconnect()     # dont place here! incorrect logic!
-        self._ADDRESS = value
-
-    @classmethod
-    @property
-    def ADDRESSES__FREE(cls) -> list[str]:
-        cls.addresses_system__detect()
-        result = []
-        for port_name, port_owner in cls.ADDRESSES__SYSTEM.items():
-            if port_owner is None:
-                result.append(port_name)
-        return result
-
-    def check__connected(self) -> bool:
-        try:
-            return self._SERIAL.is_open
-        except:
-            return False
-
-    # =================================================================================================================
     def cmd_prefix__set(self) -> None:
         """
         OVERWRITE IF NEED/USED!
@@ -237,31 +219,21 @@ class SerialClient(Logger):
         # self.PREFIX = ""
         return
 
-    def _buffers_clear__read(self) -> None:
-        try:
-            self.read_lines(_timeout=0.3)
-        except:
-            pass
-
-    def _buffers_clear__write(self) -> None:
-        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
-
-        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
-        """
-        try:
-            self.write_eol()
-        except:
-            pass
-
-    def buffers_clear(self) -> None:
-        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
-
-        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
-        """
-        self._buffers_clear__write()
-        self._buffers_clear__read()
-
     # CONNECT =========================================================================================================
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+
+    def check__connected(self) -> bool:
+        try:
+            return self._SERIAL.is_open
+        except:
+            return False
+
     def disconnect(self, release: bool = None) -> None:
         """
         for release - its better to use direct cls._addresses__release()
@@ -405,7 +377,7 @@ class SerialClient(Logger):
             self._EMULATOR__INST.wait__cycle_active()
             self._buffers_clear__read()
 
-    # address =========================================================================================================
+    # ADDRESS =========================================================================================================
     """
     THIS IS USED for applying by SIMPLE WAY just exact address! 
     """
@@ -416,6 +388,26 @@ class SerialClient(Logger):
     pass
     pass
     pass
+
+    @property
+    def ADDRESS(self) -> TYPE__ADDRESS:
+        return self._ADDRESS
+
+    @ADDRESS.setter
+    def ADDRESS(self, value: TYPE__ADDRESS) -> None:
+        self._address__release()
+        # self.disconnect()     # dont place here! incorrect logic!
+        self._ADDRESS = value
+
+    @classmethod
+    @property
+    def ADDRESSES__FREE(cls) -> list[str]:
+        cls.addresses_system__detect()
+        result = []
+        for port_name, port_owner in cls.ADDRESSES__SYSTEM.items():
+            if port_owner is None:
+                result.append(port_name)
+        return result
 
     # OCCUPATION ------------------------------------------------------------------------------------------------------
     def _address__occupy(self) -> None:
@@ -854,6 +846,31 @@ class SerialClient(Logger):
     pass
     pass
     pass
+
+    # BUFFERS ---------------------------------------------------------------------------------------------------------
+    def _buffers_clear__read(self) -> None:
+        try:
+            self.read_lines(_timeout=0.3)
+        except:
+            pass
+
+    def _buffers_clear__write(self) -> None:
+        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
+
+        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
+        """
+        try:
+            self.write_eol()
+        except:
+            pass
+
+    def buffers_clear(self) -> None:
+        """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
+
+        here we need just finish line by correct/exact EOL if it was previously send without it or with incorrect.
+        """
+        self._buffers_clear__write()
+        self._buffers_clear__read()
 
     # CMD -------------------------------------------------------------------------------------------------------------
     def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: list[Any] = None, kwargs: dict[Any, Any] = None) -> str:

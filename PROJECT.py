@@ -79,7 +79,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: tuple[int, int, int] = (0, 4, 8)
+    VERSION: tuple[int, int, int] = (0, 4, 9)
     TODO: list[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -88,7 +88,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        "[SerialClient] fix prev version! there were broken tests",
+        "[SerialClient] zero regrouping methods",
     ]
 
     # FINALIZE -----------------------------------------------

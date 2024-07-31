@@ -69,16 +69,15 @@ class Test__Shorted_AddressResolved:
     # -----------------------------------------------------------------------------------------------------------------
     def test__ADDRESSES(self):
         self.victim = self.Victim()
-        system_ports = self.victim.addresses_system__detect()
-        print(system_ports)
-        ports_owners__started = set(system_ports.values())
+        print(self.victim.addresses_system__detect())
         assert self.victim.address_check__resolved() is False
-        assert len(set(self.victim.addresses_system__detect().values())) == len(ports_owners__started)
+
+        ports_free_started_count = self.victim.addresses_free__count()
         assert self.victim.connect() is True
         assert self.victim.connect() is True
         print(self.victim.addresses_system__detect())
         assert self.victim.address_check__resolved() is True
-        assert len(set(self.victim.addresses_system__detect().values())) == len(ports_owners__started) + 1
+        assert self.victim.addresses_free__count() == ports_free_started_count - 1
         self.victim.disconnect()
 
 
