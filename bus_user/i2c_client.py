@@ -39,7 +39,7 @@ class BusI2c:
         self.detect_i2c_devices()
 
     @classmethod
-    def detect_i2c_buses(cls) -> List[int]:
+    def detect_i2c_buses(cls) -> list[int]:
         """
         EXPLORE
         =======
@@ -57,7 +57,7 @@ class BusI2c:
         return list(map(int, buses))
 
     @classmethod
-    def detect_i2c_devices(cls, bus_id: Optional[int] = None) -> Dict[int, List[int]]:
+    def detect_i2c_devices(cls, bus_id: Optional[int] = None) -> dict[int, list[int]]:
         """
         EXPLORE
         =======
@@ -83,7 +83,7 @@ class BusI2c:
             buses = [bus_id, ]
 
         cli = CliUser()
-        bus_devices: Dict[int, List[int]] = {}
+        bus_devices: dict[int, list[int]] = {}
         for bus in buses:
             cli.send(f"i2cdetect -y {bus}")
             devices = re.findall(pattern=Patterns.I2C_DEVICES, string=cli.last_stdout)

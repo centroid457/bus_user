@@ -3,7 +3,7 @@ from typing import *
 
 # =====================================================================================================================
 class HistoryIO:
-    history: List[Tuple[str, List[str]]] = None
+    history: list[Tuple[str, list[str]]] = None
 
     def __init__(self):
         self.history = []
@@ -14,14 +14,14 @@ class HistoryIO:
     def clear(self) -> None:
         self.history.clear()
 
-    def as_dict(self) -> Dict[str, List[str]]:
+    def as_dict(self) -> dict[str, list[str]]:
         return dict(self.history)
 
     # ADD =============================================================================================================
     def add_input(self, data: str) -> None:
         self.history.append((data, []))
 
-    def add_output(self, data: Union[str, List[str]]) -> None:
+    def add_output(self, data: Union[str, list[str]]) -> None:
         if not self.history:
             self.add_input("")
 
@@ -33,7 +33,7 @@ class HistoryIO:
             # SINGLE
             output_last.append(data)
 
-    def add_io(self, data_i: str, data_o: Union[str, List[str]]) -> None:
+    def add_io(self, data_i: str, data_o: Union[str, list[str]]) -> None:
         self.add_input(data_i)
         self.add_output(data_o)
 
@@ -66,14 +66,14 @@ class HistoryIO:
         return ""
 
     # LIST+PRINT ======================================================================================================
-    def list_input(self) -> List[str]:
+    def list_input(self) -> list[str]:
         result = []
         for data_i, data_o in self.history:
             result.append(data_i)
             print(data_i)
         return result
 
-    def list_output(self) -> List[str]:
+    def list_output(self) -> list[str]:
         result = []
         for data_i, data_o in self.history:
             for line in data_o:

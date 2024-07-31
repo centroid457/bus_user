@@ -150,7 +150,7 @@ class SerialClient(Logger):
     # need NONE NOT 0!!! if wait always!!
     BAUDRATE: int = 9600        # 115200
 
-    CMDS_DUMP: List[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
+    CMDS_DUMP: list[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = False
 
@@ -158,7 +158,7 @@ class SerialClient(Logger):
 
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
-    ANSWER_FAIL_PATTERN: Union[str, List[str]] = [r".*FAIL.*", ]   # case insensitive!
+    ANSWER_FAIL_PATTERN: Union[str, list[str]] = [r".*FAIL.*", ]   # case insensitive!
 
     # rare INFRASTRUCTURE -----------------
     ENCODING: str = "utf8"
@@ -618,7 +618,7 @@ class SerialClient(Logger):
         return SerialClient.ADDRESSES__SYSTEM
 
     @staticmethod
-    def _addresses_system__detect_1__standard_method() -> Union[List[str], NoReturn]:
+    def _addresses_system__detect_1__standard_method() -> Union[list[str], NoReturn]:
         """
         WINDOWS - USB
             ==========OBJECTINFO.PRINT==========================================================================
@@ -677,7 +677,7 @@ class SerialClient(Logger):
             read_line                       TypeError :join() missing 1 required positional argument: 'a'
             ====================================================================================================
         """
-        result: List[str] = []
+        result: list[str] = []
 
         # find not opened ports ----------------------------------------
         for obj in list_ports.comports():
@@ -690,7 +690,7 @@ class SerialClient(Logger):
         return result
 
     @staticmethod
-    def _addresses_system__detect_2__direct_access() -> Union[List[str], NoReturn]:
+    def _addresses_system__detect_2__direct_access() -> Union[list[str], NoReturn]:
         """Определяет список портов (НЕОТКРЫТЫХ+ОТКРЫТЫХ!!!) - способом 2 (слепым тестом подключения и анализом исключений)
         Всегда срабатывает!
         """
@@ -704,7 +704,7 @@ class SerialClient(Logger):
         else:
             raise EnvironmentError('[ERROR]Unsupported platform')
 
-        result: List[str] = []
+        result: list[str] = []
         for name in attempt_list:
             if SerialClient.address__check_exists(address=name):
                 result.append(name)
@@ -712,7 +712,7 @@ class SerialClient(Logger):
         return result
 
     @classmethod
-    def addresses_shorted__detect(cls) -> List[str]:
+    def addresses_shorted__detect(cls) -> list[str]:
         if SerialClient.ADDRESSES__SHORTED:
             return SerialClient.ADDRESSES__SHORTED
 
@@ -996,10 +996,10 @@ class SerialClient(Logger):
     # W ---------------------------------------------------------------------------------------------------------------
     def _write(
             self,
-            data: Union[AnyStr, List[AnyStr]],
+            data: Union[AnyStr, list[AnyStr]],
             prefix: Optional[str] = None,
-            args: Optional[List] = None,
-            kwargs: Optional[Dict] = None
+            args: Optional[list] = None,
+            kwargs: Optional[dict] = None
     ) -> bool:
         """
         just send data into bus!
@@ -1047,10 +1047,10 @@ class SerialClient(Logger):
 
     def write_read(
             self,
-            data: Union[AnyStr, List[AnyStr]],
+            data: Union[AnyStr, list[AnyStr]],
             prefix: Optional[str] = None,
-            args: Optional[List] = None,
-            kwargs: Optional[Dict] = None,
+            args: Optional[list] = None,
+            kwargs: Optional[dict] = None,
     ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return history
@@ -1074,10 +1074,10 @@ class SerialClient(Logger):
 
     def write_read__last(
             self,
-            data: Union[AnyStr, List[AnyStr]],
+            data: Union[AnyStr, list[AnyStr]],
             prefix: Optional[str] = None,
-            args: Optional[List] = None,
-            kwargs: Optional[Dict] = None,
+            args: Optional[list] = None,
+            kwargs: Optional[dict] = None,
     ) -> Union[str, NoReturn]:
         """
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
@@ -1090,8 +1090,8 @@ class SerialClient(Logger):
             input: Union[str, list[str]] | None,
             expect: Union[str, list[str]],
             prefix: Optional[str] = None,
-            args: Optional[List] = None,
-            kwargs: Optional[Dict] = None,
+            args: Optional[list] = None,
+            kwargs: Optional[dict] = None,
             _as_regexp: Optional[bool] = None,
     ) -> bool:
         """
@@ -1126,7 +1126,7 @@ class SerialClient(Logger):
         """
         return self.write_read__last_validate(*args, **kwargs, _as_regexp=True)
 
-    def dump_cmds(self, cmds: List[str] = None) -> Union[HistoryIO, NoReturn]:
+    def dump_cmds(self, cmds: list[str] = None) -> Union[HistoryIO, NoReturn]:
         """
         useful to get results for standard cmds list
         if you need to read all params from device!

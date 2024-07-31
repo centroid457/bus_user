@@ -14,7 +14,7 @@ from logger_aux import Logger
 
 
 # =====================================================================================================================
-TYPE__CMD_RESULT = Union[str, List[str]]
+TYPE__CMD_RESULT = Union[str, list[str]]
 
 
 # =====================================================================================================================
@@ -39,7 +39,7 @@ class AnswerVariants:
 class SerialServer_Base(Logger, QThread):
     # FIXME: PARAMS like ValueUniit/Variants is not Work/Broken!!!
     # TODO: not realized - ACCESS RULES for PARAMS - may be not need in this case of class/situation!!!
-    # TODO: not realised list access - best way to use pattern "name/index" and change same access with Dict "name/key"
+    # TODO: not realised list access - best way to use pattern "name/index" and change same access with dict "name/key"
 
     # SETTINGS ------------------------------------------------
     _SERIAL_CLIENT__CLS: Type[SerialClient] = SerialClient  # usually not redefines!
@@ -47,20 +47,20 @@ class SerialServer_Base(Logger, QThread):
     ADDRESS: str = None     # DON'T DEPRECATE! usually use only as exact port or keep NONE!
 
     HELLO_MSG__SEND_ON_START: bool = True   # don't set here on True! use it only as overwritten if needed!!!
-    HELLO_MSG: List[str] = [
+    HELLO_MSG: list[str] = [
         "SerialServer_Base HELLO line 1",
         "SerialServer_Base hello line 2",
     ]
 
-    PARAMS: Dict[str, Union[Any, Dict[Union[str, int], Any]]] = None
+    PARAMS: dict[str, Union[Any, dict[Union[str, int], Any]]] = None
     ANSWER: Type[AnswerVariants] = AnswerVariants
 
     # AUX -----------------------------------------------------
     _STARTSWITH__CMD: str = "cmd__"
     _STARTSWITH__SCRIPT: str = "script__"
 
-    _LIST__CMDS: List[str]
-    _LIST__SCRIPTS: List[str]
+    _LIST__CMDS: list[str]
+    _LIST__SCRIPTS: list[str]
 
     CYCLE_ACTIVE: bool = None  # active working state on ReadingWriting - used for waiting active state!
 
@@ -74,7 +74,7 @@ class SerialServer_Base(Logger, QThread):
             time.sleep(0.5)
 
     @property
-    def _LIST__HELP(self) -> List[str]:
+    def _LIST__HELP(self) -> list[str]:
         params_dump = []
         for name, value in self.PARAMS.items():
             if isinstance(value, dict):
@@ -106,7 +106,7 @@ class SerialServer_Base(Logger, QThread):
         ]
         return result
 
-    def list_param_results(self, lines: List[str]) -> List[str]:
+    def list_param_results(self, lines: list[str]) -> list[str]:
         """
         used to show several PARAMS and CMD results (ready to pretty sent in serial port)
         cmds used as params in just case if cmd returns exact value! (not for any cmd and not used for results as Answer)
@@ -120,7 +120,7 @@ class SerialServer_Base(Logger, QThread):
         return result
 
     # -----------------------------------------------------------------------------------------------------------------
-    def __init__(self, params: Dict[str, Any] = None):
+    def __init__(self, params: dict[str, Any] = None):
         # FIXME: deprecate param params??? used for tests?
         super().__init__()
 
@@ -430,7 +430,7 @@ class SerialServer_Base(Logger, QThread):
 
 # =====================================================================================================================
 class SerialServer_Echo(SerialServer_Base):
-    HELLO_MSG: List[str] = [
+    HELLO_MSG: list[str] = [
         "SerialServer_Echo",
     ]
 

@@ -14,8 +14,8 @@ class LineParsed:
     ORIGINAL: str
     PREFIX: str
     CMD: str
-    ARGS: List[str]
-    KWARGS: Dict[str, str]
+    ARGS: list[str]
+    KWARGS: dict[str, str]
 
     # AUX ---------------------
     _PREFIX_EXPECTED: str

@@ -17,12 +17,12 @@ class PROJECT:
 
     # PROJECT ----------------------------------------------
     NAME_IMPORT: str = "bus_user"
-    KEYWORDS: List[str] = [
+    KEYWORDS: list[str] = [
         "serial", "serial bus", "pyserial", "serial port", "com port", "comport", "rs232", "UART", "TTL",
         "serial client", "serial server", "serial emulator",
         "i2c",
     ]
-    CLASSIFIERS_TOPICS_ADD: List[str] = [
+    CLASSIFIERS_TOPICS_ADD: list[str] = [
         # "Topic :: Communications",
         # "Topic :: Communications :: Email",
     ]
@@ -52,7 +52,7 @@ other protocols mot recommended
     [FAIL 0123] - any specified error without description
     [FAIL 02 VALUE OUT OF RANGE] - any specified error with description (full variant)
 """
-    FEATURES: List[str] = [
+    FEATURES: list[str] = [
         # "feat1",
         # ["feat2", "block1", "block2"],
 
@@ -80,14 +80,14 @@ other protocols mot recommended
 
     # HISTORY -----------------------------------------------
     VERSION: Tuple[int, int, int] = (0, 4, 4)
-    TODO: List[str] = [
+    TODO: list[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
     ]
-    FIXME: List[str] = [
+    FIXME: list[str] = [
         "..."
     ]
-    NEWS: List[str] = [
+    NEWS: list[str] = [
         "[SerialServer] mark tests/comments for VlueUnit/Variants are not working",
         "[SerialClient] fix ADDRESSES__SYSTEM owners",
     ]
