@@ -156,6 +156,8 @@ class SerialClient(Logger):
 
     PREFIX: Optional[str] = None
 
+    RELEASE_ON_DISCONNECT: bool | None = None
+
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
     ANSWER_FAIL_PATTERN: Union[str, list[str]] = [r".*FAIL.*", ]   # case insensitive!
@@ -262,7 +264,7 @@ class SerialClient(Logger):
         """
         for release - its better to use direct cls._addresses__release()
         """
-        if release:
+        if release or self.RELEASE_ON_DISCONNECT:
             self._address__release()
 
         try:

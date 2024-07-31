@@ -88,7 +88,9 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        "[SerialClient] [SerialClient] make occupation as forever! not released on disconnection",
+
+
+        "[SerialClient] add RELEASE_ON_DISCONNECT",
     ]
 
     # FINALIZE -----------------------------------------------
