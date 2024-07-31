@@ -8,8 +8,9 @@ from logger_aux import Logger
 
 from serial import Serial
 from serial.tools import list_ports
-from . import HistoryIO
 from funcs_aux import *
+
+from . import HistoryIO
 
 
 # =====================================================================================================================
@@ -462,6 +463,33 @@ class SerialClient(Logger):
         """
         SerialClient.ADDRESSES__SYSTEM = dict.fromkeys(SerialClient.ADDRESSES__SYSTEM, None)
 
+    def address_forget(self) -> None:
+        """
+        GOAL
+        ----
+        get default address for derivatives or else just clear to None.
+
+        SPECIAL CREATED FOR
+        -------------------
+        testplans module - to drop all devices for manually refind devices
+
+        CONSTRAINTS
+        -----------
+        be sure to use Base class from Derivatives so method would work correctly (as designed)!
+        """
+        self.ADDRESS = None
+
+        # CAREFUL ---- here we will get curriculum import!
+        # from . import SerialClient_FirstFree, SerialClient_FirstFree_Shorted, SerialClient_FirstFree_Paired, SerialClient_FirstFree_AnswerValid
+        # if isinstance(self, SerialClient_FirstFree):
+        #     self.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE
+        # elif isinstance(self, SerialClient_FirstFree_Shorted):
+        #     self.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED
+        # elif isinstance(self, SerialClient_FirstFree_Paired):
+        #     self.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
+        # elif isinstance(self, SerialClient_FirstFree_AnswerValid):
+        #     self.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
+
     def address_check__resolved(self) -> bool:
         return isinstance(self.ADDRESS, str)
 
@@ -812,6 +840,10 @@ class SerialClient(Logger):
     @classmethod
     def addresses_paired__count(cls) -> int:
         return len(cls.addresses_paired__detect())
+
+    @classmethod
+    def addresses_free__count(cls) -> int:
+        return len(cls.ADDRESSES__FREE)
 
     # RW ==============================================================================================================
     pass

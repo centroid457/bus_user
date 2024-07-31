@@ -88,7 +88,8 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        "[SerialClient] add RELEASE_ON_DISCONNECT",
+        
+        "[SerialClient] add address_forget",
     ]
 
     # FINALIZE -----------------------------------------------
