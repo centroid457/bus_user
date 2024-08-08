@@ -8,6 +8,40 @@ JUST_LOAD = "JUST_LOAD"
 
 
 # =====================================================================================================================
+class Test__connect:
+    Victim: Type[SerialClient]
+    victim: SerialClient
+
+    @classmethod
+    def setup_class(cls):
+        class Victim(SerialClient_FirstFree_Shorted):
+            RAISE_CONNECT = False
+
+        cls.Victim = Victim
+
+    # @classmethod
+    # def teardown_class(cls):
+    #     pass
+    #
+    # def setup_method(self, method):
+    #     pass
+    #
+    def teardown_method(self, method):
+        pass
+        if hasattr(self, "victim") and self.victim:
+            self.victim._addresses__release()
+            self.victim.disconnect()
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test__address_check__resolved(self):
+        self.victim = self.Victim()
+        assert self.victim.address__resolve()
+        assert self.victim.address_check__resolved()
+        assert self.victim.address_check__occupied()
+        assert self.victim.connect()
+
+
+# =====================================================================================================================
 class Test__Shorted_AddressResolved:
     Victim: Type[SerialClient]
     victim: SerialClient
@@ -28,7 +62,7 @@ class Test__Shorted_AddressResolved:
     #
     def teardown_method(self, method):
         pass
-        if self.victim:
+        if hasattr(self, "victim") and self.victim:
             self.victim._addresses__release()
             self.victim.disconnect()
 
@@ -89,8 +123,8 @@ class Test__Shorted_Connect:
     @classmethod
     def setup_class(cls):
         class Victim(SerialClient_FirstFree_Shorted):
-            def address__answer_validation(self):       # this is only for FIRST_FREE__ANSWER_VALID! not for FIRST_FREE__SHORTED and etc!
-                return self._address__answer_validation__shorted()
+            def address__validate(self):       # this is only for FIRST_FREE__ANSWER_VALID! not for FIRST_FREE__SHORTED and etc!
+                return self._address__validate_shorted()
 
         cls.Victim = Victim
         cls.victim = cls.Victim()
@@ -112,7 +146,7 @@ class Test__Shorted_Connect:
 
     def teardown_method(self, method):
         pass
-        if self.victim:
+        if hasattr(self, "victim") and self.victim:
             self.victim._addresses__release()
             self.victim.disconnect()
 
@@ -158,7 +192,7 @@ class Test__Shorted_Connect:
         self.victim.disconnect()
         class Victim(SerialClient):
             _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
-            def address__answer_validation(self) -> Union[bool, NoReturn]:
+            def address__validate(self) -> Union[bool, NoReturn]:
                 raise Exception()
 
         assert not Victim().connect(_raise=False)

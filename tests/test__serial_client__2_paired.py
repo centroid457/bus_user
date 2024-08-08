@@ -16,7 +16,7 @@ class Test__Paired:
             LOG_ENABLE = True
 
             _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED
-            # def address__answer_validation(self) -> Union[bool, NoReturn]:
+            # def address__validate(self) -> Union[bool, NoReturn]:
             #     return self.write_read_line_last("echo") == "echo"
 
         cls.Victim = Victim

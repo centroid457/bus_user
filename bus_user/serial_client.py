@@ -257,8 +257,8 @@ class SerialClient(Logger):
 
     def connect(
             self,
-            address: Optional[str] = None,
-            _raise: Optional[bool] = None,
+            address: TYPE__ADDRESS | None = None,
+            _raise: bool | None = None,
             _touch_connection: bool | None = None    # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
     ) -> Union[bool, NoReturn]:
         msg = None
@@ -272,20 +272,12 @@ class SerialClient(Logger):
         if address is None:
             address = self.ADDRESS
 
-        # AUTOAPPLY ---------------------------------
-        if address == Type__AddressAutoAcceptVariant.FIRST_FREE:
-            address = self.address_get__first_free()
-        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
-            address = self.address_get__first_free__shorted()
-        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
-            address = self.address_get__first_free__answer_valid()
-        elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
-            address = self.address_get__first_free__paired()
-
-        if address is None or isinstance(address, Type__AddressAutoAcceptVariant):
-            msg = "Exx_SerialAddress_NotApplyed"
-            exx = Exx_SerialAddress_NotApplyed()
-            need_open = False
+        if address in Type__AddressAutoAcceptVariant:
+            if not self.address__resolve(address):
+                exx = Exx_SerialAddress_NotApplyed()
+                need_open = False
+            else:
+                address = self.ADDRESS
 
         # need_open ==========================================================
         # CHANGE PORT OR USE SAME ---------------------------------
@@ -346,17 +338,17 @@ class SerialClient(Logger):
 
         # OK -----------------------------
         if not _touch_connection:
-            if not self.connect__validation():
+            if not self.connect__validate():
                 self.disconnect()
                 return False
 
-            self._address__occupy()
+            self._address__occupy(address)
             self.emulator_start()
             self.cmd_prefix__set()
 
         return True
 
-    def connect__validation(self) -> bool:
+    def connect__validate(self) -> bool:
         """
         DIFFERENCE
         ----------
@@ -395,9 +387,13 @@ class SerialClient(Logger):
 
     @ADDRESS.setter
     def ADDRESS(self, value: TYPE__ADDRESS) -> None:
+        if value == self.ADDRESS:
+            return
+
         self._address__release()
         # self.disconnect()     # dont place here! incorrect logic!
         self._ADDRESS = value
+        self._address__occupy(value)
 
     @classmethod
     @property
@@ -410,7 +406,7 @@ class SerialClient(Logger):
         return result
 
     # OCCUPATION ------------------------------------------------------------------------------------------------------
-    def _address__occupy(self) -> None:
+    def _address__occupy(self, address: TYPE__ADDRESS | None = None) -> None:
         """
         USAGE
         -----
@@ -418,19 +414,12 @@ class SerialClient(Logger):
         ones we connect exact device - it would occupy the port.
         port must be occupied even if Serial is not open!
         """
-        if not self._SERIAL.port:
-            return
+        if address is None:
+            address = self.ADDRESS
 
-        # clear old lock -------------
-        # for address, owner in SerialClient.ADDRESSES__SYSTEM.items():
-        #     if owner is self and address != self._SERIAL.port:
-        #         SerialClient.ADDRESSES__SYSTEM[address] = None
+        if address in SerialClient.ADDRESSES__SYSTEM:
+            SerialClient.ADDRESSES__SYSTEM[address] = self
 
-        # self._address__release()          # DONT USE HERE!!!!
-
-        # set new lock -------------
-        self.ADDRESS = self._SERIAL.port
-        SerialClient.ADDRESSES__SYSTEM[self._SERIAL.port] = self
         self.LOGGER.info(f"[{self._SERIAL.port}][OK] connected/locked/occupy {self._SERIAL}")
 
     def _address__release(self) -> None:
@@ -485,11 +474,53 @@ class SerialClient(Logger):
         # elif isinstance(self, SerialClient_FirstFree_AnswerValid):
         #     self.ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
-    def address_check__resolved(self) -> bool:
-        return isinstance(self.ADDRESS, str)
+    def address__resolve(self, address: TYPE__ADDRESS | None = None) -> bool:
+        """
+        GOAL
+        ----
+        resolve address passed as Type__AddressAutoAcceptVariant
+        could be call separately! before connect!
 
-    def address_check__occupied(self, address: str) -> bool:
-        owner = self.ADDRESSES__SYSTEM[address]
+        SPECIALLY CREATED FOR
+        ---------------------
+        separate address resolve and connect
+
+        NOTE
+        ----
+        :param address: if result if True - ALWAYS APPLY final value in instance!
+        """
+        if address is None:
+            address = self.ADDRESS
+
+        # RESOLVE ---------------------------------
+        if address in Type__AddressAutoAcceptVariant:
+            if address == Type__AddressAutoAcceptVariant.FIRST_FREE:
+                address = self.address_get__first_free()
+            elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__SHORTED:
+                address = self.address_get__first_free__shorted()
+            elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID:
+                address = self.address_get__first_free__valid()
+            elif address == Type__AddressAutoAcceptVariant.FIRST_FREE__PAIRED:
+                address = self.address_get__first_free__paired()
+
+        # APPLY -----------------------------------
+        result = isinstance(address, str)
+        if result:
+            self.ADDRESS = address
+        return result
+
+    def address_check__resolved(self, address: TYPE__ADDRESS | None = None) -> bool:
+        if address is None:
+            address = self.ADDRESS
+        return isinstance(address, str)
+
+    def address_check__occupied(self, address: TYPE__ADDRESS | None = None) -> bool:
+        if not self.address_check__resolved(address):
+            return False
+
+        if address is None:
+            address = self.ADDRESS
+        owner = self.ADDRESSES__SYSTEM.get(address)
         return owner is not None
 
     # AUTODETECT ------------------------------------------------------------------------------------------------------
@@ -538,7 +569,7 @@ class SerialClient(Logger):
 
         return result
 
-    def address_get__first_free__answer_valid(self) -> str | None:
+    def address_get__first_free__valid(self) -> str | None:
         """
         dont overwrite! dont mess with address__autodetect_logic!
         used to find exact device in all comport by some special logic like IDN/NAME value
@@ -547,7 +578,7 @@ class SerialClient(Logger):
         for address in self.ADDRESSES__FREE:
             if self.connect(address=address, _raise=False, _touch_connection=True):
                 try:
-                    if self.address__answer_validation():
+                    if self.address__validate():
                         result = address
                 except Exception as exx:
                     print(f"finding address {exx!r}")
@@ -602,7 +633,7 @@ class SerialClient(Logger):
         return result
 
     # VALIDATION ------------------------------------------------------------------------------------------------------
-    def address__answer_validation(self) -> bool | None | NoReturn:
+    def address__validate(self) -> bool | None | NoReturn:
         """
         overwrite for you case!
         used to find exact device in all comport by some special logic like IDN/NAME value.
@@ -613,7 +644,7 @@ class SerialClient(Logger):
         3. raiseExx/NoReturn - equivalent as False!
         """
 
-    def _address__answer_validation__shorted(self) -> bool | None:
+    def _address__validate_shorted(self) -> bool | None:
         """
         this is the internal method! for autodetect shorted address
         """
@@ -758,7 +789,7 @@ class SerialClient(Logger):
         for address in cls.addresses_system__detect():
             obj = SerialClient()
             if obj.connect(address=address, _raise=False, _touch_connection=True):
-                if obj._address__answer_validation__shorted():
+                if obj._address__validate_shorted():
                     result.append(address)
                 obj.disconnect()
 
@@ -1161,7 +1192,7 @@ class SerialClient(Logger):
             _as_regexp: Optional[bool] = None,
     ) -> bool:
         """
-        created specially for address__answer_validation
+        created specially for address__validate
         """
         if input:
             output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
@@ -1188,7 +1219,7 @@ class SerialClient(Logger):
 
     def write_read__last_validate_regexp(self, *args, **kwargs) -> bool:
         """
-        created specially for address__answer_validation
+        created specially for address__validate
         """
         return self.write_read__last_validate(*args, **kwargs, _as_regexp=True)
 

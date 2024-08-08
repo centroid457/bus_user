@@ -55,13 +55,13 @@ class Test__Shorted_validateModel_InfinitRW:
     def test__real_device(self):    # TODO: fix it!!!
         """
         in case of validate real device like ATC/PTB
-        DONT FORGET TO CHANGE address__answer_validation for your device!!!
+        DONT FORGET TO CHANGE address__validate for your device!!!
         """
         # PREPARE ------------------------
         VALIDATION_CMD, VALIDATION_ANSWER = ("GET NAME", "ATC 03")
 
         class Victim(SerialClient_FirstFree_Shorted):
-            def address__answer_validation(self) -> bool:
+            def address__validate(self) -> bool:
                 return self.write_read__last_validate(*VALIDATION_CMD)
 
         self.victim = Victim()
@@ -76,7 +76,7 @@ class Test__Shorted_validateModel_InfinitRW:
             index += 1
             load = f"step {index}"
             print(load)
-            assert self.victim.address__answer_validation() is True
+            assert self.victim.address__validate() is True
 
 
 # =====================================================================================================================

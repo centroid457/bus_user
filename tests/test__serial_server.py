@@ -20,6 +20,7 @@ class Test__SerialServer_NoConnection:
     #
     # def teardown_method(self, method):
     #     pass
+
     # -----------------------------------------------------------------------------------------------------------------
     def test__cmd__script(self):
         victim = self.Victim()
@@ -272,7 +273,7 @@ class Test_SerialServer_WithConnection:
         class Victim(SerialClient):
             _ADDRESS = Type__AddressAutoAcceptVariant.FIRST_FREE__ANSWER_VALID
 
-            def address__answer_validation(self) -> bool | None | NoReturn:
+            def address__validate(self) -> bool | None | NoReturn:
                 return server.HELLO_MSG[0] in self.write_read("hello").list_output()
 
         victim = Victim()

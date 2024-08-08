@@ -241,7 +241,7 @@ class SerialServer_Base(Logger, QThread):
         meth_name__original = Iterables().item__get_original__case_insensitive(meth_name__expected, dir(self))
         # GET METHOD --------------------
         if meth_name__original:
-            meth = getattr(self, meth_name__original.VALUE)
+            meth = getattr(self, meth_name__original())
         else:
             meth = self._cmd__param_as_cmd
 
@@ -296,7 +296,7 @@ class SerialServer_Base(Logger, QThread):
         if not param_value:
             return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
-        param_value = param_value.VALUE
+        param_value = param_value()
 
         # VARIANTS ------------------------------------------------------------------
         # ValueUnit -------------------------------
@@ -337,7 +337,7 @@ class SerialServer_Base(Logger, QThread):
             if not path_name__original:
                 return self.ANSWER.ERR__NAME_CMD_OR_PARAM
 
-            value_old = Iterables().value_by_path__get(path, self.PARAMS).VALUE
+            value_old = Iterables().value_by_path__get(path, self.PARAMS)()
             if isinstance(value_old, ValueUnit):
                 # NOTE: ALL CLASSES/INSTANCES ARE CALLABLE!!!
                 pass
@@ -350,7 +350,7 @@ class SerialServer_Base(Logger, QThread):
         # SET --------------
         for path, value_new in KWARGS.items():
             value_new = Strings().try_convert_to__elementary(value_new)
-            value_old = Iterables().value_by_path__get(path, self.PARAMS).VALUE
+            value_old = Iterables().value_by_path__get(path, self.PARAMS)()
             # SET ----------
             if isinstance(value_old, (ValueUnit, ValueVariants)):
                 try:
@@ -406,7 +406,7 @@ class SerialServer_Base(Logger, QThread):
         if not meth_name__original:
             return self.ANSWER.ERR__NAME_SCRIPT
 
-        meth = getattr(self, meth_name__original.VALUE)
+        meth = getattr(self, meth_name__original())
 
         # EXEC METHOD --------------------
         try:

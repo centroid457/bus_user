@@ -19,7 +19,7 @@ class Test__ATC:
             PREFIX = "ATC:03:"
             EOL__SEND = b"\r"
 
-            def address__answer_validation(self) -> bool:
+            def address__validate(self) -> bool:
                 return self.write_read__last_validate("get name", "ATC 03")
 
         cls.victim = Atc_SerialClient()
@@ -62,7 +62,7 @@ class Test__PTB(Test__ATC):
             PREFIX = "PTB:01:"
             EOL__SEND = b"\n"
 
-            def address__answer_validation(self) -> bool:
+            def address__validate(self) -> bool:
                 return self.write_read__last_validate("get name", "PTB") and self.write_read__last_validate("get addr", "01")
 
         cls.victim = Ptb_SerialClient()
