@@ -6,27 +6,38 @@
 # VERSION = (0, 0, 5)   # add pytest-aux
 # VERSION = (0, 0, 6)   # add nested in COMMON
 # VERSION = (0, 0, 7)   # add new block TESTS +add classes_aux into COMMON
+# VERSION = (0, 0, 8)   # add [deploy]build+twine+setuptools+cli_user +add singleton-meta in common/rename common to BASE/regroup subsets
 
-# COMMON ===================
+# BASE =====================
+# deploy -------------------
+build
+twine
+setuptools
+
+cli-user
+
+# debug/test ---------------
 pytest
-requirements-checker
-object-info
-funcs-aux
-classes-aux
-logger-aux
 pytest-aux
+logger-aux
+object-info
 
-# NESTED ---------------------------------
-annot_attrs
+# common -------------------
+requirements-checker
+classes-aux
+funcs-aux
+singleton-meta
+
+# nested -------------------
+annot-attrs
 numpy
 
-# TESTS ----------------------------------
-
 # ========================================
-# SPECIAL FOR THIS PROJECT - ROOT --------
+# SPECIAL (FOR THIS PROJECT - ROOT) ------
 pyserial
 smbus2
-cli-user
+
+# TESTS ----------------------------------
 
 # NESTED ---------------------------------
 
