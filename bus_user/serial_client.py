@@ -884,7 +884,10 @@ class SerialClient(Logger):
     # BUFFERS ---------------------------------------------------------------------------------------------------------
     def _buffers_clear__read(self) -> None:
         for _ in range(2):
-            while self._SERIAL.readline(1):
+            try:
+                while self._SERIAL.readline(1):
+                    pass
+            except:
                 pass
             time.sleep(0.1)
 
