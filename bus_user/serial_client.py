@@ -1141,8 +1141,14 @@ class SerialClient(Logger):
             return False
 
     def write_eol(self, eol: bytes = None) -> bool:
-        # if self._SERIAL.write(data)
-        return self._write(data=self.EOL__SEND, prefix="")
+        """
+        write without any conditions (no prefixes! no suffixes)!
+        GOAL
+        ----
+        finish any writen cmd and clear buffer
+        """
+        eol = eol or self.EOL__SEND
+        return bool(self._SERIAL.write(eol))
 
     def write_read(
             self,
