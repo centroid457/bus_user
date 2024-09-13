@@ -1,6 +1,7 @@
 import re
 import sys
 import glob
+import time
 from typing import *
 from enum import Enum, auto
 
@@ -882,10 +883,10 @@ class SerialClient(Logger):
 
     # BUFFERS ---------------------------------------------------------------------------------------------------------
     def _buffers_clear__read(self) -> None:
-        try:
-            self.read_lines(_timeout=0.3)
-        except:
-            pass
+        for _ in range(2):
+            while self._SERIAL.readline(1):
+                pass
+            time.sleep(0.1)
 
     def _buffers_clear__write(self) -> None:
         """useful to drop old previous incorrect send msg! in other words it is clear/reinit write buffer!
@@ -1139,7 +1140,8 @@ class SerialClient(Logger):
             self.LOGGER.error(f"[{self._SERIAL.port}]{msg}")
             return False
 
-    def write_eol(self) -> bool:
+    def write_eol(self, eol: bytes = None) -> bool:
+        # if self._SERIAL.write(data)
         return self._write(data=self.EOL__SEND, prefix="")
 
     def write_read(
