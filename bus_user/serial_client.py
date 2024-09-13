@@ -1132,11 +1132,16 @@ class SerialClient(Logger):
         data = self._data_ensure__bytes(data)
         data = self._bytes_eol__ensure(data)
 
-        data_length = self._SERIAL.write(data)
-        msg = f"[OK]write={data}/{data_length=}"
-        self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
+        try:
+            data_length = self._SERIAL.write(data)
+            msg = f"[OK]write={data}/{data_length=}"
+        except Exception as exx:
+            msg = f"[FAIL]write={data}/{exx!r}"
+            self.LOGGER.warning(f"[{self._SERIAL.port}]{msg}")
+            return False
 
         if data_length > 0:
+            self.LOGGER.info(f"[{self._SERIAL.port}]{msg}")
             return True
         else:
             msg = f"[ERROR] write {data}"
@@ -1151,7 +1156,10 @@ class SerialClient(Logger):
         finish any writen cmd and clear buffer
         """
         eol = eol or self.EOL__SEND
-        return bool(self._SERIAL.write(eol))
+        try:
+            return bool(self._SERIAL.write(eol))
+        except:
+            return False
 
     def write_read(
             self,
