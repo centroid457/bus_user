@@ -6,8 +6,6 @@ from typing import *
 import time
 
 
-print(SerialClient._data_ensure__string(b'step400\x1d'))
-
 class Dev(SerialClient_FirstFree_Shorted):
     BAUDRATE: int = 115200
     EOL__SEND = b"\r\n"
