@@ -42,5 +42,5 @@ if dev.connect():
         index += 1
         load = f"step{index}"
         print(load)
-        if not dev.write_read__last(load) == load:
-            print(f"FAIL{load=}")
+        if not dev.write_read__last_validate(load, load):
+            print(f"FAIL_FINAL[{load=}]")

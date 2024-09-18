@@ -155,6 +155,7 @@ class SerialClient(Logger):
 
     REWRITEIF_READNOANSWER: int = 5
     REWRITEIF_READFAILDECODE: int = 5
+    REWRITEIF_NOVALID: int = 5
 
     CMDS_DUMP: list[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
@@ -1193,6 +1194,11 @@ class SerialClient(Logger):
     ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return history
+
+        CAREFUL
+        -------
+        DONT USE! IF WANT TO BE SURE!
+        instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
         """
         history = HistoryIO()
         if retry_noanswer is None:
@@ -1242,6 +1248,11 @@ class SerialClient(Logger):
         """
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
+
+        CAREFUL
+        -------
+        DONT USE! IF WANT TO BE SURE!
+        instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
         """
         return self.write_read(data=data, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=retry_noanswer).last_output
 
@@ -1252,32 +1263,48 @@ class SerialClient(Logger):
             prefix: Optional[str] = None,
             args: Optional[list] = None,
             kwargs: Optional[dict] = None,
+
+            retry_novalid: int | None = None,
             _as_regexp: Optional[bool] = None,
     ) -> bool:
         """
-        created specially for address__validate
+        CREATED SPECIALLY FOR
+        ---------------------
+        1. address__validate
+
+        SOLVE PROBLEMS
+        --------------
+        communicate with wrong working devices!
         """
-        if input:
-            output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
-        else:
-            outputs = self.read_lines()
-            if outputs:
-                output_last = outputs[-1]
-            else:
-                output_last = ""
+        if retry_novalid is None:
+            retry_novalid = self.REWRITEIF_NOVALID or 0
 
         if isinstance(expect, (str, bytes)):
             expect_list = [expect, ]
         else:
             expect_list = expect
 
-        for expect_var in expect_list:
-            if not _as_regexp:
-                if str(output_last).lower() == str(expect_var).lower():
-                    return True
+        while retry_novalid >= 0:
+            if input:
+                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
             else:
-                if re.fullmatch(expect_var, str(output_last), flags=re.IGNORECASE):
-                    return True
+                outputs = self.read_lines()
+                if outputs:
+                    output_last = outputs[-1]
+                else:
+                    output_last = ""
+
+            for expect_var in expect_list:
+                if not _as_regexp:
+                    if str(output_last).lower() == str(expect_var).lower():
+                        return True
+                else:
+                    if re.fullmatch(expect_var, str(output_last), flags=re.IGNORECASE):
+                        return True
+
+            retry_novalid -= 1
+            print(f"{retry_novalid=}")
+
         return False
 
     def write_read__last_validate_regexp(self, *args, **kwargs) -> bool:
