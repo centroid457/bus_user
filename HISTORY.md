@@ -12,6 +12,13 @@
 ********************************************************************************
 ## NEWS
 
+0.4.12 (2024/09/18 17:46:58)
+------------------------------
+- [serialClient]:  
+	- fix good working with not so good adapters, add REWRITEIF_READNOANSWER/*READFAILDECODE/*NOVALID  
+	- fix _data_ensure__string with correct comparing elements with printable ascii  
+	- fix buffers_clear*/write_eol  
+
 0.4.11 (2024/08/08 14:49:01)
 ------------------------------
 - [serialClient] separate address_resolve from connect as direct meth  
