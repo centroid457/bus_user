@@ -1175,28 +1175,41 @@ class SerialClient(Logger):
             prefix: Optional[str] = None,
             args: Optional[list] = None,
             kwargs: Optional[dict] = None,
+
+            retry_noanswer: int | None = None,
     ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return history
         """
         history = HistoryIO()
+        if retry_noanswer is None:
+            retry_noanswer = self.REWRITEIF_READNOANSWER
 
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
             for data_i in data:
-                history_i = self.write_read(data_i, prefix=prefix, args=args, kwargs=kwargs)
+                history_i = self.write_read(data_i, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=retry_noanswer)
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
             data_o = []
-            for i in range(5):
+            remain__retry_decode = self.REWRITEIF_READFAILDECODE or 0
+            remain__retry_noanswer = retry_noanswer or 0
+            while True:
+                if remain__retry_decode < 0 or remain__retry_noanswer < 0:
+                    break
+
                 if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
                     try:
                         data_o = self.read_lines()
                         if data_o:  # here are validated string data!   # NEED ALWAYS GET ANYTHING IN RESPONSE
                             break
-                    except:
-                        pass
+                        else:
+                            remain__retry_noanswer -= 1
+                            self.buffers_clear()
+
+                    except Exx_SerialRead_FailDecoding:
+                        remain__retry_decode -= 1
                         self.buffers_clear()
                         continue
             history.add_io(self._data_ensure__string(data), data_o)
@@ -1210,12 +1223,14 @@ class SerialClient(Logger):
             prefix: Optional[str] = None,
             args: Optional[list] = None,
             kwargs: Optional[dict] = None,
+
+            retry_noanswer: int | None = None,
     ) -> Union[str, NoReturn]:
         """
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
         return always last_output
         """
-        return self.write_read(data=data, prefix=prefix, args=args, kwargs=kwargs).last_output
+        return self.write_read(data=data, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=retry_noanswer).last_output
 
     def write_read__last_validate(
             self,
