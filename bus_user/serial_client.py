@@ -123,7 +123,8 @@ TYPE__ADDRESS = Union[None, Type__AddressAutoAcceptVariant, str]
 # =====================================================================================================================
 class SerialClient(Logger):
     """
-    NOTE:
+    GOOD ADAPTERS
+    =============
     1. use good COM-port adapters!!!
         some bites may be lost (usually on started byte) or added extra chars (usually to start and end of line)!!!
 
@@ -138,6 +139,11 @@ class SerialClient(Logger):
         - driver CH340(pcb UsbToTtl) - no one error so far!
         - driver CH341A(pcb AllInOne/big universal) - no one error so far! more then steps about 50 minutes!!! tired of waiting
         - driver CH341A(pcb CH341T_V3) - no one error so far! more then steps about 35 minutes!!! tired of waiting
+
+    CAREFUL
+    -------
+    IF YOU WANT TO BE SURE with WR methods with not good adapters
+    use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
     """
     pass
     pass
