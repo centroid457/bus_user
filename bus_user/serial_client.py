@@ -2,6 +2,7 @@ import re
 import sys
 import glob
 import time
+import string
 from typing import *
 from enum import Enum, auto
 
@@ -1014,15 +1015,27 @@ class SerialClient(Logger):
 
             bus_user\serial_client.py:722: UnicodeDecodeError
         """
+        # TODO: move to sepaarted module!
         try:
             if isinstance(data, bytes):
-                return data.decode(encoding=cls.ENCODING)
+                result = data.decode(encoding=cls.ENCODING)
             else:
-                return str(data)
+                result = str(data)
         except Exception as exx:
             print(f"{exx!r}")
             msg = f"[FAIL] decoding {data=}"
             raise Exx_SerialRead_FailDecoding(msg)
+
+        # check printable ascii ------------------
+        for char in result:
+            if isinstance(char, bytes):
+                char = chr(char)
+            if char not in string.printable:
+                msg = f"[FAIL] decoding [{char=}]"
+                raise Exx_SerialRead_FailDecoding(msg)
+        # ----------------------------------------
+
+        return result
 
     # R ---------------------------------------------------------------------------------------------------------------
     # TODO: use wrapper for connect/disconnect!??? - NO!

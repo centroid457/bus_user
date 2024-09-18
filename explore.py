@@ -6,11 +6,15 @@ from typing import *
 import time
 
 
-class Dev(SerialClient_FirstFree):
+print(SerialClient._data_ensure__string(b'step400\x1d'))
+
+class Dev(SerialClient_FirstFree_Shorted):
     BAUDRATE: int = 115200
     EOL__SEND = b"\r\n"
     RAISE_CONNECT = False
     LOG_ENABLE = True
+
+    REWRITEIF_READFAILDECODE = 5
     # TIMEOUT__READ: float = 3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
 
     # def address__validate(self) -> bool | None | NoReturn:
@@ -24,12 +28,21 @@ class Dev(SerialClient_FirstFree):
 
 dev = Dev()
 if dev.connect():
-    for i in range(10):
-        if dev.write_read__last('stop'):
-            break
-        time.sleep(0.5)
-        print()
-        print()
-        print()
-        print()
-        print()
+    # for i in range(10):
+    #     if dev.write_read__last('stop'):
+    #         break
+    #     time.sleep(0.5)
+    #     print()
+    #     print()
+    #     print()
+    #     print()
+    #     print()
+
+
+    index = 0
+    while True:
+        index += 1
+        load = f"step{index}"
+        print(load)
+        if not dev.write_read__last(load) == load:
+            print(f"FAIL{load=}")

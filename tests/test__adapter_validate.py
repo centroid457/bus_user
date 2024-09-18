@@ -4,7 +4,7 @@ from bus_user import *
 
 
 # =====================================================================================================================
-@pytest.mark.skip
+# @pytest.mark.skip
 class Test__Shorted_validateModel_InfinitRW:
     """
     VALIDATE ADAPTERS fro DECODУ ERRORS
@@ -38,6 +38,7 @@ class Test__Shorted_validateModel_InfinitRW:
         """
         # PREPARE ------------------------
         self.victim = SerialClient_FirstFree_Shorted()
+        # self.victim.REWRITEIF_READFAILDECODE = 5
         if not self.victim.connect():
             msg = f"[ERROR] not found PORT shorted by Rx+Tx"
             print(msg)
