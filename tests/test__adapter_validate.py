@@ -48,7 +48,7 @@ class Test__Shorted_validateModel_InfinitRW:
         index = 0
         while True:
             index += 1
-            load = f"step {index}"
+            load = f"step{index}"
             print(load)
             assert self.victim.write_read__last(load) == load
 
