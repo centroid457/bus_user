@@ -152,6 +152,9 @@ class SerialClient(Logger):
     # need NONE NOT 0!!! if wait always!!
     BAUDRATE: int = 9600        # 115200
 
+    REWRITEIF_READNOANSWER: int = 5
+    REWRITEIF_READFAILDECODE: int = 5
+
     CMDS_DUMP: list[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = False
@@ -1048,7 +1051,12 @@ class SerialClient(Logger):
 
         self._SERIAL.timeout = _timeout or self.TIMEOUT__READ or None
         while True:
-            new_char = self._SERIAL.readline(1)
+            new_char = None
+            for i in range(2):
+                new_char = self._SERIAL.readline(1)
+                if new_char:
+                    break
+
             if not new_char:
                 # print(f"detected finish line")
                 break
@@ -1180,9 +1188,17 @@ class SerialClient(Logger):
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
-            data_o = ""
-            if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
-                data_o = self.read_lines()
+            data_o = []
+            for i in range(5):
+                if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
+                    try:
+                        data_o = self.read_lines()
+                        if data_o:  # here are validated string data!   # NEED ALWAYS GET ANYTHING IN RESPONSE
+                            break
+                    except:
+                        pass
+                        self.buffers_clear()
+                        continue
             history.add_io(self._data_ensure__string(data), data_o)
 
         # RESULT ----------------------------

@@ -25,8 +25,9 @@ class Dev(SerialClient_FirstFree):
 dev = Dev()
 if dev.connect():
     for i in range(10):
-        dev.write_read__last('stop')
-        time.sleep(1)
+        if dev.write_read__last('stop'):
+            break
+        time.sleep(0.5)
         print()
         print()
         print()
