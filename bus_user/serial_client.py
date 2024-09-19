@@ -1060,6 +1060,13 @@ class SerialClient(Logger):
     def read_line(self, _timeout: Optional[float] = None) -> Union[str, NoReturn]:
         """
         read line from bus buffer,
+
+        CAREFUL
+        -------
+        DONT USE! IF WANT TO BE SURE!
+        instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
+
+        TODO: here possible rewrite by getting from history!!!
         """
         # FIXME: return Object??? need keep exx for not finished readline!!!
         # var1: just read as usual - could cause error with not full bytes read in ONE CHAR!!!
@@ -1203,12 +1210,14 @@ class SerialClient(Logger):
 
         CAREFUL
         -------
+        in this case you can get incorrect but printable chars!!!
         DONT USE! IF WANT TO BE SURE!
         instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
         """
         history = HistoryIO()
         if retry_noanswer is None:
             retry_noanswer = self.REWRITEIF_READNOANSWER
+        remain__retry_noanswer = retry_noanswer or 0
 
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
@@ -1219,11 +1228,7 @@ class SerialClient(Logger):
             # SINGLE LAST -----------------------
             data_o = []
             remain__retry_decode = self.REWRITEIF_READFAILDECODE or 0
-            remain__retry_noanswer = retry_noanswer or 0
-            while True:
-                if remain__retry_decode < 0 or remain__retry_noanswer < 0:
-                    break
-
+            while remain__retry_decode >= 0 and remain__retry_noanswer >= 0:
                 if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
                     try:
                         data_o = self.read_lines()
@@ -1231,12 +1236,11 @@ class SerialClient(Logger):
                             break
                         else:
                             remain__retry_noanswer -= 1
-                            self.buffers_clear()
 
                     except Exx_SerialRead_FailDecoding:
                         remain__retry_decode -= 1
-                        self.buffers_clear()
-                        continue
+
+                    self.buffers_clear()
             history.add_io(self._data_ensure__string(data), data_o)
 
         # RESULT ----------------------------
@@ -1257,6 +1261,7 @@ class SerialClient(Logger):
 
         CAREFUL
         -------
+        in this case you can get incorrect but printable chars!!!
         DONT USE! IF WANT TO BE SURE!
         instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
         """
@@ -1292,7 +1297,7 @@ class SerialClient(Logger):
 
         while retry_novalid >= 0:
             if input:
-                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs)
+                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=0)  # use only retry_noanswer=0! so it would not multiplyed iterations
             else:
                 outputs = self.read_lines()
                 if outputs:

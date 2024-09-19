@@ -99,7 +99,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: tuple[int, int, int] = (0, 4, 12)
+    VERSION: tuple[int, int, int] = (0, 4, 13)
     TODO: list[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -108,11 +108,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        ["[serialClient]",
-         "fix good working with not so good adapters, add REWRITEIF_READNOANSWER/*READFAILDECODE/*NOVALID",
-         "fix _data_ensure__string with correct comparing elements with printable ascii",
-         "fix buffers_clear*/write_eol"
-         ]
+        "[serialClient] zero fix+docstr",
     ]
 
 
