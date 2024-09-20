@@ -2,20 +2,31 @@ from typing import *
 
 
 # =====================================================================================================================
+TYPE__IO = tuple[str, list[str]]
+
+
+# =====================================================================================================================
+# TODO:
+#   USE OBJECTS instead of tuples? + internal add+read
+#   1. use deque with objects Write Read WEol REol None(not used)?
+#   2. add top(n=10)
+#   if when writeLine - always readLines?
+
+
 class HistoryIO:
-    history: list[tuple[str, list[str]]] = None
+    history: list[TYPE__IO] = []
 
     def __init__(self):
         self.history = []
 
     def count(self) -> int:
+        """
+        count requests
+        """
         return len(self.history)
 
     def clear(self) -> None:
         self.history.clear()
-
-    def as_dict(self) -> dict[str, list[str]]:
-        return dict(self.history)
 
     # ADD =============================================================================================================
     def add_input(self, data: str) -> None:
@@ -25,13 +36,11 @@ class HistoryIO:
         if not self.history:
             self.add_input("")
 
-        output_last = self.history[-1][1]
         if isinstance(data, (tuple, list, )):
-            # LIST
-            output_last.extend(data)
+            self.last_outputs.extend(data)
         else:
             # SINGLE
-            output_last.append(data)
+            self.last_outputs.append(data)
 
     def add_io(self, data_i: str, data_o: Union[str, list[str]]) -> None:
         self.add_input(data_i)
@@ -42,28 +51,46 @@ class HistoryIO:
             self.add_input(data_i)
             self.add_output(data_o)
 
+    # LAST ============================================================================================================
+    @property
+    def last_io(self) -> TYPE__IO | None:
+        try:
+            return self.history[-1]
+        except:
+            return None
+
+    @property
+    def last_input(self) -> str:
+        try:
+            return self.last_io[0]
+        except:
+            return ""
+
+    @property
+    def last_outputs(self) -> list[str]:
+        try:
+            return self.last_io[1]
+        except:
+            return []
+
+    @property
+    def last_output(self) -> str:
+        try:
+            return self.last_outputs[-1]
+        except:
+            return ""
+
     # CHECK ===========================================================================================================
     def check_equal_io(self) -> bool:
         """
-        created specially for testing UART bus when shorted Rx+Tx
+        CREATED SPECIALLY FOR
+        ---------------------
+        testing UART bus when shorted Rx+Tx
         """
         for data_i, data_o in self.history:
             if not (len(data_o) == 1 and data_o[0] == data_i):
                 return False
         return True
-
-    # LAST ============================================================================================================
-    @property
-    def last_input(self) -> str:
-        if self.history:
-            return self.history[-1][0]
-        return ""
-
-    @property
-    def last_output(self) -> str:
-        if self.history and self.history[-1][-1]:
-            return self.history[-1][-1][-1]
-        return ""
 
     # LIST+PRINT ======================================================================================================
     def list_input(self) -> list[str]:
@@ -96,6 +123,10 @@ class HistoryIO:
             else:
                 print()
         print("="*100)
+
+    def as_dict(self) -> dict[str, list[str]]:
+        """not correct if exists same write"""
+        return dict(self.history)
 
 
 # =====================================================================================================================
