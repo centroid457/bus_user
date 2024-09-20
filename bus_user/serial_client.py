@@ -1057,7 +1057,7 @@ class SerialClient(Logger):
 
         return result
 
-    def read_line(self, _timeout: Optional[float] = None) -> Union[str, NoReturn]:
+    def read_line(self, _timeout: Optional[float] = None) -> Union[str, ValueUnit, NoReturn]:
         """
         read line from bus buffer,
 
@@ -1118,7 +1118,7 @@ class SerialClient(Logger):
 
         data = self._bytes_edition__apply(data)
         data = self._data_eol__clear(data)
-        data = self._data_ensure__string(data)
+        data = self._data_ensure__string(data)          # here could be Raise!
         self.history.add_output(data)
         self.answer_is_fail(data)
 
