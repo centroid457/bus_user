@@ -1298,10 +1298,10 @@ class SerialClient(Logger):
         if retry_novalid is None:
             retry_novalid = self.REWRITEIF_NOVALID or 0
 
-        if isinstance(expect, (str, bytes)):
-            expect_list = [expect, ]
-        else:
+        if isinstance(expect, (tuple, list, set, dict)):
             expect_list = expect
+        else:
+            expect_list = [expect, ]
 
         while retry_novalid >= 0:
             if input:

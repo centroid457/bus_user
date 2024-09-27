@@ -1,5 +1,9 @@
-import pytest
 from typing import *
+
+import pytest
+from pytest_aux import *
+
+from funcs_aux import *
 from bus_user import *
 
 
@@ -320,24 +324,45 @@ class Test__Shorted_WR(Test__Shorted_Base):
         assert self.victim.write_read__last("hello") == "hello"
         assert self.victim.write_read__last(["hello1", "hello2"]) == "hello2"
 
-    def test__wr_last_validate(self):
-        assert self.victim.write_read__last_validate("hello", "hello")
-        assert self.victim.write_read__last_validate(["hello1", "hello2"],  "hello2")
-        assert self.victim.write_read__last_validate(["hello1", "hello2"],  "HELLO2")   # CASE
+    @pytest.mark.parametrize(
+        argnames="write, read, _EXPECTED",
+        argvalues=[
+            ("hello", "hello", True),
+            (["hello1", "hello2"], "hello2", True),
+            (["hello1", "hello2"], "HELLO2", True),     # CASE
+            (["hello1", "hello2"], "hello222", False),
+            (["hello1", "hello2"], ["hello222", ], False),
+            (["hello1", "hello2"], ["hello222", "hello2"], True),
+            (["hello1", "hello2"], ["hello2", "hello222"], True),
 
-        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  "hello333")
+            ("hello", Valid(validate_link=lambda x: x.startswith("hel")), True),
+            ("hello", Valid(validate_link=lambda x: x.startswith("HEL")), False),
 
-        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", ])
-        assert not self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello1'])
-        assert self.victim.write_read__last_validate(["hello1", "hello2"],  ["hello333", 'hello2'])
+            ("1V", ValueUnit(unit="V"), True),
+            ("1", ValueUnit(unit="V"), True),
+            ("1V", ValueUnit(unit=""), True),
+            ("1A", ValueUnit(unit="V"), False),
 
-    def test__wr_last_validate_regexp(self):
-        assert self.victim.write_read__last_validate_regexp("hello", "hello") is True
-        assert self.victim.write_read__last_validate_regexp("hello", "he.*") is True
-        assert self.victim.write_read__last_validate_regexp("hello", ["he.*", ]) is True
-        assert self.victim.write_read__last_validate_regexp("hello", ["HE.*", ]) is True
-        assert self.victim.write_read__last_validate_regexp("hello", ["hello123", ]) is False
-        assert self.victim.write_read__last_validate_regexp("hello", ["hello123", "HELLO"]) is True
+            ("3", ValueVariants(variants=[3, ]), True),
+        ],
+    )
+    def test__wr_last_validate(self, write, read, _EXPECTED):
+        func_link = lambda: self.victim.write_read__last_validate(write, read)
+        pytest_func_tester__no_args_kwargs(func_link, _EXPECTED)
+
+    @pytest.mark.parametrize(
+        argnames="write, read, _EXPECTED",
+        argvalues=[
+            ("hello", "he.*", True),
+            ("hello", ["he.*", ], True),
+            ("hello", ["HE.*", ], True),
+            ("hello", ["hello123", ], False),
+            ("hello", ["hello123", "HELLO"], True),
+        ],
+    )
+    def test__wr_last_validate_regexp(self, write, read, _EXPECTED):
+        func_link = lambda: self.victim.write_read__last_validate_regexp(write, read)
+        pytest_func_tester__no_args_kwargs(func_link, _EXPECTED)
 
     def test__wr_ReadFailPattern(self):
         self.victim.RAISE_READ_FAIL_PATTERN = True
