@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.4.14 (2024/09/27 13:14:19)
+------------------------------
+- [SerialClient] ref write_read__last_validate make available validators Valid/ValueUbit/ValueVariants  
+
 0.4.13 (2024/09/19 18:12:08)
 ------------------------------
 - [serialClient] zero fix+docstr  
