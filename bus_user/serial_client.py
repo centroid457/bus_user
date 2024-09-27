@@ -155,15 +155,15 @@ class SerialClient(Logger):
     # SETTINGS ------------------------------------------------
     _ADDRESS: TYPE__ADDRESS = None
 
-    TIMEOUT__READ: float = 0.3       # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
+    TIMEOUT__READ: float = 0.3  # 0.2 is too short!!! dont touch! in case of reading char by char 0.5 is the best!!! 0.3 is not enough!!!
     # need NONE NOT 0!!! if wait always!!
-    BAUDRATE: int = 9600        # 115200
+    BAUDRATE: int = 9600  # 115200
 
     REWRITEIF_READNOANSWER: int = 5
     REWRITEIF_READFAILDECODE: int = 5
     REWRITEIF_NOVALID: int = 5
 
-    CMDS_DUMP: list[str] = []   # ["IDN", "ADR", "REV", "VIN", ]
+    CMDS_DUMP: list[str] = []  # ["IDN", "ADR", "REV", "VIN", ]
     RAISE_CONNECT: bool = True
     RAISE_READ_FAIL_PATTERN: bool = False
 
@@ -173,20 +173,21 @@ class SerialClient(Logger):
 
     # TODO: come up and apply ANSWER_SUCCESS??? may be not need cause of redundant
     ANSWER_SUCCESS: str = "OK"  # case insensitive
-    ANSWER_FAIL_PATTERN: Union[str, list[str]] = [r".*FAIL.*", ]   # case insensitive!
+    ANSWER_FAIL_PATTERN: Union[str, list[str]] = [r".*FAIL.*", ]  # case insensitive!
 
     # rare INFRASTRUCTURE -----------------
     ENCODING: str = "utf8"
-    EOL__SEND: bytes = b"\r\n"      # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
+    EOL__SEND: bytes = b"\r\n"  # "\r"=ENTER in PUTTY  but "\r\n"=is better in read Putty!
     EOL__UNI_SET: bytes = b"\r\n"
 
     _GETATTR_STARTSWITH__SEND: str = "send__"
     _GETATTR_SPLITTER__ARGS: str = "__"
 
     # test purpose EMULATOR -----------------
-    _EMULATOR__CLS: Type['SerialServer_Base'] = None    # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR__INST could be used for test reason and check values in realtime!!
+    _EMULATOR__CLS: Type[
+        'SerialServer_Base'] = None  # IF USED - START it on PAIRED - it is exactly Emulator/Server! no need to use just another serialClient! _EMULATOR__INST could be used for test reason and check values in realtime!!
     _EMULATOR__INST: 'SerialServer_Base' = None
-    _EMULATOR__START: bool = None    # DONT DELETE! it need when you reconnecting! cause of address replaced after disconnecting by exact str after PAIRED*
+    _EMULATOR__START: bool = None  # DONT DELETE! it need when you reconnecting! cause of address replaced after disconnecting by exact str after PAIRED*
 
     # AUX -----------------------------------------------------
     history: HistoryIO = None
@@ -271,7 +272,8 @@ class SerialClient(Logger):
             self,
             address: TYPE__ADDRESS | None = None,
             _raise: bool | None = None,
-            _touch_connection: bool | None = None    # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
+            _touch_connection: bool | None = None
+            # no final connection! specially keep ability to connect without Emu on cls main perpose (search ports)!
     ) -> Union[bool, NoReturn]:
         msg = None
         exx = None
@@ -315,6 +317,8 @@ class SerialClient(Logger):
         if need_open:
             try:
                 self._SERIAL.open()
+                # self.write_eol()
+                # self.buffers_clear()
             except Exception as _exx:
                 if not _touch_connection:
                     self.LOGGER.error(f"[{self._SERIAL.port}]{_exx!r}")
@@ -536,7 +540,7 @@ class SerialClient(Logger):
         return owner is not None
 
     # AUTODETECT ------------------------------------------------------------------------------------------------------
-    pass    # dont move this all to CLASSMETHOD!!!
+    pass  # dont move this all to CLASSMETHOD!!!
 
     def address_get__first_free(self) -> str | None:
         result = None
@@ -921,7 +925,8 @@ class SerialClient(Logger):
         self._buffers_clear__read()
 
     # CMD -------------------------------------------------------------------------------------------------------------
-    def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: list[Any] = None, kwargs: dict[Any, Any] = None) -> str:
+    def _create_cmd_line(self, cmd: str, prefix: Optional[str] = None, args: list[Any] = None,
+                         kwargs: dict[Any, Any] = None) -> str:
         result = ""
 
         cmd = self._data_ensure__string(cmd)
@@ -1057,7 +1062,7 @@ class SerialClient(Logger):
 
         return result
 
-    def read_line(self, _timeout: Optional[float] = None) -> Union[str, ValueUnit, NoReturn]:
+    def read_line(self, _timeout: Optional[float] = None) -> Union[str, NoReturn]:
         """
         read line from bus buffer,
 
@@ -1087,7 +1092,7 @@ class SerialClient(Logger):
             if not new_char:
                 # print(f"detected finish line")
                 break
-            if new_char == b'\x7f':     # BACKSPACE
+            if new_char == b'\x7f':  # BACKSPACE
                 # LINE EDITION --------------
                 data = data[:-1]
                 continue
@@ -1118,7 +1123,7 @@ class SerialClient(Logger):
 
         data = self._bytes_edition__apply(data)
         data = self._data_eol__clear(data)
-        data = self._data_ensure__string(data)          # here could be Raise!
+        data = self._data_ensure__string(data)
         self.history.add_output(data)
         self.answer_is_fail(data)
 
@@ -1151,7 +1156,7 @@ class SerialClient(Logger):
         data = data or ""
 
         # LIST -----------------------
-        if isinstance(data, (list, tuple, )):
+        if isinstance(data, (list, tuple,)):
             if len(data) > 1:
                 for data_i in data:
                     if not self._write(data=data_i, prefix=prefix, args=args, kwargs=kwargs):
@@ -1222,7 +1227,8 @@ class SerialClient(Logger):
         # LIST -------------------------
         if isinstance(data, (list, tuple,)):
             for data_i in data:
-                history_i = self.write_read(data_i, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=retry_noanswer)
+                history_i = self.write_read(data_i, prefix=prefix, args=args, kwargs=kwargs,
+                                            retry_noanswer=retry_noanswer)
                 history.add_history(history_i)
         else:
             # SINGLE LAST -----------------------
@@ -1270,7 +1276,7 @@ class SerialClient(Logger):
     def write_read__last_validate(
             self,
             input: Union[str, list[str]] | None,
-            expect: Union[str, list[str]],
+            expect: Union[Any, list[Any]],
             prefix: Optional[str] = None,
             args: Optional[list] = None,
             kwargs: Optional[dict] = None,
@@ -1286,6 +1292,8 @@ class SerialClient(Logger):
         SOLVE PROBLEMS
         --------------
         communicate with wrong working devices!
+
+        :param expect: can be Any! even Valid/ValueUbit/ValueVariants as validation object!
         """
         if retry_novalid is None:
             retry_novalid = self.REWRITEIF_NOVALID or 0
@@ -1297,7 +1305,8 @@ class SerialClient(Logger):
 
         while retry_novalid >= 0:
             if input:
-                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=0)  # use only retry_noanswer=0! so it would not multiplyed iterations
+                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs,
+                                                    retry_noanswer=0)  # use only retry_noanswer=0! so it would not multiplyed iterations
             else:
                 outputs = self.read_lines()
                 if outputs:
@@ -1306,11 +1315,15 @@ class SerialClient(Logger):
                     output_last = ""
 
             for expect_var in expect_list:
-                if not _as_regexp:
-                    if str(output_last).lower() == str(expect_var).lower():
+                if _as_regexp:
+                    if re.fullmatch(expect_var, str(output_last), flags=re.IGNORECASE):
                         return True
                 else:
-                    if re.fullmatch(expect_var, str(output_last), flags=re.IGNORECASE):
+                    if (
+                            str(output_last).lower() == str(expect_var).lower()
+                            or
+                            Valid.compare_doublesided__bool(output_last, expect_var)
+                    ):
                         return True
 
             retry_novalid -= 1
@@ -1380,7 +1393,7 @@ class SerialClient(Logger):
             item_args = item_splited[1:]
 
         # 3=apply direct cmd
-        return lambda *args, **kwargs: self.write_read__last(data=self._create_cmd_line(cmd=item, args=[*item_args, *args], kwargs=kwargs))
-
+        return lambda *args, **kwargs: self.write_read__last(
+            data=self._create_cmd_line(cmd=item, args=[*item_args, *args], kwargs=kwargs))
 
 # =====================================================================================================================
