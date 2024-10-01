@@ -1419,13 +1419,13 @@ class SerialClient(Logger):
         # cand to it in here!
 
         # 4=apply direct cmd
-        result = lambda *args, **kwargs: self.write_read__last(
+        result = lambda *_args, **_kwargs: self.write_read__last(
             data=self._create_cmd_line(
                 cmd=item,
-                args=[*item_args, *args],
-                kwargs={k: v for k, v in kwargs.items() if not k.startswith("_")}
+                args=[*item_args, *_args],
+                kwargs={k: v for k, v in _kwargs.items() if not k.startswith("_")}
             ),
-            **{k[1:]: v for k, v in kwargs.items() if k.startswith("_")}
+            **{k[1:]: v for k, v in _kwargs.items() if k.startswith("_")}
         )
         return result
 
