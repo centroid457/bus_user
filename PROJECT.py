@@ -99,7 +99,7 @@ other protocols mot recommended
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: tuple[int, int, int] = (0, 4, 15)
+    VERSION: tuple[int, int, int] = (0, 4, 16)
     TODO: list[str] = [
         "add all other port settings into SerialClient",
         "fix all tests! fix EMU"
@@ -108,7 +108,7 @@ other protocols mot recommended
         "..."
     ]
     NEWS: list[str] = [
-        "[SerialClient] fix timeoutRead handling+make kwargs for methods over getattr",
+        "[SerialClient.writeReadLast*] fix timeoutRead on only first read! after first char timeout set default",
     ]
 
 

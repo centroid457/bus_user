@@ -1055,6 +1055,7 @@ class SerialClient(Logger):
         result: list[str] = []
         while True:
             line = self.read_line(_timeout)
+            _timeout = self.TIMEOUT__READ or None
             if line is None or str(line) == "":
                 break
             else:

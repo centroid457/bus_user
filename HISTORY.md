@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.4.16 (2024/10/01 17:58:56)
+------------------------------
+- [SerialClient.writeReadLast*] fix timeoutRead on only first read! after first char timeout set default  
+
 0.4.15 (2024/10/01 13:04:41)
 ------------------------------
 - [SerialClient] fix timeoutRead handling+make kwargs for methods over getattr  

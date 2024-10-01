@@ -7,7 +7,7 @@ anyio==4.4.0
 art==6.2
 attrs==23.2.0
 build==1.2.1
-bus_user==0.4.14
+bus_user==0.4.15
 can==0.0.0
 cattrs==24.1.0
 certifi==2024.7.4
