@@ -1086,6 +1086,7 @@ class SerialClient(Logger):
             new_char = None
             for i in range(2):
                 new_char = self._SERIAL.readline(1)
+                self._SERIAL.timeout = self.TIMEOUT__READ or None  # set back - no need repiatiting
                 if new_char:
                     break
 
@@ -1106,6 +1107,8 @@ class SerialClient(Logger):
                     continue
 
             data += new_char
+
+        self._SERIAL.timeout = self.TIMEOUT__READ or None  # set back - final
 
         # RESULT ----------------------
         if data:
@@ -1209,6 +1212,7 @@ class SerialClient(Logger):
             kwargs: Optional[dict] = None,
 
             retry_noanswer: int | None = None,
+            _timeout: Optional[float] = None,
     ) -> Union[HistoryIO, NoReturn]:
         """
         send data and return history
@@ -1237,7 +1241,7 @@ class SerialClient(Logger):
             while remain__retry_decode >= 0 and remain__retry_noanswer >= 0:
                 if self._write(data=data, prefix=prefix, args=args, kwargs=kwargs):
                     try:
-                        data_o = self.read_lines()
+                        data_o = self.read_lines(_timeout=_timeout)
                         if data_o:  # here are validated string data!   # NEED ALWAYS GET ANYTHING IN RESPONSE
                             break
                         else:
@@ -1260,6 +1264,7 @@ class SerialClient(Logger):
             kwargs: Optional[dict] = None,
 
             retry_noanswer: int | None = None,
+            _timeout: Optional[float] = None,
     ) -> Union[str, NoReturn]:
         """
         it is created specially for single cmd usage! but decided leave multy cmd usage as feature.
@@ -1271,7 +1276,14 @@ class SerialClient(Logger):
         DONT USE! IF WANT TO BE SURE!
         instead use write_read__last_validate!!! it would rewrite data if not valid answer (even with incorrect but good decoding)!!!
         """
-        return self.write_read(data=data, prefix=prefix, args=args, kwargs=kwargs, retry_noanswer=retry_noanswer).last_output
+        return self.write_read(
+            data=data,
+            prefix=prefix,
+            args=args,
+            kwargs=kwargs,
+            retry_noanswer=retry_noanswer,
+            _timeout=_timeout,
+        ).last_output
 
     def write_read__last_validate(
             self,
@@ -1282,6 +1294,7 @@ class SerialClient(Logger):
             kwargs: Optional[dict] = None,
 
             retry_novalid: int | None = None,
+            _timeout: Optional[float] = None,
             _as_regexp: Optional[bool] = None,
     ) -> bool:
         """
@@ -1305,10 +1318,16 @@ class SerialClient(Logger):
 
         while retry_novalid >= 0:
             if input:
-                output_last = self.write_read__last(data=input, prefix=prefix, args=args, kwargs=kwargs,
-                                                    retry_noanswer=0)  # use only retry_noanswer=0! so it would not multiplyed iterations
+                output_last = self.write_read__last(
+                    data=input,
+                    prefix=prefix,
+                    args=args,
+                    kwargs=kwargs,
+                    retry_noanswer=0,  # use only retry_noanswer=0! so it would not multiplyed iterations
+                    _timeout=_timeout,
+                )
             else:
-                outputs = self.read_lines()
+                outputs = self.read_lines(_timeout=_timeout)
                 if outputs:
                     output_last = outputs[-1]
                 else:
@@ -1365,20 +1384,24 @@ class SerialClient(Logger):
         --------------
             dev = MySerialDevice()
             dev.connect()
-            dev.IDN()   # return answer for sent string in port "IDN"
-            dev.VIN()   # return answer for sent string in port "VIN"
-            dev.VIN(12)   # return answer for sent string in port "VIN 12"
-            dev.VIN("12")   # return answer for sent string in port "VIN 12"
-            dev.VIN("12 13")  # return answer for sent string in port "VIN 12 13"
-            dev.VIN(12, 13)   # return answer for sent string in port "VIN 12 13" by args
-            dev.VIN(CH1=12, CH2=13) # return answer for sent string in port "VIN CH1=12 CH2=13" by kwargs
-            dev.VIN(12, CH2=13)     # return answer for sent string in port "VIN 12 CH2=13" by args/kwargs
+            dev.IDN()       --> dev.write_read__last("IDN")
+            dev.VIN()       # dev.write_read__last("VIN")
+            dev.VIN(12)     # dev.write_read__last("VIN 12")
+            dev.VIN("12")   # dev.write_read__last("VIN 12")
+            dev.VIN("12 13")  # dev.write_read__last("VIN 12 13")
+            dev.VIN(12, 13)   # dev.write_read__last("VIN 12 13")
+            dev.VIN(CH1=12, CH2=13) # dev.write_read__last("VIN CH1=12 CH2=13")
+            dev.VIN(12, CH2=13)     # dev.write_read__last("VIN 12 CH2=13") by args/kwargs
 
             # ALL VARIANTS
             dev.VIN(11, CH2=13)
             dev.VIN__11(22, CH2=13)
             dev.send__VIN(11, CH2=13)
             dev.send__VIN__11(22, CH2=13)
+
+            # KWARGS for WriteRead method
+            dev.TEST("HELLO", CH2=13, __timeout=5) --> dev.write_read__last("TEST CH2=13", _timeout=5) # note underscore
+
         """
         item_args = []  # args in getattr name
 
@@ -1392,8 +1415,19 @@ class SerialClient(Logger):
             item = item_splited[0]
             item_args = item_splited[1:]
 
-        # 3=apply direct cmd
-        return lambda *args, **kwargs: self.write_read__last(
-            data=self._create_cmd_line(cmd=item, args=[*item_args, *args], kwargs=kwargs))
+        # 3=separate cmd/meth kwargs
+        # cand to it in here!
+
+        # 4=apply direct cmd
+        result = lambda *args, **kwargs: self.write_read__last(
+            data=self._create_cmd_line(
+                cmd=item,
+                args=[*item_args, *args],
+                kwargs={k: v for k, v in kwargs.items() if not k.startswith("_")}
+            ),
+            **{k[1:]: v for k, v in kwargs.items() if k.startswith("_")}
+        )
+        return result
+
 
 # =====================================================================================================================
