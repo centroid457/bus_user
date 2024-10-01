@@ -12,6 +12,10 @@
 ********************************************************************************
 ## NEWS
 
+0.4.15 (2024/10/01 13:04:41)
+------------------------------
+- [SerialClient] fix timeoutRead handling+make kwargs for methods over getattr  
+
 0.4.14 (2024/09/27 13:14:19)
 ------------------------------
 - [SerialClient] ref write_read__last_validate make available validators Valid/ValueUbit/ValueVariants  
